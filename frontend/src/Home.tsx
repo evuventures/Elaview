@@ -26,7 +26,7 @@ export default function Home() {
                 </div>
               </div>
               <img
-                src="../public/images/home.png"
+                src="../public/images/home.webp"
                 width={550}
                 height={550}
                 alt="Hero Image"
