@@ -200,13 +200,6 @@ function BrowseSpace() {
 
 
 
-    // let startIndex = (currentPage - 1) * itemsperPage;
-    // let endIndex = startIndex + itemsperPage
-
-    // const currentPageItems: Product[] = products.slice(startIndex, endIndex);
-
-
-
 
     // Only use filteredItems when filters are active, otherwise use currentPageItems
     const displayedItems: Product[] = areFiltersActive ? filteredItems : currentPageItems;
@@ -226,11 +219,7 @@ function BrowseSpace() {
     }
 
 
-    // const resetCBoxes = () => {
-    //     const locationMatch = selectedNeighborhoods.length === 0;
-    //     return locationMatch;
-    // }
-
+ 
 
     return (
         <>
@@ -334,7 +323,7 @@ function BrowseSpace() {
 
 
                         <Collapse in={open6} sx={{ px: 2 }}>
-                            <Slider value={priceRange} onChange={(_, newValue) => setPriceRange(newValue)} valueLabelDisplay="off" min={1000} max={15000}
+                            <Slider value={priceRange} onChange={(_, newValue) => setPriceRange(newValue as number[])} valueLabelDisplay="off" min={1000} max={15000}
                                 step={500} sx={{ color: 'black', '& .MuiSlider-thumb': { backgroundColor: 'black' } }} />
 
 
@@ -382,7 +371,7 @@ function BrowseSpace() {
                                         padding: '0.3em', borderRadius: '0.4em'
                                     }}>
 
-                                        <TextField value={minWidth} onChange={(e) => setMinWidth(e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
+                                        <TextField value={minWidth.toString()} onChange={(e) => setMinWidth(e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
                                             variant="outlined" size="small" sx={{ width: 80, border: 'none', '& fieldset': { border: 'none' } }} />
 
                                         <Stack sx={{ borderRadius: '0 4px 4px 0', backgroundColor: '#f5f5f5' }}>
@@ -410,7 +399,7 @@ function BrowseSpace() {
                                         display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgb(211, 210, 210)',
                                         padding: '0.3em', borderRadius: '0.4em'
                                     }}>
-                                        <TextField value={minHeight} onChange={(e) => setMinHeight(Math.max(1, parseInt(e.target.value) || 1))}
+                                        <TextField value={minHeight.toString()} onChange={(e) => setMinHeight(Math.max(1, parseInt(e.target.value) || 1))}
                                             variant="outlined" size="small" sx={{ width: 80, border: 'none', '& fieldset': { border: 'none' } }} />
 
                                         <Stack sx={{ backgroundColor: '#f5f5f5' }}>
