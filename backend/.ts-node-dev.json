@@ -1,0 +1,7 @@
+{
+  "transpileOnly": true,
+  "respawn": true,
+  "compilerOptions": {
+    "module": "ESNext"
+  }
+}
