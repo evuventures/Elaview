@@ -19,6 +19,6 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"], // Provides DOM & modern JavaScript support
     "jsx": "react-jsx"                // Ensures JSX compatibility (for React projects)
   },
-  "include": ["src", "src/app.ts", "src/server.ts"],                 
+  "include": ["src", "src/app.ts", "src/server.ts", "src/config"],                 
   "exclude": ["node_modules", "dist"]
 }
