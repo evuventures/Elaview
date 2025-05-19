@@ -22,9 +22,9 @@ class NavigationMenu extends StatelessWidget {
           selectedIndex: controller.selectedIndex.value,
           onDestinationSelected: (index) => controller.selectedIndex.value=index,
           destinations: const [
-            NavigationDestination(icon: Icon(Iconsax.home), label: "Home"),
-            NavigationDestination(icon: Icon(Iconsax.shop), label: "Store"),
-            NavigationDestination(icon: Icon(Iconsax.heart), label: "Wishlist"),
+            NavigationDestination(icon: Icon(Iconsax.search_normal), label: "Spaces"),
+            NavigationDestination(icon: Icon(Iconsax.note_text), label: "Proposals"),
+            NavigationDestination(icon: Icon(Iconsax.message_text), label: "Messages"),
             NavigationDestination(icon: Icon(Iconsax.user), label: "Profile"),
           ],
         ),
