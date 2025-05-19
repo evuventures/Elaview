@@ -6,9 +6,11 @@ function Header() {
     return (
       <header className="navbar">
         
-          <a href="elaview.com">
+          <Link to="/">
             <img src={logo} className="logo" alt="Elaview Logo" />
-          </a>
+          </Link>
+            
+          
         
         <nav className="nav-links">
           {/* <a href="/" className="nav-button">Home</a> */}
