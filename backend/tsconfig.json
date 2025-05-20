@@ -1,24 +1,37 @@
 {
   "compilerOptions": {
-    "target": "ES2022",              // Modern JavaScript features for Node.js
-    "module": "ESNext",               // Ensures compatibility with ES Modules (Vite, Supabase)
-    "rootDir": "./src",               // Source folder for TypeScript files
-    "outDir": "./dist",               // Output folder for compiled JavaScript
-    "strict": true,                   // Enables all strict type checking
-    "esModuleInterop": true,          // Allows seamless import/export with CommonJS & ESNext
-    "moduleResolution": "node",       // Optimizes resolution of Node.js modules
-    "resolveJsonModule": true,        // Enables importing JSON files
+    "composite": true,
+    "target": "ES2022", // Modern JavaScript features for Node.js
+    "module": "ESNext", // Ensures compatibility with ES Modules (Vite, Supabase)
+    "rootDir": "./src", // Source folder for TypeScript files
+    "outDir": "./dist", // Output folder for compiled JavaScript
+    "strict": true, // Enables all strict type checking
+    "esModuleInterop": true, // Allows seamless import/export with CommonJS & ESNext
+    "moduleResolution": "node", // Optimizes resolution of Node.js modules
+    "resolveJsonModule": true, // Enables importing JSON files
     "forceConsistentCasingInFileNames": true, // Prevents case-sensitive file mismatches
-    "skipLibCheck": true,             // Skips type checks on dependencies for faster compilation
+    "skipLibCheck": true, // Skips type checks on dependencies for faster compilation
     "allowSyntheticDefaultImports": true, // Improves compatibility with legacy ES modules
-    "noImplicitAny": true,            // Requires explicit type definitions
+    "noImplicitAny": true, // Requires explicit type definitions
     "noUncheckedIndexedAccess": true, // Strengthens array and object index type safety
     "noFallthroughCasesInSwitch": true, // Prevents accidental switch case fallthroughs
-    "isolatedModules": true,          // Optimized for ES module environments (Vite, Supabase)
-    "noEmit": false,                  // Ensures compiled files are output to dist/
-    "lib": ["ES2022", "DOM", "DOM.Iterable"], // Provides DOM & modern JavaScript support
-    "jsx": "react-jsx"                // Ensures JSX compatibility (for React projects)
+    "isolatedModules": true, // Optimized for ES module environments (Vite, Supabase)
+    "noEmit": false, // Ensures compiled files are output to dist/
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ], // Provides DOM & modern JavaScript support
+    "jsx": "react-jsx" // Ensures JSX compatibility (for React projects)
   },
-  "include": ["src", "src/app.ts", "src/server.ts", "src/config"],                 
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src",
+    "src/app.ts",
+    "src/server.ts",
+    "src/config"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
