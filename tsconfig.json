@@ -17,7 +17,8 @@
     "jsx": "react-jsx",               // Ensures JSX compatibility (for React projects)
     "rootDir": ".",                    // Root directory for both frontend & backend
     "outDir": "./dist",                // Unified output folder for compiled JavaScript
-    "noEmit": false                    // Ensures compiled files are output to `dist/`
+    "noEmit": false,
+    "declaration": true                    // Ensures compiled files are output to `dist/`
   },
   "include": [
     "src", 

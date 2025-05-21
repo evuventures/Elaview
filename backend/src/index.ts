@@ -1,24 +1,18 @@
-// # Entry point
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-// Initialize environment variables
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
-
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.get('/api/hello', (req, res) => {
-  res.json({ message: 'Hello from Elaview API!' });
+app.get("/api/hello", (req, res) => {
+  res.json({ message: "Hello from Elaview API!" });
 });
 
-// Start server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-export default app;
+// Instead of listening on a port, export the handler for Vercel
+export default function handler(req: Request, res: Response) {
+  return app(req, res);
+}
