@@ -1,36 +1,33 @@
 {
   "compilerOptions": {
-    "target": "ES2022",              // Modern JavaScript features for both frontend & backend
-    "module": "ESNext",               // Ensures compatibility with ES Modules (Vite, Supabase)
-    "strict": true,                   // Enables all strict type checking
-    "esModuleInterop": true,          // Allows seamless import/export with CommonJS & ESNext
-    "moduleResolution": "node",       // Optimizes resolution of Node.js modules
-    "resolveJsonModule": true,        // Enables importing JSON files
+    "target": "ES2022", // Modern JavaScript features
+    "module": "ESNext", // Ensures compatibility with ES Modules
+    "strict": true, // Enables strict type checking
+    "esModuleInterop": true, // Seamless import/export with CommonJS & ESNext
+    "moduleResolution": "node", // Optimizes resolution for Node.js modules
+    "resolveJsonModule": true, // Enables importing JSON files
     "forceConsistentCasingInFileNames": true, // Prevents case-sensitive file mismatches
-    "skipLibCheck": true,             // Skips type checks on dependencies for faster compilation
-    "allowSyntheticDefaultImports": true, // Improves compatibility with legacy ES modules
-    "noImplicitAny": true,            // Requires explicit type definitions
-    "noUncheckedIndexedAccess": true, // Strengthens array and object index type safety
+    "skipLibCheck": true, // Skips type checks on dependencies for faster compilation
+    "allowSyntheticDefaultImports": true, // Improves compatibility with ES modules
+    "noImplicitAny": true, // Requires explicit type definitions
+    "noUncheckedIndexedAccess": true, // Strengthens array/object index type safety
     "noFallthroughCasesInSwitch": true, // Prevents accidental switch case fallthroughs
-    "isolatedModules": true,          // Optimized for ES module environments (Vite, Supabase)
-    "lib": ["ES2022", "DOM", "DOM.Iterable"], // Provides DOM & modern JavaScript support
-    "jsx": "react-jsx",               // Ensures JSX compatibility (for React projects)
-    "rootDir": ".",                    // Root directory for both frontend & backend
-    "outDir": "./dist",                // Unified output folder for compiled JavaScript
-    "noEmit": false,
-    "declaration": true                    // Ensures compiled files are output to `dist/`
+    "isolatedModules": true, // Optimized for ES module environments
+    "composite": true, // Supports incremental builds
+    "lib": ["ES2022", "DOM", "DOM.Iterable"], // Provides modern JavaScript & DOM support
+    "jsx": "react-jsx", // JSX compatibility for React projects
+    "rootDir": ".", // Sets the root directory for both frontend & backend
+    "outDir": "./dist", // Unified output folder for compiled JavaScript
+    "noEmit": false, // Allows emitting compiled files
+    "declaration": true // Generates type declaration files (.d.ts)
   },
   "include": [
-    "src", 
-    "frontend/src", 
-    "backend/src", 
-    "src/app.ts", 
-    "src/server.ts", 
+    "src",
+    "frontend/src",
+    "backend/src",
+    "src/app.ts",
+    "src/server.ts",
     "src/config"
   ],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-    { "path": "./frontend/tsconfig.json" },
-    { "path": "./backend/tsconfig.json" }
-  ]
+  "exclude": ["node_modules", "dist"]
 }
