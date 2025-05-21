@@ -149,7 +149,8 @@ function BrowseSpace() {
         const locationMatch = selectedNeighborhoods.length === 0 || selectedNeighborhoods.includes(item.location);
         const spacetypeMatch = selectedspaceTypes.length === 0 || selectedspaceTypes.includes(item.type);
         const trafficMatch = selectedTraffic.length === 0 || selectedTraffic.includes(item.traffic);
-        const PriceMatch = item.price >= priceRange[0] && item.price <= priceRange[1];
+        const PriceMatch = priceRange[0] !== undefined && priceRange[1] !== undefined &&
+            item.price >= priceRange[0] && item.price <= priceRange[1];
         const WidthMatch = minWidth === 0 || parseInt(item.width) === minWidth;
         const HeightMatch = minHeight === 0 || parseInt(item.height) === minHeight;
         const dateMatch = selectedAvailability.includes('Immediately') ? item.availability === 'Immediately' : true;
@@ -219,7 +220,7 @@ function BrowseSpace() {
     }
 
 
- 
+
 
     return (
         <>
