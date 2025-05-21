@@ -72,7 +72,7 @@
 
 .cards {
     text-align: center;
-    padding-top: 2em;
+    margin-top: 0.8em;
 }
 
 
@@ -100,31 +100,118 @@
 
 
 .reset:hover {
-    border: none;
+    border: 1px solid rgb(211, 210, 210);
 }
 
 
 .content-heading {
-    font-size: calc(1rem + 2vh);
+    font-size: calc(1rem + 1.4vh);
     text-align: left;
-    font-weight: 700;
+    font-weight: 750;
 }
+
+
+.DetailsButton:hover {
+    background-color: #f3f3f3;
+    color: #222
+}
+
 
 
 .pageBtn {
     background: none;
     color: black;
-    font-size: calc(1em + 0.1vh);
+    font-size: calc(0.8em + 0.1vh);
     font-family: inherit;
     cursor: pointer;
-    height: auto;
-    padding: 0.4em;
+    border: 1px solid transparent;
+    box-sizing: border-box;
 }
 
 
-.pageBtn:focus{
+.pageBtn:focus {
     background-color: white;
     border: 1px solid rgb(211, 210, 210);
+}
+
+
+.pageBtn:hover {
+    background-color: white;
+    border: 1px solid rgb(211, 210, 210);
+}
+
+
+.leftstyle {
+    border-radius: 5px;
+    padding: 0.4em;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+}
+
+
+.leftstyle:hover {
+    background-color: white;
+    border: 1px solid rgb(211, 210, 210);
+    cursor: pointer;
+}
+
+
+.leftstyle:focus {
+    background-color: white;
+    border: 1px solid rgb(211, 210, 210);
+}
+
+
+.rightstyle {
+    border-radius: 5px;
+    padding: 0.4em;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+}
+
+.rightstyle:hover {
+    background-color: white;
+    border: 1px solid rgb(211, 210, 210);
+    cursor: pointer;
+}
+
+
+.rightstyle:focus {
+    background-color: white;
+    border: 1px solid rgb(211, 210, 210);
+}
+
+
+.droppy {
+    border: 1px solid rgb(211, 210, 210);
+}
+
+
+.dropdown-toggle::after {
+    margin-left: 3em;
+}
+
+
+.selectedFilters {
+    display: flex;
+    align-items: center;
+    border: 0.2px solid rgb(211, 210, 210);
+    border-radius: 1em;
+    font-size: calc(0.8em + 0.1vh);
+    font-weight: 500;
+    padding: 0.3em;
+    gap: 0.3em;
+}
+
+
+.cancelFilters {
+    background-color: transparent;
+    color: rgb(77, 76, 76);
+    padding: 0;
+    margin-top: 0.1em;
+    box-sizing: border-box;
+    border: none;
+
 }
 
 
