@@ -4,7 +4,7 @@ import 'package:mobile_app/navigation_menu.dart';
 import 'package:mobile_app/utils/constants/colors.dart';
 import 'package:mobile_app/utils/constants/text_strings.dart';
 import 'package:mobile_app/utils/theme/theme.dart';
-
+import 'package:mobile_app/features/authentication/screens/signin/signin.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -17,7 +17,7 @@ class App extends StatelessWidget {
       theme: TAppTheme.lightTheme,
       darkTheme: TAppTheme.darkTheme,
       debugShowCheckedModeBanner: false,
-      home: const Scaffold(bottomNavigationBar: NavigationMenu()),
+      home: const Scaffold(body: SignInScreen(),),
       );
   }
 }

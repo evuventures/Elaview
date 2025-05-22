@@ -44,8 +44,8 @@ class TTexts {
 
 
   // -- Authentication Headings
-  static const String loginTitle = "Welcome back,";
-  static const String loginSubTitle = "Discover Limitless Choices and Unmatched Convenience.";
+  static const String loginTitle = "Sign in to your account";
+  static const String loginSubTitle = "Enter you Email and Password to continue";
   static const String signupTitle = "Let’s create your account";
   static const String forgetPasswordTitle = "Forget password";
   static const String forgetPasswordSubTitle = "Don’t worry sometimes people can forget too, enter your email and we will send you a password reset link.";
@@ -59,10 +59,10 @@ class TTexts {
 
 
   // -- Product
-  static const String popularProducts = "Popular Products";
+  static const String popularSpaces = "Popular Spaces";
 
   // -- Home
-  static const String homeAppbarTitle = "Good day for shopping";
+  static const String homeAppbarTitle = "Good day for Advertisement";
   static const String homeAppbarSubTitle = "Taimoor Sikander";
 
 }
