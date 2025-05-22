@@ -411,7 +411,7 @@ function BrowseSpace() {
 
 
                         <Collapse in={open6} sx={{ px: 2 }}>
-                            <Slider value={priceRange} onChange={(_, newValue) => setPriceRange(newValue as number[])} valueLabelDisplay="off" min={1000} max={15000}
+                            <Slider value={priceRange} onChange={(event: Event, newValue: number | number[]) => setPriceRange(newValue as number[])} valueLabelDisplay="off" min={1000} max={15000}
                                 step={500} sx={{ color: 'black', '& .MuiSlider-thumb': { backgroundColor: 'black' } }} />
 
 
@@ -569,7 +569,7 @@ function BrowseSpace() {
                                 <Box sx={{ mb: 3 }}>
 
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                        <DatePicker value={calendarDate} onChange={(newValue: Date | null) => setcalendarDate(newValue)}
+                                        <DatePicker value={calendarDate} onChange={(newValue) => setcalendarDate(newValue)}
                                             slots={{ openPickerIcon: CalendarToday }}
                                             slotProps={{
                                                 textField: {
@@ -677,11 +677,11 @@ function BrowseSpace() {
 
 
                                 {calendarDate && (
-                                    <Box className='selectedFilters'>
+                                    <Box key="calendar-date" className='selectedFilters'>
                                         <i className="bi bi-calendar-check-fill" style={{ fontSize: '0.9em' }}></i>
                                         <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>
                                            
-                                            {`${String(calendarDate.getMonth() + 1).padStart(2, '0')}/
+                                            {calendarDate && `${String(calendarDate.getMonth() + 1).padStart(2, '0')}/
                                             ${String(calendarDate.getDate()).padStart(2, '0')}/${calendarDate.getFullYear()}`}
                                         </Box>
                                         <button className='cancelFilters' onClick={() => setcalendarDate(null)}>
