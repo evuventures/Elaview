@@ -49,15 +49,6 @@ const products: Product[] = [
 ];
 
 
-const locationCounts: Record<string, number> = {};
-
-products.forEach(product => {
-    locationCounts[product.location] = (locationCounts[product.location] || 0) + 1;
-});
-
-
-
-
 
 
 function BrowseSpace() {
