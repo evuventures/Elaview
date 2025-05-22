@@ -1,6 +1,7 @@
 // frontend/src/hooks/useSupabase.ts
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { User } from '@supabase/supabase-js';
 
 // Example hook to fetch data from Supabase
 export function useSupabaseFetch<T>(
@@ -19,23 +20,23 @@ export function useSupabaseFetch<T>(
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         let queryBuilder = supabase.from(tableName).select('*');
-        
+
         // Apply filters if provided
         if (query?.column && query?.value !== undefined) {
           queryBuilder = queryBuilder.eq(query.column, query.value);
         }
-        
+
         // Apply limit if provided
         if (query?.limit) {
           queryBuilder = queryBuilder.limit(query.limit);
         }
-        
+
         const { data, error } = await queryBuilder;
-        
+
         if (error) throw error;
-        
+
         setData(data);
       } catch (err) {
         setError(err instanceof Error ? err : new Error(String(err)));
@@ -53,16 +54,16 @@ export function useSupabaseFetch<T>(
 
 // Example hook for authentication
 export function useSupabaseAuth() {
-  const [user, setUser] = useState(supabase.auth.getUser());
+  const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [authError, setAuthError] = useState<Error | null>(null);
 
   useEffect(() => {
     // Set initial user
     setAuthLoading(true);
-    supabase.auth.getUser().then(({ data, error }) => {
+    supabase.auth.getUser().then(({ data: { user }, error }) => {
       if (error) setAuthError(new Error(error.message));
-      else setUser(data);
+      else setUser(user);
       setAuthLoading(false);
     });
 
