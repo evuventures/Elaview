@@ -2,7 +2,7 @@ import { Box, Checkbox, FormControlLabel, ListItem, List, Typography, TextField,
 import './BrowseSpace.css';
 import { Collapse, ListSubheader } from '@mui/material';
 import { ExpandLess, ExpandMore, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Slider } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -55,7 +55,6 @@ products.forEach(product => {
     locationCounts[product.location] = (locationCounts[product.location] || 0) + 1;
 });
 
-console.log(locationCounts);
 
 
 
@@ -71,7 +70,7 @@ function BrowseSpace() {
     const [open5, setOpen5] = useState<boolean>(true);
     const [open6, setOpen6] = useState<boolean>(true);
     const [priceRange, setPriceRange] = useState<number[]>([1000, 15000]);
-    const [selectedOption, setSelectedOption] = useState<string>("week");
+    const [selectedOption, setSelectedOption] = useState<string>("Per week");
     const [minWidth, setMinWidth] = useState<number>(0);
     const [minHeight, setMinHeight] = useState<number>(0);
     const [calendarDate, setcalendarDate] = useState<Date | null>(null);
@@ -81,6 +80,7 @@ function BrowseSpace() {
     const [selectedspaceTypes, setselectedspaceTypes] = useState<string[]>([]);
     const [selectedTraffic, setselectedTraffic] = useState<string[]>([]);
     const [selectedAvailability, setselectedAvailability] = useState<string[]>([]);
+    const [sortOption, setSortOption] = useState('Recommended');
 
 
 
@@ -100,6 +100,7 @@ function BrowseSpace() {
 
         if (isChecked) {
             setselectedLocations(([...selectedLocations, value]));
+            setCurrentPage(1);
         }
 
         else {
@@ -116,6 +117,7 @@ function BrowseSpace() {
 
         if (isChecked) {
             setselectedNeighborhoods(([...selectedNeighborhoods, value]));
+            setCurrentPage(1);
 
         }
 
@@ -133,6 +135,7 @@ function BrowseSpace() {
 
         if (isChecked) {
             setselectedspaceTypes(([...selectedspaceTypes, value]));
+            setCurrentPage(1);
         }
 
         else {
@@ -149,7 +152,7 @@ function BrowseSpace() {
 
         if (isChecked) {
             setselectedTraffic(([...selectedTraffic, value]));
-
+            setCurrentPage(1);
         }
 
         else {
@@ -165,6 +168,7 @@ function BrowseSpace() {
 
         if (isChecked) {
             setselectedAvailability([...selectedAvailability, 'Immediately']);
+            setCurrentPage(1);
         }
 
         else {
@@ -197,14 +201,46 @@ function BrowseSpace() {
 
 
 
-    let itemsperPage = 8;
-    const itemsToDisplay = areFiltersActive ? filteredItems : products;
-    const totalPages = Math.ceil(itemsToDisplay.length / itemsperPage);
+    const sortedItems = useMemo(() => {
+        const itemsCopy = [...filteredItems];
+
+        if (sortOption === 'Newest First') {
+            return itemsCopy.sort((a, b) => {
+                const dateA = a.availability === 'Immediately' ? 0 : new Date(a.availability).getTime();
+                const dateB = b.availability === 'Immediately' ? 0 : new Date(b.availability).getTime();
+                return dateA - dateB;
+            });
+        }
+
+        if (sortOption === 'Oldest') {
+            return itemsCopy.sort((a, b) => {
+                const dateA = a.availability === 'Immediately' ? 0 : new Date(a.availability).getTime();
+                const dateB = b.availability === 'Immediately' ? 0 : new Date(b.availability).getTime();
+                return dateB - dateA;
+            });
+        }
+
+        return itemsCopy;
+    }, [filteredItems, sortOption]);
 
 
-    const startIndex = (currentPage - 1) * itemsperPage;
-    const endIndex = startIndex + itemsperPage;
-    const currentPageItems = itemsToDisplay.slice(startIndex, endIndex);
+
+
+
+    const itemsPerPage = 8;
+    const itemsToDisplay = areFiltersActive ? sortedItems : products;
+    const totalPages = Math.ceil(sortedItems.length / itemsPerPage);
+
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentPageItems = sortedItems.slice(startIndex, endIndex);
+
+
+
+    const displayedItems: Product[] = currentPageItems;
+
+
 
 
     const prevButton = () => {
@@ -232,8 +268,10 @@ function BrowseSpace() {
 
 
 
-    // Only use filteredItems when filters are active, otherwise use currentPageItems
-    const displayedItems: Product[] = currentPageItems;
+    const handleSortChange = (option: string) => {
+        setSortOption(option);
+    };
+
 
 
 
@@ -250,6 +288,33 @@ function BrowseSpace() {
     }
 
 
+
+    const locationFilter = (i: number) => {
+        setselectedLocations(selectedLocations.filter((_, index) => index != i));
+    }
+
+
+    const neighFilter = (i: number) => {
+        setselectedNeighborhoods(selectedNeighborhoods.filter((_, index) => index != i));
+    }
+
+
+    const typeFilter = (i: number) => {
+        setselectedspaceTypes(selectedspaceTypes.filter((_, index) => index != i));
+    }
+
+
+
+
+    const trafficFilter = (i: number) => {
+        setselectedTraffic(selectedTraffic.filter((_, index) => index != i));
+    }
+
+
+
+    const dateFilter = (i: number) => {
+        setselectedAvailability(selectedAvailability.filter((_, index) => index != i));
+    }
 
 
     return (
@@ -431,7 +496,7 @@ function BrowseSpace() {
                                         display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgb(211, 210, 210)',
                                         padding: '0.3em', borderRadius: '0.4em'
                                     }}>
-                                        <TextField value={minHeight.toString()} onChange={(e) => setMinHeight(Math.max(1, parseInt(e.target.value) || 1))}
+                                        <TextField value={minHeight.toString()} onChange={(e) => setMinHeight(e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
                                             variant="outlined" size="small" sx={{ width: 80, border: 'none', '& fieldset': { border: 'none' } }} />
 
                                         <Stack sx={{ backgroundColor: '#f5f5f5' }}>
@@ -538,6 +603,7 @@ function BrowseSpace() {
 
 
 
+                {/*MAIN CONTENT */}
                 <Box className='main-content'>
 
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
@@ -546,15 +612,21 @@ function BrowseSpace() {
 
 
                         <Box className="dropdown show">
-                            <button className="btn dropdown-toggle droppy" type="button" data-bs-toggle="dropdown" aria-expanded="false">Recommended</button>
+                            <button className="btn dropdown-toggle droppy" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {sortOption}
+                            </button>
                             <ul className="dropdown-menu">
-                                <li><a className="dropdown-item" href="#">Recommended</a></li>
-                                <li><a className="dropdown-item" href="#">Latest</a></li>
-                                <li><a className="dropdown-item" href="#">Oldest</a></li>
+                                {['Recommended', 'Newest First', 'Oldest'].map(option => (
+                                    <li key={option}>
+                                        <a className="dropdown-item" href="#" onClick={e => { e.preventDefault(); handleSortChange(option); }}>
+                                            {option}
+                                        </a>
+                                    </li>
+                                ))}
                             </ul>
                         </Box>
-
                     </Box>
+
 
 
 
@@ -563,10 +635,10 @@ function BrowseSpace() {
                             <>
 
                                 {selectedLocations.map((location, index) => (
-                                    <Box key={`loc-${index}`} className='selectedFilters'>
+                                    <Box key={index} className='selectedFilters'>
                                         <i className="bi bi-geo-alt-fill" style={{ fontSize: '0.8em' }}></i>
                                         <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{location}</Box>
-                                        <button className='cancelFilters' onClick={() => setselectedLocations([])}>
+                                        <button className='cancelFilters' onClick={() => locationFilter(index)}>
                                             <i className="bi bi-x"></i>
                                         </button>
                                     </Box>
@@ -576,7 +648,7 @@ function BrowseSpace() {
                                     <Box key={`neigh-${index}`} className='selectedFilters'>
                                         <i className="bi bi-map" style={{ fontSize: '0.9em' }}></i>
                                         <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{neighborhood}</Box>
-                                        <button className='cancelFilters' onClick={() => setselectedNeighborhoods([])}>
+                                        <button className='cancelFilters' onClick={() => neighFilter(index)}>
                                             <i className="bi bi-x"></i>
                                         </button>
                                     </Box>
@@ -586,7 +658,7 @@ function BrowseSpace() {
                                     <Box key={`space-${index}`} className='selectedFilters'>
                                         <i className="bi bi-layout-text-sidebar" style={{ fontSize: '0.9em' }}></i>
                                         <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{space}</Box>
-                                        <button className='cancelFilters' onClick={() => setselectedspaceTypes([])}>
+                                        <button className='cancelFilters' onClick={() => typeFilter(index)}>
                                             <i className="bi bi-x"></i>
                                         </button>
                                     </Box>
@@ -596,21 +668,37 @@ function BrowseSpace() {
                                     <Box key={`traffic-${index}`} className='selectedFilters'>
                                         <i className="bi bi-car-front-fill" style={{ fontSize: '0.9em' }}></i>
                                         <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{traffic}</Box>
-                                        <button className='cancelFilters' onClick={() => setselectedTraffic([])}>
+                                        <button className='cancelFilters' onClick={() => trafficFilter(index)}>
                                             <i className="bi bi-x"></i>
                                         </button>
                                     </Box>
                                 ))}
 
                                 {selectedAvailability.map((availability, index) => (
-                                    <Box key={`avail-${index}`} className='selectedFilters'>
+                                    <Box key={index} className='selectedFilters'>
                                         <i className="bi bi-calendar-check-fill" style={{ fontSize: '0.9em' }}></i>
                                         <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{availability}</Box>
-                                        <button className='cancelFilters' onClick={() => setselectedAvailability([])}>
+                                        <button className='cancelFilters' onClick={() => dateFilter(index)}>
                                             <i className="bi bi-x"></i>
                                         </button>
                                     </Box>
                                 ))}
+
+
+                                {calendarDate && (
+                                    <Box className='selectedFilters'>
+                                        <i className="bi bi-calendar-check-fill" style={{ fontSize: '0.9em' }}></i>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>
+                                           
+                                            {`${String(calendarDate.getMonth() + 1).padStart(2, '0')}/
+                                            ${String(calendarDate.getDate()).padStart(2, '0')}/${calendarDate.getFullYear()}`}
+                                        </Box>
+                                        <button className='cancelFilters' onClick={() => setcalendarDate(null)}>
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                    </Box>
+                                )}
+
 
                                 {minWidth > 0 && (
                                     <Box className='selectedFilters'>
@@ -773,7 +861,8 @@ function BrowseSpace() {
                                                         return (
                                                             <Box key={num} sx={{ padding: '0.2em' }}>
                                                                 <Box>
-                                                                    <button className="pageBtn" onClick={() => setCurrentPage(num)}>{num}</button>
+                                                                    <button className={`pageBtn ${currentPage === num ? 'active' : ''}`}
+                                                                        onClick={() => setCurrentPage(num)}>{num}</button>
                                                                 </Box>
                                                             </Box>
 

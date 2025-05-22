@@ -88,7 +88,7 @@
     background-color: #FFFFFF;
     border-color: #E0E0E0;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    max-width: 20em;
+    max-width: 30em;
 }
 
 
@@ -129,13 +129,20 @@
 }
 
 
-.pageBtn:focus {
+.pageBtn.active {
+    background-color: white;
+    border: 1px solid rgb(211, 210, 210);
+    font-weight: bold;
+}
+
+
+.pageBtn:hover {
     background-color: white;
     border: 1px solid rgb(211, 210, 210);
 }
 
 
-.pageBtn:hover {
+.pageBtn:focus {
     background-color: white;
     border: 1px solid rgb(211, 210, 210);
 }
@@ -213,5 +220,3 @@
     border: none;
 
 }
-
-
