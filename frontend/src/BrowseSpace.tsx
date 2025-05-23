@@ -339,7 +339,7 @@ function BrowseSpace() {
                                     <ListItem key={location} sx={{ py: 0 }}>
                                         <FormControlLabel value={location} checked={selectedLocations.includes(location)}
                                             control={<Checkbox onChange={handleCheckboxChang4} />}
-                                            label={<span style={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>{location}</span>} />
+                                            label={<span style={{ fontSize: 'calc(1rem + 0.1vh)' }}>{location}</span>} />
                                     </ListItem>
                                 ))}
                             </List>
@@ -365,7 +365,7 @@ function BrowseSpace() {
                                     <ListItem key={location} sx={{ py: 0 }}>
                                         <FormControlLabel value={location} checked={selectedNeighborhoods.includes(location)}
                                             control={<Checkbox onChange={handleCheckboxChange} />}
-                                            label={<span style={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>{location}</span>} />
+                                            label={<span style={{ fontSize: 'calc(1rem + 0.1vh)' }}>{location}</span>} />
                                     </ListItem>
                                 ))}
                             </List>
@@ -390,7 +390,7 @@ function BrowseSpace() {
                                 {spaceTypes.map((type) => (
                                     <ListItem key={type} sx={{ py: 0 }}>
                                         <FormControlLabel value={type} control={<Checkbox onChange={handleCheckboxChange1} />}
-                                            label={<span style={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>{type}</span>} />
+                                            label={<span style={{ fontSize: 'calc(1rem + 0.1vh)' }}>{type}</span>} />
                                     </ListItem>
                                 ))}
                             </List>
@@ -417,15 +417,15 @@ function BrowseSpace() {
 
                             {/* Static range markers */}
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                                <span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>${priceRange[0]}</span> {/* Current min value */}
-                                <span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>${priceRange[1]}</span> {/* Current max value */}
+                                <span style={{ fontSize: 'calc(1rem + 0.1vh)' }}>${priceRange[0]}</span> {/* Current min value */}
+                                <span style={{ fontSize: 'calc(1rem + 0.1vh)' }}>${priceRange[1]}</span> {/* Current max value */}
                             </Box>
 
 
 
                             <Box sx={{ mt: 3 }}>
                                 <select className="form-select" value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}
-                                    style={{ outline: 'none', boxShadow: 'none', border: '1px solid rgb(211, 210, 210)', fontSize: 'calc(1rem + 0.1vw)' }}>
+                                    style={{ outline: 'none', boxShadow: 'none', border: '1px solid rgb(211, 210, 210)', fontSize: 'calc(1rem + 0.1vh)' }}>
                                     <option value="week">Per Week</option>
                                     <option value="month">Per Month</option>
                                 </select>
@@ -452,7 +452,7 @@ function BrowseSpace() {
 
                                 {/* Width Selector */}
                                 <Box>
-                                    <Typography sx={{ mb: 0.5, fontSize: 'calc(0.9rem + 0.1vw)' }}>Width (ft)</Typography>
+                                    <Typography sx={{ mb: 0.5, fontSize: 'calc(0.9rem + 0.1vh)' }}>Width (ft)</Typography>
 
                                     <Box sx={{
                                         display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgb(211, 210, 210)',
@@ -481,7 +481,7 @@ function BrowseSpace() {
 
                                 {/* Height Selector */}
                                 <Box>
-                                    <Typography sx={{ mb: 0.5, fontSize: 'calc(0.9rem + 0.1vw)' }}>Height (ft)</Typography>
+                                    <Typography sx={{ mb: 0.5, fontSize: 'calc(0.9rem + 0.1vh)' }}>Height (ft)</Typography>
 
                                     <Box sx={{
                                         display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgb(211, 210, 210)',
@@ -529,7 +529,7 @@ function BrowseSpace() {
                                 {traffic.map((number) => (
                                     <ListItem key={number} sx={{ py: 0 }}>
                                         <FormControlLabel value={number} control={<Checkbox onChange={handleCheckboxChange2} />}
-                                            label={<span style={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>{number}</span>} />
+                                            label={<span style={{ fontSize: 'calc(1rem + 0.1vh)' }}>{number}</span>} />
                                     </ListItem>
                                 ))}
                             </List>
@@ -556,7 +556,7 @@ function BrowseSpace() {
                                 {availability.map((date) => (
                                     <ListItem key={date} sx={{ py: 0 }}>
                                         <FormControlLabel control={<Checkbox onChange={handleCheckboxChang3} />}
-                                            label={<span style={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>
+                                            label={<span style={{ fontSize: 'calc(1rem + 0.1vh)' }}>
                                                 {date}</span>} />
                                     </ListItem>
                                 ))}
@@ -564,7 +564,7 @@ function BrowseSpace() {
 
 
                             <Box sx={{ px: 2 }}>
-                                <Typography sx={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>Available From</Typography>
+                                <Typography sx={{ fontSize: 'calc(0.9rem + 0.1vh)' }}>Available From</Typography>
 
                                 <Box sx={{ mb: 3 }}>
 
@@ -628,7 +628,7 @@ function BrowseSpace() {
                                 {selectedLocations.map((location, index) => (
                                     <Box key={index} className='selectedFilters'>
                                         <i className="bi bi-geo-alt-fill" style={{ fontSize: '0.8em' }}></i>
-                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{location}</Box>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vh)', marginLeft: '0.3em' }}>{location}</Box>
                                         <button className='cancelFilters' onClick={() => locationFilter(index)}>
                                             <i className="bi bi-x"></i>
                                         </button>
@@ -638,7 +638,7 @@ function BrowseSpace() {
                                 {selectedNeighborhoods.map((neighborhood, index) => (
                                     <Box key={`neigh-${index}`} className='selectedFilters'>
                                         <i className="bi bi-map" style={{ fontSize: '0.9em' }}></i>
-                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{neighborhood}</Box>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vh)', marginLeft: '0.3em' }}>{neighborhood}</Box>
                                         <button className='cancelFilters' onClick={() => neighFilter(index)}>
                                             <i className="bi bi-x"></i>
                                         </button>
@@ -648,7 +648,7 @@ function BrowseSpace() {
                                 {selectedspaceTypes.map((space, index) => (
                                     <Box key={`space-${index}`} className='selectedFilters'>
                                         <i className="bi bi-layout-text-sidebar" style={{ fontSize: '0.9em' }}></i>
-                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{space}</Box>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vh)', marginLeft: '0.3em' }}>{space}</Box>
                                         <button className='cancelFilters' onClick={() => typeFilter(index)}>
                                             <i className="bi bi-x"></i>
                                         </button>
@@ -658,7 +658,7 @@ function BrowseSpace() {
                                 {selectedTraffic.map((traffic, index) => (
                                     <Box key={`traffic-${index}`} className='selectedFilters'>
                                         <i className="bi bi-car-front-fill" style={{ fontSize: '0.9em' }}></i>
-                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{traffic}</Box>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vh)', marginLeft: '0.3em' }}>{traffic}</Box>
                                         <button className='cancelFilters' onClick={() => trafficFilter(index)}>
                                             <i className="bi bi-x"></i>
                                         </button>
@@ -668,7 +668,7 @@ function BrowseSpace() {
                                 {selectedAvailability.map((availability, index) => (
                                     <Box key={index} className='selectedFilters'>
                                         <i className="bi bi-calendar-check-fill" style={{ fontSize: '0.9em' }}></i>
-                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{availability}</Box>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vh)', marginLeft: '0.3em' }}>{availability}</Box>
                                         <button className='cancelFilters' onClick={() => dateFilter(index)}>
                                             <i className="bi bi-x"></i>
                                         </button>
@@ -679,7 +679,7 @@ function BrowseSpace() {
                                 {calendarDate && (
                                     <Box key="calendar-date" className='selectedFilters'>
                                         <i className="bi bi-calendar-check-fill" style={{ fontSize: '0.9em' }}></i>
-                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vh)', marginLeft: '0.3em' }}>
                                            
                                             {calendarDate && `${String(calendarDate.getMonth() + 1).padStart(2, '0')}/
                                             ${String(calendarDate.getDate()).padStart(2, '0')}/${calendarDate.getFullYear()}`}
@@ -694,7 +694,7 @@ function BrowseSpace() {
                                 {minWidth > 0 && (
                                     <Box className='selectedFilters'>
                                         <i className="bi bi-arrows-angle-expand" style={{ fontSize: '0.9em' }}></i>
-                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{minWidth}ft Width</Box>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vh)', marginLeft: '0.3em' }}>{minWidth}ft Width</Box>
                                         <button className='cancelFilters' onClick={() => setMinWidth(0)}><i className="bi bi-x"></i></button>
                                     </Box>
                                 )}
@@ -702,7 +702,7 @@ function BrowseSpace() {
                                 {minHeight > 0 && (
                                     <Box className='selectedFilters'>
                                         <i className="bi bi-arrows-angle-contract" style={{ fontSize: '0.9em' }}></i>
-                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{minHeight}ft Height</Box>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vh)', marginLeft: '0.3em' }}>{minHeight}ft Height</Box>
                                         <button className='cancelFilters' onClick={() => setMinHeight(0)}><i className="bi bi-x"></i></button>
                                     </Box>
                                 )}
@@ -710,7 +710,7 @@ function BrowseSpace() {
                                 {(priceRange[0] !== 1000 || priceRange[1] !== 15000) && (
                                     <Box className='selectedFilters'>
                                         <i className="bi bi-cash-stack" style={{ fontSize: '0.9em' }}></i>
-                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>${priceRange[0]} - ${priceRange[1]}</Box>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vh)', marginLeft: '0.3em' }}>${priceRange[0]} - ${priceRange[1]}</Box>
                                         <button className='cancelFilters' onClick={() => setPriceRange([1000, 15000])}><i className="bi bi-x"></i></button>
                                     </Box>
                                 )}
@@ -722,7 +722,7 @@ function BrowseSpace() {
 
 
 
-                    <Box sx={{ fontSize: 'calc(1rem + 0.1vh)', textAlign: 'left', color: 'rgb(110, 109, 109)', fontWeight: '500', marginTop: '1em' }}>
+                    <Box sx={{ fontSize: 'calc(1rem + 0.2vh)', textAlign: 'left', color: 'rgb(110, 109, 109)', fontWeight: '500', marginTop: '1em' }}>
 
                         {
                             itemsToDisplay.length === 0 ?
@@ -769,46 +769,46 @@ function BrowseSpace() {
                                                 <Box className="card-body" sx={{ textAlign: 'left', borderRadius: '1em', padding: '1em' }}>
 
                                                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                        <Box sx={{ fontSize: 'calc(0.6em + 0.2vw)', fontWeight: 'bold' }}>{product.spaceName}</Box>
+                                                        <Box sx={{ fontSize: 'calc(0.8em + 0.1vh)', fontWeight: 'bold' }}>{product.spaceName}</Box>
 
-                                                        <Box sx={{ fontSize: 'calc(0.7em + 0vw)', fontWeight: 'bold' }}>${product.price}
+                                                        <Box sx={{ fontSize: 'calc(0.8em + 0.1vh)', fontWeight: 'bold' }}>${product.price}
                                                             <span style={{ color: '#666', fontWeight: '500' }}>/week</span>
                                                         </Box>
                                                     </Box>
 
 
                                                     <Box sx={{ display: 'flex', color: '#666', fontWeight: '500', marginTop: '0.2em' }}>
-                                                        <Box sx={{ fontSize: 'calc(0.6em + 0.2vw)' }}><i className="bi bi-geo-alt"></i>
+                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.2vh)' }}><i className="bi bi-geo-alt"></i>
                                                             {product.neighbourhood}</Box>
                                                     </Box>
 
 
                                                     <Box sx={{ display: 'flex', mt: 2 }}>
-                                                        <Box sx={{ fontSize: 'calc(0.6em + 0.2vw)', fontWeight: '500' }}><span style={{ color: '#666' }}>
+                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.2vh)', fontWeight: '500' }}><span style={{ color: '#666' }}>
                                                             Type</span> : {product.type}
                                                         </Box>
 
-                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.1vw)', marginLeft: '5em', fontWeight: '500' }}>
+                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.2vh)', marginLeft: '5em', fontWeight: '500' }}>
                                                             <span style={{ color: '#666' }}>Size</span>: {product.width} x {product.height}
                                                         </Box>
                                                     </Box>
 
 
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.2em' }}>
+                                                    <Box sx={{mt: 1, display: 'flex', alignItems: 'center', gap: '0.2em' }}>
                                                         <i className="bi bi-people-fill"></i>
-                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.1vw)', fontWeight: '500' }}><span style={{ color: '#666' }}>
+                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.2vh)', fontWeight: '500' }}><span style={{ color: '#666' }}>
                                                             Traffic</span> : {product.traffic}
                                                         </Box>
                                                     </Box>
 
 
 
-                                                    <Box sx={{ fontSize: 'calc(0.7em + 0.1vw)', fontWeight: '500' }}><span style={{ color: '#666' }}>
+                                                    <Box sx={{mt: 1, fontSize: 'calc(0.7em + 0.2vh)', fontWeight: '500' }}><span style={{ color: '#666' }}>
                                                         Available</span>: {product.availability}
                                                     </Box>
 
                                                     <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                                                        <button className='DetailsButton' style={{ width: '100%', fontSize: 'calc(0.7em + 0.1vw)' }}>View Details</button>
+                                                        <button className='DetailsButton' style={{ width: '100%', fontSize: 'calc(0.7em + 0.2vh)' }}>View Details</button>
                                                     </Box>
 
 
