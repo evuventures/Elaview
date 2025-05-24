@@ -129,7 +129,7 @@ export default function Home() {
         
         
         <div className="HomeRightSection">
-          {/* <img src={billboardImage} alt="Billboard" className="Billboard1" /> */}
+          <img src={billboardImage} alt="Billboard" className="Billboard1" />
           <div className="Card">
             <div className="CardInfo">
               <p className="CardTitle">SoHo Wall Space</p>
