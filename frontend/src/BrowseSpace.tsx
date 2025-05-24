@@ -750,7 +750,7 @@ function BrowseSpace() {
 
                             {areFiltersActive && filteredItems.length === 0 ?
                                 (
-                                    <p style={{ marginTop: '7em', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 'calc(1rem + 1vw)' }}>
+                                    <p style={{ marginTop: '7em',display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 'calc(1rem + 1vw)' }}>
                                         No items match your selected filters. Try changing your filters.
                                     </p>
                                 )
