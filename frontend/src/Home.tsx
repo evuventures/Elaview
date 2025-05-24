@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import './Home.css';
-import billboardImage from '../public/images/billboard1.png';
+// import billboardImage from '../public/images/billboard1.png';
 import billboardImage2 from '../public/images/billboard2.png';
 import profile1 from '../public/images/profile1.png';
 import profile2 from '../public/images/profile2.png';
@@ -129,7 +129,7 @@ export default function Home() {
         
         
         <div className="HomeRightSection">
-          <img src={billboardImage} alt="Billboard" className="Billboard1" />
+          {/* <img src={billboardImage} alt="Billboard" className="Billboard1" /> */}
           <div className="Card">
             <div className="CardInfo">
               <p className="CardTitle">SoHo Wall Space</p>
