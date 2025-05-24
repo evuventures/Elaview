@@ -680,7 +680,7 @@ function BrowseSpace() {
                                     <Box key="calendar-date" className='selectedFilters'>
                                         <i className="bi bi-calendar-check-fill" style={{ fontSize: '0.9em' }}></i>
                                         <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>
-                                           
+
                                             {calendarDate && `${String(calendarDate.getMonth() + 1).padStart(2, '0')}/
                                             ${String(calendarDate.getDate()).padStart(2, '0')}/${calendarDate.getFullYear()}`}
                                         </Box>
@@ -744,14 +744,13 @@ function BrowseSpace() {
 
 
 
-
                     <Box className='cards'>
 
                         <Box className='car'>
 
                             {areFiltersActive && filteredItems.length === 0 ?
                                 (
-                                    <p style={{ marginTop: '7em', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 'calc(1rem + 2vw)' }}>
+                                    <p style={{ marginTop: '7em', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 'calc(1rem + 1vw)' }}>
                                         No items match your selected filters. Try changing your filters.
                                     </p>
                                 )
@@ -768,13 +767,17 @@ function BrowseSpace() {
 
                                                 <Box className="card-body" sx={{ textAlign: 'left', borderRadius: '1em', padding: '1em' }}>
 
-                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.2vw)', fontWeight: 'bold' }}>{product.spaceName}</Box>
+                                                    <Box sx={{ display: 'flex', flexWrap: 'nowrap', justifyContent: 'space-between' }}>
+                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.2vw)', fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '60%' }}>
+                                                            {product.spaceName}
+                                                        </Box>
 
-                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.2vw)', fontWeight: 'bold' }}>${product.price}
-                                                            <span style={{ color: '#666', fontWeight: '500' }}>/week</span>
+                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.2vw)', fontWeight: 'bold' }}>
+                                                            ${product.price}
+                                                            <span style={{ color: '#666', fontWeight: 500 }}>/week</span>
                                                         </Box>
                                                     </Box>
+
 
 
                                                     <Box sx={{ display: 'flex', color: '#666', fontWeight: '500', marginTop: '0.2em' }}>
@@ -783,18 +786,18 @@ function BrowseSpace() {
                                                     </Box>
 
 
-                                                    <Box sx={{ display: 'flex', mt: 2 }}>
+                                                    <Box sx={{ display: 'flex', mt: 2,justifyContent:'space-between' }}>
                                                         <Box sx={{ fontSize: 'calc(0.7em + 0.1vw)', fontWeight: '500' }}><span style={{ color: '#666' }}>
                                                             Type</span> : {product.type}
                                                         </Box>
 
-                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.1vw)', marginLeft: '5em', fontWeight: '500' }}>
+                                                        <Box sx={{ fontSize: 'calc(0.7em + 0.1vw)', fontWeight: '500' }}>
                                                             <span style={{ color: '#666' }}>Size</span>: {product.width} x {product.height}
                                                         </Box>
                                                     </Box>
 
 
-                                                    <Box sx={{mt: 1, display: 'flex', alignItems: 'center', gap: '0.2em' }}>
+                                                    <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: '0.2em' }}>
                                                         <i className="bi bi-people-fill"></i>
                                                         <Box sx={{ fontSize: 'calc(0.7em + 0.1vw)', fontWeight: '500' }}><span style={{ color: '#666' }}>
                                                             Traffic</span> : {product.traffic}
@@ -803,12 +806,13 @@ function BrowseSpace() {
 
 
 
-                                                    <Box sx={{mt: 1, fontSize: 'calc(0.7em + 0.1vw)', fontWeight: '500' }}><span style={{ color: '#666' }}>
+                                                    <Box sx={{ mt: 1, fontSize: 'calc(0.7em + 0.1vw)', fontWeight: '500' }}><span style={{ color: '#666' }}>
                                                         Available</span>: {product.availability}
                                                     </Box>
 
                                                     <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                                                        <button className='DetailsButton' style={{ width: '100%', fontSize: 'calc(0.7em + 0.1vw)' }}>View Details</button>
+                                                        <button className='DetailsButton' style={{ width: '100%', fontSize: 'calc(0.7em + 0.1vw)' }}>
+                                                            <i className="bi bi-eye"></i> View Details</button>
                                                     </Box>
 
 
