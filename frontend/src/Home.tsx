@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import './Home.css';
-// import billboardImage from '../public/images/billboard1.png';
+import billboardImage from '../public/images/billboard1.png';
 import billboardImage2 from '../public/images/billboard2.png';
 import profile1 from '../public/images/profile1.png';
 import profile2 from '../public/images/profile2.png';
