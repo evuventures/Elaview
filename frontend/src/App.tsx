@@ -6,7 +6,6 @@ import ListSpace from './ListSpace';
 import SignIn from './SignIn';
 import Home from './Home';
 import Footer from './Footer';
-import ItemDetailPage from './ItemDetailPage';
 
 
 function App() {
@@ -21,7 +20,6 @@ function App() {
         <Route path="/browse" element={<BrowseSpace />} />
         <Route path="/list" element={<ListSpace />} />
         <Route path="/signin" element={<SignIn />} />
-        <Route path='/detailspage' element = {<ItemDetailPage/>}/>
       </Routes>
 
       {/* <Home /> */}
