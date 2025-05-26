@@ -3,7 +3,16 @@
     margin-top: 3em;
     padding: 3em;
     gap: 1em;
+    box-sizing: border-box;
+
 }
+
+
+
+.menu {
+    display: none;
+}
+
 
 
 @media (max-width: 768px) {
@@ -15,7 +24,13 @@
     .sidebar {
         display: none;
     }
+
+
+    .menu {
+        display: block;
+    }
 }
+
 
 
 .sidebar {
@@ -189,6 +204,7 @@
 
 .droppy {
     border: 1px solid rgb(211, 210, 210);
+    
 }
 
 

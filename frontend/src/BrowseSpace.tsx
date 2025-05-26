@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControlLabel, ListItem, List, Typography, TextField, IconButton, Stack } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, ListItem, List, Typography, TextField, IconButton, Stack, Drawer } from '@mui/material';
 import './BrowseSpace.css';
 import { Collapse, ListSubheader } from '@mui/material';
 import { ExpandLess, ExpandMore, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
@@ -73,7 +73,32 @@ function BrowseSpace() {
     const [selectedTraffic, setselectedTraffic] = useState<string[]>([]);
     const [selectedAvailability, setselectedAvailability] = useState<string[]>([]);
     const [sortOption, setSortOption] = useState('Recommended');
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
+
+    const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+        setDrawerOpen(open);
+    };
+
+
+
+    const drawerList = (
+        <Box className="sbSize" sx={{ padding: '1rem' }} role="presentation">
+            <Box className='e1'>
+                <Box sx={{ fontSize: 'calc(1rem + 0.8vw)', fontWeight: 'bold' }}>0</Box>
+                <Box sx={{ fontSize: 'calc(1rem + 0.8vw)', fontWeight: 'bold' }}>Your Bucket</Box>
+                <Box sx={{ fontSize: 'calc(1rem + 0.8vw)', fontWeight: 'bold' }} className='SBC'>
+                    Rs 0
+                </Box>
+            </Box>
+
+            {/* You can add static or new content here if needed */}
+
+            <div className='viewB'>
+                <Link className='zxc' to='/Bucket'>Checkout</Link>
+            </div>
+        </Box>
+    );
 
 
     const location: string[] = ["Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island"];
@@ -313,6 +338,301 @@ function BrowseSpace() {
         <>
             <Box className='layout'>
 
+                <Box className='menu'>
+                    <i onClick={toggleDrawer(true)} className="bi bi-list" style={{ position: 'absolute', left: 10, top: 115, zIndex: 1200, padding: 2,fontSize: '24px', cursor: 'pointer' }}></i>
+
+                    <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+                        <Box role="presentation" onKeyDown={toggleDrawer(false)}>
+
+                            <Box className='drawer'>
+
+                                <Box className='sidebar-top'>
+                                    <Box className='filters'>Filters</Box>
+                                    <button onClick={reset} className='reset'>Reset All</button>
+                                </Box>
+
+
+                                <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                    <ListSubheader onClick={() => setOpen(!open)} sx={{ cursor: 'pointer' }}>
+
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Location</Box>
+                                            <Box>
+                                                {open ? <ExpandLess /> : <ExpandMore />}
+                                            </Box>
+                                        </Box>
+
+                                    </ListSubheader>
+
+
+                                    <Collapse in={open}>
+                                        <List >
+                                            {location.map((location) => (
+                                                <ListItem key={location} sx={{ py: 0 }}>
+                                                    <FormControlLabel value={location} checked={selectedLocations.includes(location)}
+                                                        control={<Checkbox onChange={handleCheckboxChang4} />}
+                                                        label={<span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>{location}</span>} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Collapse>
+
+
+
+                                    <ListSubheader onClick={() => setOpen1(!open1)} sx={{ cursor: 'pointer' }}>
+
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Neighborhoods</Box>
+                                            <Box>
+                                                {open1 ? <ExpandLess /> : <ExpandMore />}
+                                            </Box>
+                                        </Box>
+
+                                    </ListSubheader>
+
+
+                                    <Collapse in={open1}>
+                                        <List>
+                                            {neighbourhood.map((location) => (
+                                                <ListItem key={location} sx={{ py: 0 }}>
+                                                    <FormControlLabel value={location} checked={selectedNeighborhoods.includes(location)}
+                                                        control={<Checkbox onChange={handleCheckboxChange} />}
+                                                        label={<span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>{location}</span>} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Collapse>
+
+                                </Box>
+
+
+                                <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                    <ListSubheader onClick={() => setOpen2(!open2)} sx={{ cursor: 'pointer' }}>
+
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Space Types</Box>
+                                            <Box> {open2 ? <ExpandLess /> : <ExpandMore />}</Box>
+                                        </Box>
+
+                                    </ListSubheader>
+
+
+                                    <Collapse in={open2}>
+                                        <List>
+                                            {spaceTypes.map((type) => (
+                                                <ListItem key={type} sx={{ py: 0 }}>
+                                                    <FormControlLabel value={type} checked={selectedspaceTypes.includes(type)}
+                                                        control={<Checkbox onChange={handleCheckboxChange1} />}
+                                                        label={<span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>{type}</span>} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Collapse>
+
+                                </Box>
+
+
+
+                                <Box sx={{ py: 2, borderBottom: '1px solid rgb(211, 210, 210)' }}>
+
+                                    <ListSubheader onClick={() => setOpen6(!open6)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Price Range</Box>
+                                            <Box> {open6 ? <ExpandLess /> : <ExpandMore />}</Box>
+                                        </Box>
+                                    </ListSubheader>
+
+
+                                    <Collapse in={open6} sx={{ px: 2 }}>
+                                        <Slider value={priceRange} onChange={(event: Event, newValue: number | number[]) => setPriceRange(newValue as number[])} valueLabelDisplay="off" min={1000} max={15000}
+                                            step={500} sx={{ color: 'black', '& .MuiSlider-thumb': { backgroundColor: 'black' } }} />
+
+
+                                        {/* Static range markers */}
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                                            <span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>${priceRange[0]}</span> {/* Current min value */}
+                                            <span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>${priceRange[1]}</span> {/* Current max value */}
+                                        </Box>
+
+
+
+                                        <Box sx={{ mt: 3 }}>
+                                            <select className="form-select" value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}
+                                                style={{ outline: 'none', boxShadow: 'none', border: '1px solid rgb(211, 210, 210)', fontSize: 'calc(1rem + 0.1vw)' }}>
+                                                <option value="week">Per Week</option>
+                                                <option value="month">Per Month</option>
+                                            </select>
+                                        </Box>
+
+                                    </Collapse>
+
+                                </Box>
+
+
+
+                                <Box sx={{ py: 3, borderBottom: '1px solid rgb(211, 210, 210)' }}>
+
+                                    <ListSubheader onClick={() => setOpen5(!open5)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Size</Box>
+                                            <Box> {open5 ? <ExpandLess /> : <ExpandMore />}</Box>
+                                        </Box>
+                                    </ListSubheader>
+
+
+                                    <Collapse in={open5}>
+                                        <Box className='sidebar-dimensions'>
+
+                                            {/* Width Selector */}
+                                            <Box>
+                                                <Typography sx={{ mb: 0.5, fontSize: 'calc(0.9rem + 0.1vw)' }}>Width (ft)</Typography>
+
+                                                <Box sx={{
+                                                    display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgb(211, 210, 210)',
+                                                    padding: '0.3em', borderRadius: '0.4em'
+                                                }}>
+
+                                                    <TextField value={minWidth.toString()} onChange={(e) => setMinWidth(e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
+                                                        variant="outlined" size="small" sx={{ width: 80, border: 'none', '& fieldset': { border: 'none' } }} />
+
+                                                    <Stack sx={{ borderRadius: '0 4px 4px 0', backgroundColor: '#f5f5f5' }}>
+
+                                                        <IconButton onClick={() => setMinWidth(minWidth + 1)} size="small"
+                                                            sx={{ p: 0, borderRadius: 0, borderBottom: '1px solid #d3d2d2' }}>
+                                                            <KeyboardArrowUp fontSize="small" />
+                                                        </IconButton>
+
+                                                        <IconButton onClick={() => setMinWidth(Math.max(1, minWidth - 1))} size="small" sx={{ p: 0, borderRadius: 0 }}>
+                                                            <KeyboardArrowDown fontSize="small" />
+                                                        </IconButton>
+
+                                                    </Stack>
+
+                                                </Box>
+                                            </Box>
+
+
+                                            {/* Height Selector */}
+                                            <Box>
+                                                <Typography sx={{ mb: 0.5, fontSize: 'calc(0.9rem + 0.1vw)' }}>Height (ft)</Typography>
+
+                                                <Box sx={{
+                                                    display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgb(211, 210, 210)',
+                                                    padding: '0.3em', borderRadius: '0.4em'
+                                                }}>
+                                                    <TextField value={minHeight.toString()} onChange={(e) => setMinHeight(e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
+                                                        variant="outlined" size="small" sx={{ width: 80, border: 'none', '& fieldset': { border: 'none' } }} />
+
+                                                    <Stack sx={{ backgroundColor: '#f5f5f5' }}>
+                                                        <IconButton onClick={() => setMinHeight(minHeight + 1)} size="small"
+                                                            sx={{ p: 0, borderRadius: 0, borderBottom: '1px solid #d3d2d2' }}>
+                                                            <KeyboardArrowUp fontSize="small" />
+                                                        </IconButton>
+
+                                                        <IconButton onClick={() => setMinHeight(Math.max(1, minHeight - 1))} size="small" sx={{ p: 0, borderRadius: 0 }}>
+                                                            <KeyboardArrowDown fontSize="small" />
+                                                        </IconButton>
+
+                                                    </Stack>
+
+                                                </Box>
+
+                                            </Box>
+
+                                        </Box>
+
+                                    </Collapse>
+
+                                </Box>
+
+
+
+                                <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                    <ListSubheader onClick={() => setOpen3(!open3)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Traffic</Box>
+                                            <Box>{open3 ? <ExpandLess /> : <ExpandMore />}</Box>
+                                        </Box>
+
+                                    </ListSubheader>
+
+
+                                    <Collapse in={open3}>
+                                        <List>
+                                            {traffic.map((number) => (
+                                                <ListItem key={number} sx={{ py: 0 }}>
+                                                    <FormControlLabel value={number} checked={selectedTraffic.includes(number)}
+                                                        control={<Checkbox onChange={handleCheckboxChange2} />}
+                                                        label={<span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>{number}</span>} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+
+                                    </Collapse>
+
+                                </Box>
+
+
+
+                                <Box>
+
+                                    <ListSubheader onClick={() => setOpen4(!open4)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Availability</Box>
+                                            <Box>{open4 ? <ExpandLess /> : <ExpandMore />}</Box>
+                                        </Box>
+
+                                    </ListSubheader>
+
+
+                                    <Collapse in={open4}>
+                                        <List>
+                                            {availability.map((date) => (
+                                                <ListItem key={date} sx={{ py: 0 }}>
+                                                    <FormControlLabel value={date} checked={selectedAvailability.includes(date)}
+                                                        control={<Checkbox onChange={handleCheckboxChang3} />}
+                                                        label={<span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>
+                                                            {date}</span>} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+
+
+                                        <Box sx={{ px: 2 }}>
+                                            <Typography sx={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>Available From</Typography>
+
+                                            <Box sx={{ mb: 3 }}>
+
+                                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                                    <DatePicker value={calendarDate} onChange={(newValue) => setcalendarDate(newValue)}
+                                                        slots={{ openPickerIcon: CalendarToday }}
+                                                        slotProps={{
+                                                            textField: {
+                                                                size: 'small', sx: {
+                                                                    width: '100%', '& .MuiOutlinedInput-root':
+                                                                    {
+                                                                        borderRadius: '4px', '& fieldset': { borderColor: '#d3d2d2', },
+                                                                    },
+                                                                    '& .MuiInputBase-input': { py: 0.5, height: 'auto' },
+                                                                },
+                                                            },
+
+                                                            popper: { sx: { zIndex: 9999 } }
+                                                        }} />
+                                                </LocalizationProvider>
+                                            </Box>
+                                        </Box>
+                                    </Collapse>
+
+                                </Box>
+                            </Box>
+                        </Box>
+                    </Drawer>
+                </Box>
+
+
+
+
                 <Box className='sidebar'>
 
                     <Box className='sidebar-top'>
@@ -391,7 +711,7 @@ function BrowseSpace() {
                                 {spaceTypes.map((type) => (
                                     <ListItem key={type} sx={{ py: 0 }}>
                                         <FormControlLabel value={type} checked={selectedspaceTypes.includes(type)}
-                                        control={<Checkbox onChange={handleCheckboxChange1} />}
+                                            control={<Checkbox onChange={handleCheckboxChange1} />}
                                             label={<span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>{type}</span>} />
                                     </ListItem>
                                 ))}
@@ -531,7 +851,7 @@ function BrowseSpace() {
                                 {traffic.map((number) => (
                                     <ListItem key={number} sx={{ py: 0 }}>
                                         <FormControlLabel value={number} checked={selectedTraffic.includes(number)}
-                                        control={<Checkbox onChange={handleCheckboxChange2} />}
+                                            control={<Checkbox onChange={handleCheckboxChange2} />}
                                             label={<span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>{number}</span>} />
                                     </ListItem>
                                 ))}
@@ -559,7 +879,7 @@ function BrowseSpace() {
                                 {availability.map((date) => (
                                     <ListItem key={date} sx={{ py: 0 }}>
                                         <FormControlLabel value={date} checked={selectedAvailability.includes(date)}
-                                        control={<Checkbox onChange={handleCheckboxChang3} />}
+                                            control={<Checkbox onChange={handleCheckboxChang3} />}
                                             label={<span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>
                                                 {date}</span>} />
                                     </ListItem>
@@ -601,7 +921,7 @@ function BrowseSpace() {
                 {/*MAIN CONTENT */}
                 <Box className='main-content'>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap',alignItems:'center' }}>
 
                         <Box className='content-heading'>Advertising Spaces in NYC</Box>
 
