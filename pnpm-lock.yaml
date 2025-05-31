@@ -81,6 +81,9 @@ importers:
       express:
         specifier: ^4.18.2
         version: 4.21.2
+      zod:
+        specifier: ^3.25.42
+        version: 3.25.42
     devDependencies:
       '@types/cors':
         specifier: ^2.8.17
@@ -2876,6 +2879,9 @@ packages:
   zod@3.24.4:
     resolution: {integrity: sha512-OdqJE9UDRPwWsrHjLN2F8bPxvwJBK22EHLWtanu0LSYr5YqzsaaW3RMgmjwr8Rypg5k+meEJdSPXJZXE/yqOMg==}
 
+  zod@3.25.42:
+    resolution: {integrity: sha512-PcALTLskaucbeHc41tU/xfjfhcz8z0GdhhDcSgrCTmSazUuqnYqiXO63M0QUBVwpBlsLsNVn5qHSC5Dw3KZvaQ==}
+
 snapshots:
 
   '@ampproject/remapping@2.3.0':
@@ -5665,3 +5671,5 @@ snapshots:
       zod: 3.24.4
 
   zod@3.24.4: {}
+
+  zod@3.25.42: {}

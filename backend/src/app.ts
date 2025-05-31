@@ -1,4 +1,3 @@
-// src/index.ts
 import express from 'express';
 import dotenv from 'dotenv';
 
@@ -10,15 +9,15 @@ import { securityHeaders, sanitizeInput } from './middleware/security.js';
 import { requestLogger } from './middleware/logging.js';
 
 // Import routes
-import authRoutes from '../src/routes/authRoutes.js'
-import userRoutes from '../src/routes/userRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Security middleware (apply first)w
+// Security middleware (apply first)
 app.use(securityHeaders);
 app.use(corsMiddleware);
 
@@ -58,4 +57,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
 
-export default app;
+export default app; 
