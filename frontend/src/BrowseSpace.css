@@ -4,15 +4,13 @@
     padding: 3em;
     gap: 1em;
     box-sizing: border-box;
-
 }
 
 
-
-.menu {
+.menu,
+.drawer {
     display: none;
 }
-
 
 
 @media (max-width: 768px) {
@@ -26,7 +24,8 @@
     }
 
 
-    .menu {
+    .menu,
+    .drawer {
         display: block;
     }
 }
@@ -80,7 +79,6 @@
     font-size: calc(1rem + 0.5vw);
     gap: 1em;
     height: fit-content;
-
 }
 
 
@@ -121,6 +119,7 @@
     font-size: calc(1rem + 1.4vh);
     text-align: left;
     font-weight: 750;
+
 }
 
 
@@ -169,19 +168,6 @@
 }
 
 
-.leftstyle:hover {
-    background-color: white;
-    border: 1px solid rgb(211, 210, 210);
-    cursor: pointer;
-}
-
-
-.leftstyle:focus {
-    background-color: white;
-    border: 1px solid rgb(211, 210, 210);
-}
-
-
 .rightstyle {
     border-radius: 5px;
     padding: 0.4em;
@@ -189,10 +175,22 @@
     box-sizing: border-box;
 }
 
+.leftstyle:hover {
+    background-color: white;
+    border: 1px solid rgb(211, 210, 210);
+    cursor: pointer;
+}
+
+
 .rightstyle:hover {
     background-color: white;
     border: 1px solid rgb(211, 210, 210);
     cursor: pointer;
+}
+
+.leftstyle:focus {
+    background-color: white;
+    border: 1px solid rgb(211, 210, 210);
 }
 
 
@@ -204,7 +202,6 @@
 
 .droppy {
     border: 1px solid rgb(211, 210, 210);
-    
 }
 
 
