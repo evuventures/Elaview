@@ -76,29 +76,29 @@ function BrowseSpace() {
     const [drawerOpen, setDrawerOpen] = useState(false);
 
 
-    const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    const toggleDrawer = (open: boolean) => (_: React.KeyboardEvent | React.MouseEvent) => {
         setDrawerOpen(open);
     };
 
 
 
-    const drawerList = (
-        <Box className="sbSize" sx={{ padding: '1rem' }} role="presentation">
-            <Box className='e1'>
-                <Box sx={{ fontSize: 'calc(1rem + 0.8vw)', fontWeight: 'bold' }}>0</Box>
-                <Box sx={{ fontSize: 'calc(1rem + 0.8vw)', fontWeight: 'bold' }}>Your Bucket</Box>
-                <Box sx={{ fontSize: 'calc(1rem + 0.8vw)', fontWeight: 'bold' }} className='SBC'>
-                    Rs 0
-                </Box>
-            </Box>
+    // const drawerList = (
+    //     <Box className="sbSize" sx={{ padding: '1rem' }} role="presentation">
+    //         <Box className='e1'>
+    //             <Box sx={{ fontSize: 'calc(1rem + 0.8vw)', fontWeight: 'bold' }}>0</Box>
+    //             <Box sx={{ fontSize: 'calc(1rem + 0.8vw)', fontWeight: 'bold' }}>Your Bucket</Box>
+    //             <Box sx={{ fontSize: 'calc(1rem + 0.8vw)', fontWeight: 'bold' }} className='SBC'>
+    //                 Rs 0
+    //             </Box>
+    //         </Box>
 
-            {/* You can add static or new content here if needed */}
+    //         {/* You can add static or new content here if needed */}
 
-            <div className='viewB'>
-                <Link className='zxc' to='/Bucket'>Checkout</Link>
-            </div>
-        </Box>
-    );
+    //         <div className='viewB'>
+    //             <Link className='zxc' to='/Bucket'>Checkout</Link>
+    //         </div>
+    //     </Box>
+    // );
 
 
     const location: string[] = ["Manhattan", "Brooklyn", "Queens", "Bronx", "Staten Island"];
@@ -339,7 +339,6 @@ function BrowseSpace() {
             <Box className='layout'>
 
                 <Box className='menu'>
-                    <i onClick={toggleDrawer(true)} className="bi bi-list" style={{ position: 'absolute', left: 10, top: 115, zIndex: 1200, padding: 2,fontSize: '24px', cursor: 'pointer' }}></i>
 
                     <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
                         <Box role="presentation" onKeyDown={toggleDrawer(false)}>
@@ -444,7 +443,7 @@ function BrowseSpace() {
 
 
                                     <Collapse in={open6} sx={{ px: 2 }}>
-                                        <Slider value={priceRange} onChange={(event: Event, newValue: number | number[]) => setPriceRange(newValue as number[])} valueLabelDisplay="off" min={1000} max={15000}
+                                        <Slider value={priceRange} onChange={(_: Event, newValue: number | number[]) => setPriceRange(newValue as number[])} valueLabelDisplay="off" min={1000} max={15000}
                                             step={500} sx={{ color: 'black', '& .MuiSlider-thumb': { backgroundColor: 'black' } }} />
 
 
@@ -733,7 +732,7 @@ function BrowseSpace() {
 
 
                         <Collapse in={open6} sx={{ px: 2 }}>
-                            <Slider value={priceRange} onChange={(event: Event, newValue: number | number[]) => setPriceRange(newValue as number[])} valueLabelDisplay="off" min={1000} max={15000}
+                            <Slider value={priceRange} onChange={(_: Event, newValue: number | number[]) => setPriceRange(newValue as number[])} valueLabelDisplay="off" min={1000} max={15000}
                                 step={500} sx={{ color: 'black', '& .MuiSlider-thumb': { backgroundColor: 'black' } }} />
 
 
@@ -918,12 +917,16 @@ function BrowseSpace() {
 
 
 
-                {/*MAIN CONTENT */}
+
                 <Box className='main-content'>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap',alignItems:'center' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', alignItems: 'center' }}>
 
-                        <Box className='content-heading'>Advertising Spaces in NYC</Box>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center',gap:'0.7em' }}>
+                            <i onClick={toggleDrawer(true)} className="bi bi-list drawer" style={{ zIndex: 1200, fontSize: '24px', cursor: 'pointer' }}></i>
+                            <Box className='content-heading'>Advertising Spaces in NYC</Box>
+                        </Box>
+
 
 
                         <Box className="dropdown show">
@@ -1135,7 +1138,7 @@ function BrowseSpace() {
                                                     </Box>
 
                                                     <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                                                        <Link to='/detailspage' style={{ width: '100%', fontSize: 'calc(0.7em + 0.1vw)' }}>
+                                                        <Link to={`/detailsPage/${product.id}`} style={{ width: '100%', fontSize: 'calc(0.7em + 0.1vw)' }}>
                                                             <button className='DetailsButton' ><i className="bi bi-eye"></i> View Details</button>
                                                         </Link>
                                                     </Box>
@@ -1171,7 +1174,7 @@ function BrowseSpace() {
 
                                         <ul style={{ display: 'flex', alignItems: 'center' }} className="pagination justify-content-center">
 
-                                            <li className="page-item leftstyle" onClick={prevButton} tabIndex={-1}><i className="bi bi-arrow-left"></i></li>
+                                            <li className="page-item leftstyle" onClick={prevButton}><i className="bi bi-arrow-left"></i></li>
 
                                             <li className="page-item">
 
