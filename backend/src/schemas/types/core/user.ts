@@ -1,3 +1,7 @@
+// 001_user_profiles.sql
+// user profiles
+
+// Add to your UserProfile:
 export interface UserProfile {
   id: string;
   name: string;
@@ -6,9 +10,14 @@ export interface UserProfile {
   bio?: string;
   profile_image_url?: string;
   phone?: string;
+  phone_verified: boolean;     
   city?: string;
   state?: string;
+  country: string;             // (default 'US')
   company_name?: string;
+  is_verified: boolean;        
+  is_active: boolean;          
+  verification_level: 'unverified' | 'email_verified' | 'phone_verified'; 
   total_listings: number;
   total_bookings: number;
   total_reviews: number;
@@ -29,18 +38,19 @@ export interface CreateUserProfileRequest {
 
 export interface UpdateUserProfileRequest extends Partial<CreateUserProfileRequest> {}
 
-export interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-  message?: string;
-}
 
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
+export interface PublicUserProfile {
+  id: string;
+  name: string;
+  role: 'renter' | 'landlord' | 'both';
+  bio?: string;
+  profile_image_url?: string;
+  company_name?: string;
+  city?: string;
+  state?: string;
+  is_verified: boolean;
+  total_listings: number;
+  total_reviews: number;
+  average_rating: number | null;
+  created_at: string;
 }

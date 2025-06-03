@@ -1,0 +1,26 @@
+-- User Profiles (extends Supabase auth.users)
+CREATE TABLE user_profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  name VARCHAR(100) NOT NULL,
+  role ENUM('renter', 'landlord', 'both') DEFAULT 'renter',
+  phone VARCHAR(20),
+  phone_verified BOOLEAN DEFAULT FALSE,
+  company_name VARCHAR(200),
+  business_license VARCHAR(100),
+  bio TEXT,
+  profile_image_url TEXT,
+  website_url TEXT,
+  address_line1 VARCHAR(200),
+  city VARCHAR(100),
+  state VARCHAR(50),
+  postal_code VARCHAR(20),
+  country VARCHAR(3) DEFAULT 'US',
+  verification_level ENUM('unverified', 'email_verified', 'phone_verified', 'business_verified', 'premium_verified'),
+  is_verified BOOLEAN GENERATED,
+  is_active BOOLEAN DEFAULT TRUE,
+  can_create_listings BOOLEAN DEFAULT FALSE,
+  total_listings INTEGER DEFAULT 0,
+  average_rating DECIMAL(3,2),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
