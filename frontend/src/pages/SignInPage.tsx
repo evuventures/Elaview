@@ -1,4 +1,4 @@
-import './styles/SignIn.css';
+import './styles/SignInPage.css';
 import { useState } from 'react';
 import Header from '../partials/Header';
 import { supabase } from '../SupabaseClient.js';
