@@ -1,18 +1,18 @@
 import { Link } from 'react-router-dom';
-import './Home.css';
-import billboardImage from '../public/images/billboard1.png';
-import billboardImage2 from '../public/images/billboard2.png';
-import profile1 from '../public/images/profile1.png';
-import profile2 from '../public/images/profile2.png';
-import profile3 from '../public/images/profile3.png';
-import profile4 from '../public/images/profile4.png';
-import profile5 from '../public/images/profile5.png';
-import profile6 from '../public/images/profile6.png';
-import profile7 from '../public/images/profile7.png';
-import sohoImg from "../public/images/soho.png";
-import timesSquareImg from "../public/images/timesSquare.png";
-import brooklynImg from "../public/images/brooklyn.png";
-import chelseaImg from "../public/images/chelsea.png";
+import './styles/HomePage.css';
+import billboardImage from '/images/billboard1.png'
+import billboardImage2 from '/images/billboard2.png';
+import profile1 from '/images/profile1.png';
+import profile2 from '/images/profile2.png';
+import profile3 from '/images/profile3.png';
+import profile4 from '/images/profile4.png';
+import profile5 from '/images/profile5.png';
+import profile6 from '/images/profile6.png';
+import profile7 from '/images/profile7.png';
+import sohoImg from "/images/soho.png";
+import timesSquareImg from "/images/timesSquare.png";
+import brooklynImg from "/images/brooklyn.png";
+import chelseaImg from "/images/chelsea.png";
 
 
 // for displaying the featured spaces

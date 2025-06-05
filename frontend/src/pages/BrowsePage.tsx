@@ -1,5 +1,5 @@
 import { Box, Checkbox, FormControlLabel, ListItem, List, Typography, TextField, IconButton, Stack } from '@mui/material';
-import './BrowseSpace.css';
+import './styles/BrowsePage.css';
 import { Collapse, ListSubheader } from '@mui/material';
 import { ExpandLess, ExpandMore, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 import { useState } from 'react';

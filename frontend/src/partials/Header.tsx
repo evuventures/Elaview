@@ -1,5 +1,5 @@
-import './Header.css';
-import logo from './assets/logo.png'; // replace logo with actual logo later
+import './styles/Header.css';
+import logo from '../assets/logo.png' // replace logo with actual logo later
 import { Link } from 'react-router-dom';
 
 function Header() {

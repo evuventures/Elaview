@@ -1,5 +1,5 @@
-import './SignIn.css';
-import Header from './Header';
+import './styles/SignInPage.css';
+import Header from '../partials/Header';
 
 function SignIn() {
     return (

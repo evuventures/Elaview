@@ -1,5 +1,5 @@
-import './ListSpace.css';
-import Header from './Header';
+import './styles/ListPage.css';
+import Header from '../partials/Header';
 
 function ListSpace() {
     return (

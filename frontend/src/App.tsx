@@ -1,11 +1,11 @@
 import './App.css';
-import Header from './Header';
+import Header from './partials/Header';
 import { Routes, Route} from 'react-router-dom';
-import BrowseSpace from './BrowseSpace';
-import ListSpace from './ListSpace';
-import SignIn from './SignIn';
-import Home from './Home';
-import Footer from './Footer';
+import BrowseSpace from './pages/BrowsePage';
+import ListSpace from './pages/ListPage';
+import SignIn from './pages/SignInPage';
+import Home from './pages/HomePage';
+import Footer from './partials/Footer';
 
 
 function App() {
