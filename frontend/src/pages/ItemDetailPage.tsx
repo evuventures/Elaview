@@ -1,12 +1,12 @@
 import { Box, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material'
 import { Link, useParams } from 'react-router-dom';
-import './ItemDetailPage.css'
+import './styles/ItemDetailPage.css'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { CalendarToday } from '@mui/icons-material';
 import { useState } from 'react';
-import pic from '../src/assets/logo.png'
+import pic from '../assets/logo.png'
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';

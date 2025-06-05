@@ -6,7 +6,7 @@ import ListSpace from './pages/ListPage';
 import SignIn from './pages/SignInPage';
 import Home from './pages/HomePage';
 import Footer from './partials/Footer';
-import ItemDetailPage from './ItemDetailPage';
+import ItemDetailPage from './pages/ItemDetailPage';
 
 
 function App() {
