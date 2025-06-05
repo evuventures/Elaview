@@ -12,13 +12,14 @@ import { requestLogger } from './middleware/logging.js';
 // Import routes
 import authRoutes from '../src/routes/authRoutes.js'
 import userRoutes from '../src/routes/userRoutes.js';
+import testRoutes from '../src/routes/testRoutes.js';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 4000;
 
-// Security middleware (apply first)w
+// Security middleware (apply first)
 app.use(securityHeaders);
 app.use(corsMiddleware);
 
@@ -46,7 +47,16 @@ app.get('/health', (req, res) => {
   });
 });
 
-// API Routes
+// Public test routes (NO AUTH REQUIRED) - Only in development/testing
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/api/test', testRoutes);
+  console.log(`🧪 Test endpoints will be available at:`);
+  console.log(`   GET http://localhost:${PORT}/api/test/health`);
+  console.log(`   GET http://localhost:${PORT}/api/test/users`);
+  console.log(`   GET http://localhost:${PORT}/api/test/users/:id`);
+}
+
+// Protected API Routes
 app.use('/api/auth', authRateLimit, authRoutes);
 app.use('/api/users', userRoutes);
 
@@ -56,6 +66,7 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 export default app;

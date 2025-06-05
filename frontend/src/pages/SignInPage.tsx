@@ -1,7 +1,7 @@
 import './styles/SignInPage.css';
 import { useState } from 'react';
 import Header from '../partials/Header';
-import { supabase } from '../SupabaseClient.js';
+import { supabase } from '../utils/SupabaseClient.js';
 
 function SignIn() {
     const [email, setEmail] = useState('');

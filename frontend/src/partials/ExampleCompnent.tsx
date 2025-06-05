@@ -23,8 +23,8 @@ export default function ExampleComponent() {
   if (error) return <div>Error: {error.message}</div>;
   
   return (
-    <div className="example-component">
-      <h2>Example Data from Supabase</h2>
+    <div className="">
+      <h2 className="text-7xl">Example Data from Supabase</h2>
       
       <div>
         <label htmlFor="limit">Number of items: </label>

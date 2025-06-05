@@ -5,10 +5,9 @@ import { supabase } from '../config/supabase.js';
 import { 
   UserProfile, 
   CreateUserProfileRequest, 
-  UpdateUserProfileRequest,
-  ApiResponse,
-  PaginatedResponse
-} from '../types/user.js';
+  UpdateUserProfileRequest
+} from '../schemas/types/core/user.js';
+import { ApiResponse, PaginatedResponse } from '../types/api.js';
 
 export class UserController {
   
