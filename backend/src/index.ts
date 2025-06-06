@@ -1,4 +1,3 @@
-// src/index.ts
 import express from 'express';
 import dotenv from 'dotenv';
 
@@ -9,10 +8,10 @@ import { generalRateLimit, authRateLimit } from './middleware/rateLimit.js';
 import { securityHeaders, sanitizeInput } from './middleware/security.js';
 import { requestLogger } from './middleware/logging.js';
 
-// Import routes
-import authRoutes from '../src/routes/authRoutes.js'
-import userRoutes from '../src/routes/userRoutes.js';
-import testRoutes from '../src/routes/testRoutes.js';
+// Import routes - FIXED PATHS
+import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import testRoutes from './routes/testRoutes.js';
 
 dotenv.config();
 
@@ -67,6 +66,12 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔐 Auth endpoints available at:`);
+  console.log(`   POST http://localhost:${PORT}/api/auth/complete-profile`);
+  console.log(`   GET http://localhost:${PORT}/api/auth/profile`);
+  console.log(`   POST http://localhost:${PORT}/api/auth/verify-token`);
+  console.log(`   GET http://localhost:${PORT}/api/auth/test-protected`);
+  console.log(`   GET http://localhost:${PORT}/api/auth/test-landlord`);
 });
 
 export default app;

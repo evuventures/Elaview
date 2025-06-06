@@ -42,6 +42,7 @@ function SignUp() {
         /><br/>
         <button type="submit">Sign Up</button>
         </form>
+        {message && <p className="message">{message}</p>}
         <p>Already have an account? Sign in</p> <Link to="/signin">here</Link>
       </div>
     </>

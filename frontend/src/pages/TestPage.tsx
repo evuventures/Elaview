@@ -154,24 +154,93 @@ const TestPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">
-          🧪 Database Connection Test
-        </h1>
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#f8fafc',
+      color: '#1e293b',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      padding: '2rem 1rem'
+    }}>
+      <div style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        backgroundColor: '#ffffff',
+        borderRadius: '16px',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        padding: '2rem',
+        border: '1px solid #e2e8f0'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          marginBottom: '2rem',
+          paddingBottom: '1.5rem',
+          borderBottom: '2px solid #e2e8f0'
+        }}>
+          <h1 style={{
+            fontSize: '2.5rem',
+            fontWeight: '700',
+            color: '#0f172a',
+            margin: '0 0 0.5rem 0',
+            background: 'linear-gradient(135deg, #059669, #0891b2)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            🧪 Database Connection Test
+          </h1>
+          <p style={{
+            color: '#64748b',
+            fontSize: '1.1rem',
+            margin: 0
+          }}>
+            Test your backend API and database connectivity
+          </p>
+        </div>
 
         {/* Test Buttons */}
-        <div className="mb-6 flex gap-3 flex-wrap">
+        <div style={{
+          marginBottom: '2rem',
+          display: 'flex',
+          gap: '0.75rem',
+          flexWrap: 'wrap',
+          justifyContent: 'center'
+        }}>
           <button
             onClick={testPing}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+            style={{
+              backgroundColor: '#10b981',
+              color: '#ffffff',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '8px',
+              border: 'none',
+              fontWeight: '500',
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              transition: 'background-color 0.15s ease',
+              outline: 'none'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
           >
             🏓 Test Ping
           </button>
           
           <button
             onClick={testConnection}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+            style={{
+              backgroundColor: '#8b5cf6',
+              color: '#ffffff',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '8px',
+              border: 'none',
+              fontWeight: '500',
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              transition: 'background-color 0.15s ease',
+              outline: 'none'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#7c3aed'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#8b5cf6'}
           >
             🔗 Test DB Connection
           </button>
@@ -179,33 +248,106 @@ const TestPage: React.FC = () => {
           <button
             onClick={fetchUsers}
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-4 py-2 rounded-md font-medium transition-colors"
+            style={{
+              backgroundColor: loading ? '#93c5fd' : '#3b82f6',
+              color: '#ffffff',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '8px',
+              border: 'none',
+              fontWeight: '500',
+              fontSize: '0.875rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.15s ease',
+              outline: 'none'
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.target.style.backgroundColor = '#2563eb';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) {
+                e.target.style.backgroundColor = '#3b82f6';
+              }
+            }}
           >
             {loading ? 'Loading...' : '🔄 Refresh Data'}
           </button>
         </div>
 
         {/* Connection Status */}
-        <div className="mb-6 p-4 rounded-md bg-gray-50">
-          <h2 className="text-lg font-semibold mb-2">Connection Status:</h2>
+        <div style={{
+          marginBottom: '2rem',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          backgroundColor: '#f1f5f9',
+          border: '1px solid #cbd5e1'
+        }}>
+          <h2 style={{
+            fontSize: '1.25rem',
+            fontWeight: '600',
+            marginBottom: '1rem',
+            color: '#334155'
+          }}>
+            Connection Status
+          </h2>
+          
           {connectionStatus && (
-            <div className="mb-2">
+            <div style={{
+              marginBottom: '0.75rem',
+              padding: '0.75rem',
+              borderRadius: '8px',
+              backgroundColor: connectionStatus.includes('✅') ? '#dcfce7' : '#fef2f2',
+              border: `1px solid ${connectionStatus.includes('✅') ? '#bbf7d0' : '#fecaca'}`,
+              color: connectionStatus.includes('✅') ? '#166534' : '#dc2626',
+              fontWeight: '500'
+            }}>
               {connectionStatus}
             </div>
           )}
+          
           {loading && (
-            <div className="flex items-center text-blue-600">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: '#3b82f6',
+              fontWeight: '500'
+            }}>
+              <div style={{
+                width: '1rem',
+                height: '1rem',
+                border: '2px solid #3b82f6',
+                borderTopColor: 'transparent',
+                borderRadius: '50%',
+                marginRight: '0.5rem',
+                animation: 'spin 1s linear infinite'
+              }}></div>
               Testing connection...
             </div>
           )}
+          
           {error && (
-            <div className="text-red-600">
+            <div style={{
+              padding: '0.75rem',
+              borderRadius: '8px',
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fecaca',
+              color: '#dc2626',
+              fontWeight: '500'
+            }}>
               ❌ Error: {error}
             </div>
           )}
+          
           {!loading && !error && users.length >= 0 && (
-            <div className="text-green-600">
+            <div style={{
+              padding: '0.75rem',
+              borderRadius: '8px',
+              backgroundColor: '#dcfce7',
+              border: '1px solid #bbf7d0',
+              color: '#166534',
+              fontWeight: '500'
+            }}>
               ✅ Connected! Found {users.length} users
             </div>
           )}
@@ -213,57 +355,141 @@ const TestPage: React.FC = () => {
 
         {/* Users List */}
         {!loading && !error && users.length > 0 && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Test Users:</h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div style={{ marginBottom: '2rem' }}>
+            <h2 style={{
+              fontSize: '1.5rem',
+              fontWeight: '600',
+              marginBottom: '1.5rem',
+              color: '#334155',
+              borderBottom: '2px solid #e2e8f0',
+              paddingBottom: '0.5rem'
+            }}>
+              Test Users
+            </h2>
+            <div style={{
+              display: 'grid',
+              gap: '1rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))'
+            }}>
               {users.map((user) => (
                 <div
                   key={user.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  style={{
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '12px',
+                    padding: '1.5rem',
+                    backgroundColor: '#ffffff',
+                    transition: 'box-shadow 0.15s ease',
+                    cursor: 'default'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.boxShadow = 'none';
+                  }}
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-lg">{user.name}</h3>
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      user.role === 'landlord' 
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-green-100 text-green-800'
-                    }`}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '1rem'
+                  }}>
+                    <h3 style={{
+                      fontWeight: '600',
+                      fontSize: '1.125rem',
+                      color: '#334155',
+                      margin: 0
+                    }}>
+                      {user.name}
+                    </h3>
+                    <span style={{
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '9999px',
+                      fontSize: '0.75rem',
+                      fontWeight: '500',
+                      backgroundColor: user.role === 'landlord' ? '#dbeafe' : '#dcfce7',
+                      color: user.role === 'landlord' ? '#1e40af' : '#166534'
+                    }}>
                       {user.role}
                     </span>
                   </div>
                   
-                  <div className="space-y-1 text-sm text-gray-600">
-                    <p>📧 {user.email}</p>
-                    <p>📍 {user.city || 'No city'}, {user.state || 'No state'}</p>
-                    <p>📞 {user.phone || 'No phone'}</p>
+                  <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                    fontSize: '0.875rem',
+                    color: '#64748b',
+                    marginBottom: '1rem'
+                  }}>
+                    <div>📧 {user.email}</div>
+                    <div>📍 {user.city || 'No city'}, {user.state || 'No state'}</div>
+                    <div>📞 {user.phone || 'No phone'}</div>
+                  </div>
                     
-                    <div className="flex gap-2 mt-2 flex-wrap">
-                      {user.is_verified && (
-                        <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
-                          ✅ Verified
-                        </span>
-                      )}
-                      {user.phone_verified && (
-                        <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
-                          📱 Phone OK
-                        </span>
-                      )}
-                      {user.is_active && (
-                        <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">
-                          🟢 Active
-                        </span>
-                      )}
-                    </div>
+                  <div style={{
+                    display: 'flex',
+                    gap: '0.5rem',
+                    flexWrap: 'wrap',
+                    marginBottom: '1rem'
+                  }}>
+                    {user.is_verified && (
+                      <span style={{
+                        padding: '0.25rem 0.5rem',
+                        backgroundColor: '#dcfce7',
+                        color: '#166534',
+                        fontSize: '0.75rem',
+                        borderRadius: '6px',
+                        fontWeight: '500'
+                      }}>
+                        ✅ Verified
+                      </span>
+                    )}
+                    {user.phone_verified && (
+                      <span style={{
+                        padding: '0.25rem 0.5rem',
+                        backgroundColor: '#dbeafe',
+                        color: '#1e40af',
+                        fontSize: '0.75rem',
+                        borderRadius: '6px',
+                        fontWeight: '500'
+                      }}>
+                        📱 Phone OK
+                      </span>
+                    )}
+                    {user.is_active && (
+                      <span style={{
+                        padding: '0.25rem 0.5rem',
+                        backgroundColor: '#f3e8ff',
+                        color: '#7c3aed',
+                        fontSize: '0.75rem',
+                        borderRadius: '6px',
+                        fontWeight: '500'
+                      }}>
+                        🟢 Active
+                      </span>
+                    )}
                   </div>
 
-                  <div className="mt-3">
-                    <button
-                      onClick={() => fetchSingleUser(user.id)}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                    >
-                      Test Single Fetch →
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => fetchSingleUser(user.id)}
+                    style={{
+                      color: '#3b82f6',
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      border: 'none',
+                      backgroundColor: 'transparent',
+                      cursor: 'pointer',
+                      padding: '0.25rem 0',
+                      outline: 'none',
+                      transition: 'color 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.color = '#1d4ed8'}
+                    onMouseLeave={(e) => e.target.style.color = '#3b82f6'}
+                  >
+                    Test Single Fetch →
+                  </button>
                 </div>
               ))}
             </div>
@@ -272,37 +498,112 @@ const TestPage: React.FC = () => {
 
         {/* Empty State */}
         {!loading && !error && users.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-500 mb-4">No users found. Your database might be empty.</p>
-            <div className="text-sm text-gray-400">
-              <p>Make sure you've:</p>
-              <ul className="list-disc list-inside mt-2">
-                <li>Created the user_profiles table in Supabase</li>
-                <li>Added some test data</li>
-                <li>Set the correct RLS policies</li>
-              </ul>
+          <div style={{
+            textAlign: 'center',
+            padding: '3rem 1rem',
+            backgroundColor: '#f8fafc',
+            borderRadius: '12px',
+            border: '1px solid #e2e8f0',
+            marginBottom: '2rem'
+          }}>
+            <div style={{
+              fontSize: '3rem',
+              marginBottom: '1rem'
+            }}>
+              📊
+            </div>
+            <p style={{
+              color: '#64748b',
+              marginBottom: '1rem',
+              fontSize: '1.125rem'
+            }}>
+              No users found. Your database might be empty.
+            </p>
+            <div style={{
+              fontSize: '0.875rem',
+              color: '#94a3b8'
+            }}>
+              <p style={{ marginBottom: '0.75rem' }}>Make sure you've:</p>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.25rem',
+                alignItems: 'center'
+              }}>
+                <div>• Created the user_profiles table in Supabase</div>
+                <div>• Added some test data</div>
+                <div>• Set the correct RLS policies</div>
+              </div>
             </div>
           </div>
         )}
 
         {/* API Endpoints Testing */}
-        <div className="mt-8 p-4 bg-gray-50 rounded-md">
-          <h3 className="font-semibold mb-2">🔧 API Testing (Public Test Endpoints):</h3>
-          <div className="text-sm space-y-1">
-            <p><strong>GET</strong> /api/test/ping - Test if routes work</p>
-            <p><strong>GET</strong> /api/test/health - Test database connection</p>
-            <p><strong>GET</strong> /api/test/users - Fetch all users (NO AUTH)</p>
-            <p><strong>GET</strong> /api/test/users/:id - Fetch single user (NO AUTH)</p>
-            <p><strong>Backend URL:</strong> http://localhost:4000</p>
+        <div style={{
+          padding: '1.5rem',
+          backgroundColor: '#f8fafc',
+          borderRadius: '12px',
+          border: '1px solid #e2e8f0'
+        }}>
+          <h3 style={{
+            fontWeight: '600',
+            marginBottom: '1rem',
+            color: '#334155',
+            fontSize: '1.125rem'
+          }}>
+            🔧 API Testing (Public Test Endpoints)
+          </h3>
+          <div style={{
+            fontSize: '0.875rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.5rem',
+            color: '#475569',
+            marginBottom: '1rem'
+          }}>
+            <div>
+              <strong style={{ color: '#059669' }}>GET</strong> /api/test/ping - Test if routes work
+            </div>
+            <div>
+              <strong style={{ color: '#059669' }}>GET</strong> /api/test/health - Test database connection
+            </div>
+            <div>
+              <strong style={{ color: '#3b82f6' }}>GET</strong> /api/test/users - Fetch all users (NO AUTH)
+            </div>
+            <div>
+              <strong style={{ color: '#3b82f6' }}>GET</strong> /api/test/users/:id - Fetch single user (NO AUTH)
+            </div>
+            <div>
+              <strong>Backend URL:</strong> http://localhost:4000
+            </div>
           </div>
           
-          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
-            <p className="text-yellow-800 text-sm">
-              <strong>Note:</strong> These are public test endpoints that bypass authentication. 
-              The protected endpoints require JWT tokens.
-            </p>
+          <div style={{
+            padding: '1rem',
+            backgroundColor: '#fef3c7',
+            border: '1px solid #fcd34d',
+            borderRadius: '8px',
+            color: '#92400e',
+            fontSize: '0.875rem'
+          }}>
+            <strong>Note:</strong> These are public test endpoints that bypass authentication. 
+            The protected endpoints require JWT tokens.
           </div>
         </div>
+
+        {/* Inline CSS for animation */}
+        <style>
+          {`
+            @keyframes spin {
+              from {
+                transform: rotate(0deg);
+              }
+              to {
+                transform: rotate(360deg);
+              }
+            }
+          `}
+        </style>
       </div>
     </div>
   );
