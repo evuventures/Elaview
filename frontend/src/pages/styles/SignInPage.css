@@ -1,18 +1,32 @@
 
 .signin-container {
-    max-width: 300px;
-    margin: auto;
-    padding-top: 100px;
-    text-align: center;
-  }
-  input {
-    width: 100%;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-  }
-  button {
-    width: 100%;
-    padding: 0.5rem;
-    margin-top: 1rem;
-  }
-  
+  max-width: 300px;
+  margin: auto;
+  padding-top: 100px;
+  text-align: center;
+}
+input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+}
+button {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.input-field {
+  background-color: white;
+  color: black;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-weight: bold;
+}

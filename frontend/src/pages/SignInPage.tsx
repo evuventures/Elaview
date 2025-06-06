@@ -2,6 +2,7 @@ import './styles/SignInPage.css';
 import { useState } from 'react';
 import Header from '../partials/Header';
 import { supabase } from '../utils/SupabaseClient.js';
+import { Link } from 'react-router-dom';
 
 function SignIn() {
     const [email, setEmail] = useState('');
@@ -37,6 +38,7 @@ function SignIn() {
             <h2>Sign In</h2>
             <form onSubmit={handleSignIn}>
             <input
+                className="input-field"
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -44,6 +46,7 @@ function SignIn() {
                 required
             /><br />
             <input
+                className = "input-field"
                 type="password"
                 placeholder="Password"
                 value={password}
@@ -55,6 +58,7 @@ function SignIn() {
             </button>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             </form>
+            <p>Don't have an account yet? Sign up </p> <Link to="/signup">here</Link>
         </div>
       </>
     );

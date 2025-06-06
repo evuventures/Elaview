@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../utils/SupabaseClient.js';
+import { Link } from 'react-router-dom';
+import './styles/SignUpPage.css';
 
 function SignUp() {
   const [email, setEmail] = useState('');
@@ -18,25 +20,31 @@ function SignUp() {
   };
 
   return (
-    <form onSubmit={handleSignUp}>
-      <h2>Sign Up</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      /><br/>
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-      /><br/>
-      <button type="submit">Sign Up</button>
-      <p>{message}</p>
-    </form>
+    <>
+      <div className='signup-container'>
+        <h2>Sign Up</h2>
+        <form onSubmit={handleSignUp}>
+        <input
+          className='input-field'
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        /><br/>
+        <input
+          className='input-field'
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        /><br/>
+        <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? Sign in</p> <Link to="/signin">here</Link>
+      </div>
+    </>
   );
 }
 
