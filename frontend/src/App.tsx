@@ -1,13 +1,14 @@
 import './App.css';
 import Header from './partials/Header';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import BrowseSpace from './pages/BrowsePage';
+import BrowsePage from './pages/BrowsePage';
 import ListSpace from './pages/ListPage';
 import SignIn from './pages/SignInPage';
 import Home from './pages/HomePage';
 import Footer from './partials/Footer';
 import ItemDetailPage from './pages/ItemDetailPage';
 import TestPage from './pages/TestPage';
+import BrowseSpace from './pages/BrowsePage';
 
 function App() {
   const location = useLocation();
