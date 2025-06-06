@@ -12,6 +12,7 @@ import { requestLogger } from './middleware/logging.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
+
 dotenv.config();
 
 const app = express();
