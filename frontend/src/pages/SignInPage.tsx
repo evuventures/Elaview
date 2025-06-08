@@ -58,7 +58,7 @@ function SignIn() {
             </button>
             {error && <p style={{ color: 'red' }}>{error}</p>}
             </form>
-            <p>Don't have an account yet? Sign up </p> <Link to="/signup">here</Link>
+            <p>Don't have an account yet? Sign up <Link to="/signup">here.</Link> </p>
         </div>
       </>
     );
