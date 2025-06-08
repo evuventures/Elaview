@@ -1,9 +1,12 @@
 
 .signin-container {
-  max-width: 300px;
-  margin: auto;
-  padding-top: 100px;
-  text-align: center;
+  max-width: 400px;
+  margin: 7rem auto;
+  padding: 2rem;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  background: #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 input {
   width: 100%;
