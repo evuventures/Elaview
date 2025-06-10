@@ -16,6 +16,7 @@ function Header() {
           {/* <a href="/" className="nav-button">Home</a> */}
           <Link to="/browse" className="nav-button">Browse Spaces</Link>
           <Link to="/list" className="nav-button">List Your Space</Link>
+          <Link to="/profile" className="nav-button">Profile</Link>
           <Link to="/signin" className="nav-button">Sign In</Link>
         </nav>
       </header>
