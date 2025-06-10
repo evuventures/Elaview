@@ -1,7 +1,7 @@
 import './App.css';
 import Header from './partials/Header';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import ListSpace from './pages/ListPage';
+import ListSpace from './pages/ListSpacePage.js';
 import SignIn from './pages/SignInPage';
 import SignUp from './pages/SignUpPage';
 import Home from './pages/HomePage';

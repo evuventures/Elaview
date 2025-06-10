@@ -8,6 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { CalendarToday } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 interface Product {
     id: string;
@@ -46,6 +47,9 @@ const fallbackProducts: Product[] = [
 ];
 
 function BrowseSpace() {
+    // Navigation
+    const navigate = useNavigate();
+
     // UI State
     const [open1, setOpen1] = useState<boolean>(true);
     const [open2, setOpen2] = useState<boolean>(true);
@@ -75,6 +79,11 @@ function BrowseSpace() {
     const spaceTypes: string[] = ["Wall", "Window", "Queens", "Billboard", "Vehicle", "Storefront", "Rooftop"];
     const traffic: string[] = ["5,000+ daily", "10,000+ daily", "15,000+ daily", "20,000+ daily"]
     const availability: string[] = ["Available Now"]
+
+    // Navigation function
+    const handleViewDetails = (productId: string) => {
+        navigate(`/detailsPage/${productId}`);
+    };
 
     // Helper function to extract base location name for filtering
     const getBaseLocation = (title: string): string => {
@@ -594,7 +603,12 @@ function BrowseSpace() {
                                                 </Box>
 
                                                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                                                    <button style={{ width: '100%', fontSize: 'calc(0.7em + 0.1vw)' }}>View Details</button>
+                                                    <button 
+                                                        style={{ width: '100%', fontSize: 'calc(0.7em + 0.1vw)' }}
+                                                        onClick={() => handleViewDetails(product.id)}
+                                                    >
+                                                        View Details
+                                                    </button>
                                                 </Box>
                                             </Box>
                                         </Box>
