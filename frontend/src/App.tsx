@@ -8,11 +8,12 @@ import Home from './pages/HomePage';
 import Footer from './partials/Footer';
 import ItemDetailPage from './pages/ItemDetailPage';
 import TestPage from './tests/TestPage';
-import BrowseSpace from './pages/BrowsePage';
 import AuthTestPage from './tests/AuthTestPage';
 import AccountQuestionsForm from './partials/AccountQuestionsForm.js';
 import ProtectedRoute from './partials/ProtectedRoute.js';
-import OnboardingGuard from './partials/OnboardingGuard.js';
+import BrowseSpace from './pages/BrowsePage.js';
+import ProfilePage from './pages/ProfilePage.js';
+
 
 function App() {
   const location = useLocation();
@@ -29,6 +30,8 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/auth-test" element={<AuthTestPage />} />
+        <Route path='/profile' element={<ProfilePage />} />
+
         
         {/* Account questions route - protected but doesn't require completed onboarding */}
         <Route path="/account-questions" element={
@@ -41,7 +44,7 @@ function App() {
         {/* Protected routes that require completed onboarding */}
         <Route path="/browse" element={
           // <ProtectedRoute>
-          //   <OnboardingGuard>
+          // // <OnboardingGuard>
               <BrowseSpace />
           // </OnboardingGuard>
           // </ProtectedRoute> 
@@ -62,6 +65,7 @@ function App() {
            // </OnboardingGuard>
           // </ProtectedRoute> 
         } />
+
       </Routes>
 
       {!hideHeaderFooter && <Footer />}

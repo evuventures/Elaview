@@ -2,7 +2,7 @@ import './styles/SignInPage.css';
 import { useState } from 'react';
 import Header from '../partials/Header';
 import { supabase } from '../utils/SupabaseClient.js';
-import { Link } from 'react-router-dom';
+import { useNavigate , Link } from 'react-router-dom';
 
 function SignIn() {
     const [email, setEmail] = useState('');
@@ -10,6 +10,8 @@ function SignIn() {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
   
+    const navigate = useNavigate();
+    
     const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setLoading(true);
@@ -25,6 +27,7 @@ function SignIn() {
       } else {
         console.log('Signed in:', data);
         // redirect or update app state
+        navigate('/profile');
       }
   
       setLoading(false);
