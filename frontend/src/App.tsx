@@ -44,7 +44,7 @@ function App() {
         {/* Protected routes that require completed onboarding */}
         <Route path="/browse" element={
           // <ProtectedRoute>
-          // // <OnboardingGuard>
+          // <OnboardingGuard>
               <BrowseSpace />
           // </OnboardingGuard>
           // </ProtectedRoute> 

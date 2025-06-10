@@ -219,8 +219,8 @@ const TestPage: React.FC = () => {
               transition: 'background-color 0.15s ease',
               outline: 'none'
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#059669'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#10b981'}
+            onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#059669'}
+            onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#10b981'}
           >
             🏓 Test Ping
           </button>
@@ -239,8 +239,8 @@ const TestPage: React.FC = () => {
               transition: 'background-color 0.15s ease',
               outline: 'none'
             }}
-            onMouseEnter={(e) => e.target.style.backgroundColor = '#7c3aed'}
-            onMouseLeave={(e) => e.target.style.backgroundColor = '#8b5cf6'}
+            onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = '#7c3aed'}
+            onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = '#8b5cf6'}
           >
             🔗 Test DB Connection
           </button>
@@ -262,12 +262,12 @@ const TestPage: React.FC = () => {
             }}
             onMouseEnter={(e) => {
               if (!loading) {
-                e.target.style.backgroundColor = '#2563eb';
+                (e.target as HTMLElement).style.backgroundColor = '#2563eb';
               }
             }}
             onMouseLeave={(e) => {
               if (!loading) {
-                e.target.style.backgroundColor = '#3b82f6';
+                (e.target as HTMLElement).style.backgroundColor = '#3b82f6';
               }
             }}
           >
@@ -383,10 +383,10 @@ const TestPage: React.FC = () => {
                     cursor: 'default'
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                    (e.target as HTMLElement).style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.boxShadow = 'none';
+                    (e.target as HTMLElement).style.boxShadow = 'none';
                   }}
                 >
                   <div style={{
@@ -485,8 +485,8 @@ const TestPage: React.FC = () => {
                       outline: 'none',
                       transition: 'color 0.15s ease'
                     }}
-                    onMouseEnter={(e) => e.target.style.color = '#1d4ed8'}
-                    onMouseLeave={(e) => e.target.style.color = '#3b82f6'}
+                    onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#1d4ed8'}
+                    onMouseLeave={(e) => (e.target as HTMLElement).style.color = '#3b82f6'}
                   >
                     Test Single Fetch →
                   </button>
