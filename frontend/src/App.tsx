@@ -10,6 +10,7 @@ import ItemDetailPage from './pages/ItemDetailPage';
 import TestPage from './pages/TestPage';
 import BrowseSpace from './pages/BrowsePage';
 import AuthTestPage from './pages/AuthTestPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   const location = useLocation();
@@ -28,6 +29,7 @@ function App() {
         <Route path="/test" element={<TestPage />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/auth-test" element={<AuthTestPage />} />
+        <Route path='/profile' element={<ProfilePage />} />
       </Routes>
 
       {!hideHeaderFooter && <Footer />}
