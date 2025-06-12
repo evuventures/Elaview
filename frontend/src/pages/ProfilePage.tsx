@@ -46,7 +46,7 @@ export default function ProfilePage() {
 
           if (profileById && profileById.length > 0) {
             // Profile found by ID
-            setProfile(profileById[0]);
+            setProfile(profileById[0] as UserProfile);
             setLoading(false);
             return;
           }
