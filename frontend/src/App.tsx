@@ -13,6 +13,7 @@ import AccountQuestionsForm from './partials/AccountQuestionsForm.js';
 import ProtectedRoute from './partials/ProtectedRoute.js';
 import BrowseSpace from './pages/BrowsePage.js';
 import ProfilePage from './pages/ProfilePage.js';
+import MessagingPage from './pages/MessagingPage.js';
 
 
 function App() {
@@ -66,11 +67,39 @@ function App() {
           // </ProtectedRoute> 
         } />
 
+        <Route path="/messaging" element={
+          // <ProtectedRoute> // (optional, if you want to restrict it)
+            <MessagingPageWrapper />
+          // </ProtectedRoute>
+        } />
+
       </Routes>
 
       {!hideHeaderFooter && <Footer />}
     </>
   )
 }
+
+import { useEffect, useState } from 'react';
+import { supabase } from './utils/SupabaseClient';
+import { User } from '@supabase/supabase-js';
+
+
+function MessagingPageWrapper() {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
+
+  if (!user) return <p>Loading messaging...</p>;
+
+  return <MessagingPage user={user} />;
+}
+
 
 export default App
