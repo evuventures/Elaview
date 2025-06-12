@@ -1,5 +1,5 @@
 import { Box, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material'
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import './styles/ItemDetailPage.css'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -106,7 +106,6 @@ function a11yProps(index: number) {
 
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   
   // State management
   const [listing, setListing] = useState<Listing | null>(null);
