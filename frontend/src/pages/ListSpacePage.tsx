@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/SupabaseClient';
 import './styles/ListSpacePage.css';
@@ -326,18 +327,19 @@ const ListSpacePage: React.FC = () => {
 
   return (
     <div className="list-space-page">
-      {/* Header */}
-      <div className="page-header">
-        <button 
-          className="back-button"
-          onClick={() => navigate('/')}
-        >
-          ← Back to home
-        </button>
-      </div>
-
+      <button 
+            className="back-button"
+            onClick={() => navigate('/')}
+          >
+            ← Back to home
+          </button>
       {/* Main Content */}
       <div className="list-space-container">
+        {/* Sticky Back Button */}
+        <div className="sticky-back-button">
+          
+        </div>
+
         <div className="page-title-section">
           <h1>List Your Advertising Space</h1>
           <p>Turn your unused building space into revenue with Elaview</p>
@@ -346,15 +348,23 @@ const ListSpacePage: React.FC = () => {
         {/* Step Indicators */}
         <div className="step-indicators">
           <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
-            <div className="step-number">1</div>
+            <div className="step-number-wrapper">
+              <div className="step-number">1</div>
+              {currentStep > 1 && <div className="step-checkmark">✓</div>}
+            </div>
             <span>Basic Information</span>
           </div>
           <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
-            <div className="step-number">2</div>
+            <div className="step-number-wrapper">
+              <div className="step-number">2</div>
+              {currentStep > 2 && <div className="step-checkmark">✓</div>}
+            </div>
             <span>Photos & Details</span>
           </div>
           <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
-            <div className="step-number">3</div>
+            <div className="step-number-wrapper">
+              <div className="step-number">3</div>
+            </div>
             <span>Pricing & Availability</span>
           </div>
         </div>
@@ -839,92 +849,6 @@ const ListSpacePage: React.FC = () => {
                     </div>
                   </div>
                   <small>Leave "Available Until" empty if your space is available indefinitely</small>
-                </div>
-
-                {/* Booking Policies */}
-                <div className="booking-policies-section">
-                  <h3>Booking Policies</h3>
-                  <div className="policies-grid">
-                    <div className="policy-item">
-                      <div className="policy-icon">📋</div>
-                      <h4>Installation</h4>
-                      <p>Professional installation support available for an additional fee</p>
-                    </div>
-                    <div className="policy-item">
-                      <div className="policy-icon">🔄</div>
-                      <h4>Changes</h4>
-                      <p>Campaign modifications allowed up to 48 hours before start date</p>
-                    </div>
-                    <div className="policy-item">
-                      <div className="policy-icon">💳</div>
-                      <h4>Payment</h4>
-                      <p>Secure payment processing with funds released after campaign approval</p>
-                    </div>
-                    <div className="policy-item">
-                      <div className="policy-icon">🛡️</div>
-                      <h4>Insurance</h4>
-                      <p>All campaigns covered by comprehensive liability insurance</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Additional Settings */}
-                <div className="additional-settings-section">
-                  <h3>Additional Settings</h3>
-                  
-                  <div className="setting-item">
-                    <div className="setting-toggle">
-                      <input
-                        type="checkbox"
-                        id="instant_book"
-                        name="instant_book"
-                        className="toggle-checkbox"
-                      />
-                      <label htmlFor="instant_book" className="toggle-label">
-                        <span className="toggle-slider"></span>
-                      </label>
-                    </div>
-                    <div className="setting-content">
-                      <h4>Instant Booking</h4>
-                      <p>Allow advertisers to book your space immediately without waiting for approval</p>
-                    </div>
-                  </div>
-
-                  <div className="setting-item">
-                    <div className="setting-toggle">
-                      <input
-                        type="checkbox"
-                        id="auto_approve"
-                        name="auto_approve"
-                        className="toggle-checkbox"
-                      />
-                      <label htmlFor="auto_approve" className="toggle-label">
-                        <span className="toggle-slider"></span>
-                      </label>
-                    </div>
-                    <div className="setting-content">
-                      <h4>Auto-Approve Content</h4>
-                      <p>Automatically approve advertising content that meets platform guidelines</p>
-                    </div>
-                  </div>
-
-                  <div className="setting-item">
-                    <div className="setting-toggle">
-                      <input
-                        type="checkbox"
-                        id="weekend_premium"
-                        name="weekend_premium"
-                        className="toggle-checkbox"
-                      />
-                      <label htmlFor="weekend_premium" className="toggle-label">
-                        <span className="toggle-slider"></span>
-                      </label>
-                    </div>
-                    <div className="setting-content">
-                      <h4>Weekend Premium (20% higher rates)</h4>
-                      <p>Charge premium rates for Friday-Sunday bookings when foot traffic is higher</p>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Revenue Estimate */}
