@@ -336,28 +336,27 @@ const ListSpacePage: React.FC = () => {
       {/* Main Content */}
       <div className="list-space-container">
         {/* Sticky Back Button */}
-        <div className="sticky-back-button">
-          
-        </div>
 
         <div className="page-title-section">
           <h1>List Your Advertising Space</h1>
           <p>Turn your unused building space into revenue with Elaview</p>
         </div>
 
-        {/* Step Indicators */}
+        {/* Step Indicators - Updated to match mockup */}
         <div className="step-indicators">
-          <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
+          <div className={`step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}`}>
             <div className="step-number-wrapper">
-              <div className="step-number">1</div>
-              {currentStep > 1 && <div className="step-checkmark">✓</div>}
+              <div className="step-number">
+                {currentStep > 1 ? '✓' : '1'}
+              </div>
             </div>
             <span>Basic Information</span>
           </div>
-          <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
+          <div className={`step ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'completed' : ''}`}>
             <div className="step-number-wrapper">
-              <div className="step-number">2</div>
-              {currentStep > 2 && <div className="step-checkmark">✓</div>}
+              <div className="step-number">
+                {currentStep > 2 ? '✓' : '2'}
+              </div>
             </div>
             <span>Photos & Details</span>
           </div>
@@ -511,35 +510,49 @@ const ListSpacePage: React.FC = () => {
                   <div className="section-row">
                     <div className="form-group flex-1">
                       <label htmlFor="width_ft">Width</label>
-                      <div className="input-with-unit">
-                        <input
-                          type="number"
-                          id="width_ft"
-                          name="width_ft"
-                          placeholder="Width"
-                          value={formData.width_ft}
-                          onChange={handleInputChange}
-                          step="0.1"
-                          min="0"
-                        />
-                        <span className="unit">ft</span>
-                      </div>
+                      <input
+                        type="number"
+                        id="width_ft"
+                        name="width_ft"
+                        placeholder="Width"
+                        value={formData.width_ft}
+                        onChange={handleInputChange}
+                        step="0.1"
+                        min="0"
+                      />
+                    </div>
+                    <div className="form-group flex-1">
+                      <select
+                        name="width_unit"
+                        value="ft"
+                        onChange={handleInputChange}
+                      >
+                        <option value="ft">ft</option>
+                        <option value="in">in</option>
+                      </select>
                     </div>
                     <div className="form-group flex-1">
                       <label htmlFor="height_ft">Height</label>
-                      <div className="input-with-unit">
-                        <input
-                          type="number"
-                          id="height_ft"
-                          name="height_ft"
-                          placeholder="Height"
-                          value={formData.height_ft}
-                          onChange={handleInputChange}
-                          step="0.1"
-                          min="0"
-                        />
-                        <span className="unit">ft</span>
-                      </div>
+                      <input
+                        type="number"
+                        id="height_ft"
+                        name="height_ft"
+                        placeholder="Height"
+                        value={formData.height_ft}
+                        onChange={handleInputChange}
+                        step="0.1"
+                        min="0"
+                      />
+                    </div>
+                    <div className="form-group flex-1">
+                      <select
+                        name="height_unit"
+                        value="ft"
+                        onChange={handleInputChange}
+                      >
+                        <option value="ft">ft</option>
+                        <option value="in">in</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -934,18 +947,24 @@ const ListSpacePage: React.FC = () => {
           <h2>Why List with Elaview?</h2>
           <div className="benefits-grid">
             <div className="benefit">
+              <div className="benefit-wrapper">
               <div className="benefit-icon">💰</div>
               <h3>Maximize Revenue</h3>
+              </div>
               <p>Turn unused space into a steady income stream with competitive market rates.</p>
             </div>
             <div className="benefit">
+            <div className="benefit-wrapper">
               <div className="benefit-icon">🎯</div>
               <h3>Targeted Exposure</h3>
+              </div>
               <p>Connect with quality advertisers looking specifically for spaces like yours.</p>
             </div>
             <div className="benefit">
+            <div className="benefit-wrapper">
               <div className="benefit-icon">📋</div>
               <h3>Simple Process</h3>
+              </div>
               <p>We handle the paperwork, payments, and provide support throughout the process.</p>
             </div>
           </div>
