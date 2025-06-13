@@ -210,6 +210,10 @@
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   background: white;
   box-sizing: border-box;
+  
+  /* Enhanced caret styling */
+  caret-color: #333; /* Darker caret color for better visibility */
+  color: #333; /* Ensure text color is consistent */
 }
 
 /* Focus states for inputs - Fix #1 */
@@ -219,6 +223,51 @@
   outline: none;
   border-color: #333;
   box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.1);
+  caret-color: #4a5568; /* Slightly softer than pure black for friendliness */
+}
+
+@keyframes caret-blink {
+  0%, 50% { 
+    opacity: 1; 
+  }
+  51%, 100% { 
+    opacity: 0; 
+  }
+}
+/* For input-with-unit containers */
+.input-with-unit input {
+  border: none;
+  padding: 12px;
+  border-radius: 4px 0 0 4px;
+  box-shadow: none;
+  flex: 1;
+  background: transparent;
+  caret-color: #4a5568; /* Consistent caret color */
+}
+
+.input-with-unit input:focus {
+  outline: none;
+  border: none;
+  box-shadow: none;
+  caret-color: #4a5568;
+  animation: caret-blink 1s infinite;
+}
+
+/* Ensure placeholder text remains subtle while caret is visible */
+.form-group input::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+/* Optional: More subtle caret for a friendlier feel */
+.form-group input.friendly-caret,
+.form-group textarea.friendly-caret {
+  caret-color: #6b7280; /* Even softer gray-blue */
+}
+
+.form-group input.friendly-caret:focus,
+.form-group textarea.friendly-caret:focus {
+  caret-color: #6b7280;
 }
 
 /* Updated dropdown styling */
