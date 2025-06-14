@@ -1,17 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/SupabaseClient.js';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './styles/AccountQuestionsForm.css';
-
-interface LocationState {
-  isFirstTime?: boolean;
-  userId?: string;
-}
 
 function AccountQuestionsForm() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const state = location.state as LocationState;
   
   const [formData, setFormData] = useState({
     business_type: '',

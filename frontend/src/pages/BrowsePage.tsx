@@ -9,6 +9,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { CalendarToday } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../utils/SupabaseClient';
 
 interface Product {
     id: string;
@@ -29,11 +30,23 @@ interface Product {
     tags?: string[];
 }
 
-interface ApiResponse {
-    success: boolean;
-    listings: Product[];
-    total: number;
-    message?: string;
+// Add interface to match Supabase database
+interface SupabaseListing {
+    id: string;
+    title: string;
+    primary_image_url?: string;
+    type: string;
+    width_ft?: number;
+    height_ft?: number;
+    traffic_count_daily?: number;
+    available_from?: string;
+    price_per_week?: number;
+    price_per_day?: number;
+    landlord_name?: string;
+    landlord_verified?: boolean;
+    average_rating?: number;
+    features?: string[];
+    description?: string;
 }
 
 // Fallback static data (your original data, converted to new interface)
@@ -96,82 +109,109 @@ function BrowseSpace() {
         return title;
     };
 
-    // Fetch listings from API
+    // Helper functions for data transformation
+    const formatTraffic = (count?: number): string => {
+        if (!count) return '5,000+ daily';
+        if (count >= 20000) return '20,000+ daily';
+        if (count >= 15000) return '15,000+ daily';
+        if (count >= 10000) return '10,000+ daily';
+        if (count >= 5000) return '5,000+ daily';
+        return `${Math.floor(count / 500) * 500}+ daily`;
+    };
+
+    const formatAvailability = (date?: string): string => {
+        if (!date) return 'Immediately';
+        const availableDate = new Date(date);
+        const today = new Date();
+        if (availableDate <= today) return 'Immediately';
+        return availableDate.toLocaleDateString();
+    };
+
+    // Fetch listings directly from Supabase
     const fetchListings = async () => {
         try {
             setLoading(true);
             setError(null);
             
-            console.log('🔄 Fetching listings from API...');
+            console.log('🔄 Fetching listings directly from Supabase...');
             
-            // Use the proxy setup from your vite.config.ts
-            const response = await fetch('/api/test/listings', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            // Fetch directly from Supabase
+            const { data, error: supabaseError } = await supabase
+                .from('public_listings')
+                .select(`
+                    id,
+                    title,
+                    primary_image_url,
+                    type,
+                    width_ft,
+                    height_ft,
+                    traffic_count_daily,
+                    available_from,
+                    price_per_week,
+                    price_per_day,
+                    landlord_name,
+                    landlord_verified,
+                    average_rating,
+                    features,
+                    description
+                `)
+                .eq('status', 'active')
+                .order('created_at', { ascending: false });
 
-            if (!response.ok) {
-                throw new Error(`Failed to fetch listings: ${response.status} ${response.statusText}`);
+            if (supabaseError) {
+                console.error('❌ Supabase error:', supabaseError);
+                throw new Error(`Supabase error: ${supabaseError.message}`);
             }
 
-            const apiResponse: ApiResponse = await response.json();
-            
-            if (apiResponse.success && apiResponse.listings) {
-                setProducts(apiResponse.listings);
-                setDataSource('api');
-                console.log(`✅ Successfully fetched ${apiResponse.listings.length} listings from API`);
-            } else {
-                throw new Error('API returned success: false');
+            if (!data || data.length === 0) {
+                console.log('⚠️ No listings found, using fallback data');
+                setProducts(fallbackProducts);
+                setDataSource('fallback');
+                setError('No active listings found - using demo data');
+                return;
             }
+
+            // Transform Supabase data to match your Product interface
+            const transformedListings: Product[] = data.map((listing: SupabaseListing) => ({
+                id: listing.id,
+                location: listing.title || 'Unknown Location',
+                price: listing.price_per_week || (listing.price_per_day ? listing.price_per_day * 7 : 0),
+                pricePerMonth: listing.price_per_week 
+                    ? Math.round(listing.price_per_week * 4.3) 
+                    : (listing.price_per_day ? Math.round(listing.price_per_day * 30) : 0),
+                img: listing.primary_image_url || 'https://via.placeholder.com/400x300?text=No+Image',
+                type: listing.type || 'Other',
+                width: listing.width_ft ? `${listing.width_ft}ft` : '20ft',
+                height: listing.height_ft ? `${listing.height_ft}ft` : '25ft',
+                traffic: formatTraffic(listing.traffic_count_daily),
+                availability: formatAvailability(listing.available_from),
+                description: listing.description,
+                landlordName: listing.landlord_name,
+                landlordVerified: listing.landlord_verified,
+                rating: listing.average_rating,
+                features: listing.features
+            }));
+
+            setProducts(transformedListings);
+            setDataSource('api');
+            console.log(`✅ Successfully fetched ${transformedListings.length} listings from Supabase`);
             
         } catch (err) {
-            console.error('❌ Error fetching listings from API:', err);
+            console.error('❌ Error fetching listings:', err);
             console.log('🔄 Falling back to static data...');
             
             // Use fallback data
             setProducts(fallbackProducts);
             setDataSource('fallback');
-            setError('Using demo data - API connection failed');
+            setError('Database connection failed - using demo data');
         } finally {
             setLoading(false);
         }
     };
 
-    // Test API connection
-    const testApiConnection = async () => {
-        try {
-            const response = await fetch('/api/test/ping');
-            const data = await response.json();
-            
-            if (data.success) {
-                console.log('🏓 API connection successful');
-                return true;
-            }
-            return false;
-        } catch (err) {
-            console.log('❌ API connection failed');
-            return false;
-        }
-    };
-
     // Fetch data when component mounts
     useEffect(() => {
-        const initializeData = async () => {
-            const apiConnected = await testApiConnection();
-            if (apiConnected) {
-                await fetchListings();
-            } else {
-                console.log('🔄 API not available, using fallback data');
-                setProducts(fallbackProducts);
-                setDataSource('fallback');
-                setError('Backend not available - using demo data');
-                setLoading(false);
-            }
-        };
-
-        initializeData();
+        fetchListings();
     }, []);
 
     // Get current price based on selected option (week/month)

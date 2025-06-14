@@ -1,73 +1,144 @@
-
-.logo {
-  height: 2.5em;
-  padding: 0.5em;
-  will-change: filter;
-  transition: filter 300ms;
-  object-fit: contain;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 0.5em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 0.5em #61dafbaa);
-}
+/* Header.css */
 
 .navbar {
   display: flex;
-  flex-wrap: wrap; 
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 1rem;
+  padding: 1rem 2rem;
   background-color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  box-sizing: border-box;
-  z-index: 1000;
+  border-bottom: 1px solid #e5e7eb;
+  position: relative;
 }
 
 .logo {
-  font-size: 1.5rem;
-  font-weight: bold;
+  height: 40px;
+  width: auto;
 }
 
 .nav-links {
   display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
 .nav-button {
+  text-decoration: none;
   padding: 0.5rem 1rem;
-  background-color: #555;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+/* Browse Spaces - black text, white background, no border */
+.browse-btn {
+  background-color: white;
+  color: black;
+  border: none;
+}
+
+.browse-btn:hover {
+  background-color: #f9fafb;
+}
+
+/* Action buttons (List Your Space / View Bookings) - white background, thin dark border, black text */
+.action-btn {
+  background-color: white;
+  color: black;
+  border: 1px solid #374151;
+}
+
+.action-btn:hover {
+  background-color: #f9fafb;
+  border-color: #111827;
+}
+
+/* Sign In button - black background, no border, white text */
+.signin-btn {
+  background-color: black;
   color: white;
   border: none;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
 }
 
-.nav-button:hover {
-  background-color: #f3f3f3;
-  color: #222
+.signin-btn:hover {
+  background-color: #374151;
 }
 
-@media (max-width: 786px) {
-  .nav-button {
-    font-size: 0.85rem;
-    padding: 0.4rem 0.6rem;
-  }
+/* Regular navigation buttons (Messages, Profile) */
+.nav-button:not(.browse-btn):not(.action-btn):not(.signin-btn) {
+  background-color: white;
+  color: black;
+  border: none;
+}
 
-  .logo {
-    font-size: 1.2rem;
-    padding: 0.25rem;
-  }
+.nav-button:not(.browse-btn):not(.action-btn):not(.signin-btn):hover {
+  background-color: #f3f4f6;
+}
 
+/* Admin view indicator */
+.admin-view-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #3b82f6;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 10;
+}
+
+/* Loading state */
+.nav-loading {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
   .nav-links {
-    gap: 0.5rem;
     flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .nav-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 13px;
+  }
+  
+  .admin-view-indicator {
+    position: static;
+    transform: none;
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.75rem;
+  }
+  
+  .logo {
+    height: 32px;
+  }
+  
+  .nav-links {
+    gap: 0.25rem;
+  }
+  
+  .nav-button {
+    padding: 0.4rem 0.6rem;
+    font-size: 12px;
   }
 }

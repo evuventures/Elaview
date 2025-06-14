@@ -1,23 +1,59 @@
+/* Main container to constrain width */
+.item-detail-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  box-sizing: border-box;
+}
+
+/* Update your existing layout1 class */
 .layout1 {
   display: flex;
-  gap: 1em;
+  gap: 2rem;
   box-sizing: border-box;
-
+  max-width: 100%;
 }
 
-
+/* Update mainContent to take 70% */
 .mainContent {
   text-align: left;
-  width: 100%;
+  flex: 0 0 70%; /* Fixed 70% width */
+  max-width: 70%;
+  min-width: 0; /* Prevents flex item from overflowing */
 }
 
-
+/* Update sidebar to take 30% */
 .sidebaar {
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  flex: 0 0 30%; /* Fixed 30% width */
+  max-width: 30%;
+  min-width: 280px; /* Minimum width to prevent sidebar from getting too narrow */
 }
 
+/* Image container improvements */
+.main-image-container {
+  width: 100%;
+  max-width: 800px; /* Prevent image from getting too wide */
+  height: 400px;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.main-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Additional images container */
+.additional-images-container {
+  display: flex;
+  gap: 1rem;
+  max-width: 800px; /* Match main image max-width */
+}
 
 .detailsLeftSideBar1 {
   border: 2px solid rgb(211, 210, 210);
@@ -25,7 +61,6 @@
   padding: 1.2em;
   border-radius: 0.3em
 }
-
 
 .reportItem {
   text-align: center;
@@ -38,7 +73,6 @@
   font-weight: 600;
 }
 
-
 .detailsLeftSideBar2 {
   border: 2px solid rgb(211, 210, 210);
   text-align: left;
@@ -47,7 +81,6 @@
   margin-top: 2em;
   width: 100%;
 }
-
 
 .logo1 {
   height: 70px;
@@ -70,7 +103,6 @@
   border: 2px solid #666;
 }
 
-
 .icons {
   background: transparent;
   color: black;
@@ -82,7 +114,7 @@
   border: none;
 }
 
-
+/* Ensure sections don't get too wide */
 .sections {
   display: flex;
   gap: 2em;
@@ -90,35 +122,34 @@
   background-color: rgb(245, 242, 242);
   border-radius: 0.5em;
   padding: 0.2em;
+  max-width: 800px; /* Prevent tabs from stretching too wide */
 }
-
 
 .details {
   background-color: transparent;
   color: #666;
 }
 
-
 .specifications {
   background-color: transparent;
   color: black;
 }
-
 
 .reviews {
   background-color: transparent;
   color: black;
 }
 
-
+/* Improve readability for text content */
 .detailsText {
   font-size: calc(0.8em + 0.2vw);
   margin-top: 0.5em;
   color: #666;
   font-weight: 600;
   width: 100%;
+  max-width: 65ch; /* Optimal reading width - about 65 characters */
+  line-height: 1.6; /* Better line spacing for readability */
 }
-
 
 .specificationDetails {
   display: grid;
@@ -131,9 +162,82 @@
   margin-top: 1em;
 }
 
-
 .upload {
   border: 1px solid #999;
   border-radius: 0.3em;
   padding: 0.4em 0.4em 0.4em 0.4em;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1240px) {
+  .item-detail-container {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 968px) {
+  .item-detail-container {
+    padding: 0 1rem;
+  }
+  
+  .layout1 {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .mainContent,
+  .sidebaar {
+    flex: none;
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .sidebaar {
+    min-width: unset;
+  }
+  
+  /* Stack sidebar items horizontally on tablet */
+  .sidebar-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .main-image-container {
+    max-width: 100%;
+    height: 350px;
+  }
+
+  .additional-images-container {
+    max-width: 100%;
+  }
+
+  .sections {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .item-detail-container {
+    padding: 0 0.75rem;
+  }
+  
+  .layout1 {
+    gap: 1rem;
+  }
+  
+  /* Stack all sidebar items vertically on mobile */
+  .sidebar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .main-image-container {
+    height: 300px; /* Smaller image on mobile */
+  }
+
+  .additional-images-container {
+    gap: 0.5rem;
+  }
 }

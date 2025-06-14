@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/SupabaseClient';
 import './styles/ListSpacePage.css';
@@ -326,35 +327,43 @@ const ListSpacePage: React.FC = () => {
 
   return (
     <div className="list-space-page">
-      {/* Header */}
-      <div className="page-header">
-        <button 
-          className="back-button"
-          onClick={() => navigate('/')}
-        >
-          ← Back to home
-        </button>
-      </div>
-
+      <button 
+            className="back-button"
+            onClick={() => navigate('/')}
+          >
+            ← Back to home
+          </button>
       {/* Main Content */}
       <div className="list-space-container">
+        {/* Sticky Back Button */}
+
         <div className="page-title-section">
           <h1>List Your Advertising Space</h1>
           <p>Turn your unused building space into revenue with Elaview</p>
         </div>
 
-        {/* Step Indicators */}
+        {/* Step Indicators - Updated to match mockup */}
         <div className="step-indicators">
-          <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
-            <div className="step-number">1</div>
+          <div className={`step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}`}>
+            <div className="step-number-wrapper">
+              <div className="step-number">
+                {currentStep > 1 ? '✓' : '1'}
+              </div>
+            </div>
             <span>Basic Information</span>
           </div>
-          <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
-            <div className="step-number">2</div>
+          <div className={`step ${currentStep >= 2 ? 'active' : ''} ${currentStep > 2 ? 'completed' : ''}`}>
+            <div className="step-number-wrapper">
+              <div className="step-number">
+                {currentStep > 2 ? '✓' : '2'}
+              </div>
+            </div>
             <span>Photos & Details</span>
           </div>
           <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
-            <div className="step-number">3</div>
+            <div className="step-number-wrapper">
+              <div className="step-number">3</div>
+            </div>
             <span>Pricing & Availability</span>
           </div>
         </div>
@@ -501,35 +510,49 @@ const ListSpacePage: React.FC = () => {
                   <div className="section-row">
                     <div className="form-group flex-1">
                       <label htmlFor="width_ft">Width</label>
-                      <div className="input-with-unit">
-                        <input
-                          type="number"
-                          id="width_ft"
-                          name="width_ft"
-                          placeholder="Width"
-                          value={formData.width_ft}
-                          onChange={handleInputChange}
-                          step="0.1"
-                          min="0"
-                        />
-                        <span className="unit">ft</span>
-                      </div>
+                      <input
+                        type="number"
+                        id="width_ft"
+                        name="width_ft"
+                        placeholder="Width"
+                        value={formData.width_ft}
+                        onChange={handleInputChange}
+                        step="0.1"
+                        min="0"
+                      />
+                    </div>
+                    <div className="form-group flex-1">
+                      <select
+                        name="width_unit"
+                        value="ft"
+                        onChange={handleInputChange}
+                      >
+                        <option value="ft">ft</option>
+                        <option value="in">in</option>
+                      </select>
                     </div>
                     <div className="form-group flex-1">
                       <label htmlFor="height_ft">Height</label>
-                      <div className="input-with-unit">
-                        <input
-                          type="number"
-                          id="height_ft"
-                          name="height_ft"
-                          placeholder="Height"
-                          value={formData.height_ft}
-                          onChange={handleInputChange}
-                          step="0.1"
-                          min="0"
-                        />
-                        <span className="unit">ft</span>
-                      </div>
+                      <input
+                        type="number"
+                        id="height_ft"
+                        name="height_ft"
+                        placeholder="Height"
+                        value={formData.height_ft}
+                        onChange={handleInputChange}
+                        step="0.1"
+                        min="0"
+                      />
+                    </div>
+                    <div className="form-group flex-1">
+                      <select
+                        name="height_unit"
+                        value="ft"
+                        onChange={handleInputChange}
+                      >
+                        <option value="ft">ft</option>
+                        <option value="in">in</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -841,92 +864,6 @@ const ListSpacePage: React.FC = () => {
                   <small>Leave "Available Until" empty if your space is available indefinitely</small>
                 </div>
 
-                {/* Booking Policies */}
-                <div className="booking-policies-section">
-                  <h3>Booking Policies</h3>
-                  <div className="policies-grid">
-                    <div className="policy-item">
-                      <div className="policy-icon">📋</div>
-                      <h4>Installation</h4>
-                      <p>Professional installation support available for an additional fee</p>
-                    </div>
-                    <div className="policy-item">
-                      <div className="policy-icon">🔄</div>
-                      <h4>Changes</h4>
-                      <p>Campaign modifications allowed up to 48 hours before start date</p>
-                    </div>
-                    <div className="policy-item">
-                      <div className="policy-icon">💳</div>
-                      <h4>Payment</h4>
-                      <p>Secure payment processing with funds released after campaign approval</p>
-                    </div>
-                    <div className="policy-item">
-                      <div className="policy-icon">🛡️</div>
-                      <h4>Insurance</h4>
-                      <p>All campaigns covered by comprehensive liability insurance</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Additional Settings */}
-                <div className="additional-settings-section">
-                  <h3>Additional Settings</h3>
-                  
-                  <div className="setting-item">
-                    <div className="setting-toggle">
-                      <input
-                        type="checkbox"
-                        id="instant_book"
-                        name="instant_book"
-                        className="toggle-checkbox"
-                      />
-                      <label htmlFor="instant_book" className="toggle-label">
-                        <span className="toggle-slider"></span>
-                      </label>
-                    </div>
-                    <div className="setting-content">
-                      <h4>Instant Booking</h4>
-                      <p>Allow advertisers to book your space immediately without waiting for approval</p>
-                    </div>
-                  </div>
-
-                  <div className="setting-item">
-                    <div className="setting-toggle">
-                      <input
-                        type="checkbox"
-                        id="auto_approve"
-                        name="auto_approve"
-                        className="toggle-checkbox"
-                      />
-                      <label htmlFor="auto_approve" className="toggle-label">
-                        <span className="toggle-slider"></span>
-                      </label>
-                    </div>
-                    <div className="setting-content">
-                      <h4>Auto-Approve Content</h4>
-                      <p>Automatically approve advertising content that meets platform guidelines</p>
-                    </div>
-                  </div>
-
-                  <div className="setting-item">
-                    <div className="setting-toggle">
-                      <input
-                        type="checkbox"
-                        id="weekend_premium"
-                        name="weekend_premium"
-                        className="toggle-checkbox"
-                      />
-                      <label htmlFor="weekend_premium" className="toggle-label">
-                        <span className="toggle-slider"></span>
-                      </label>
-                    </div>
-                    <div className="setting-content">
-                      <h4>Weekend Premium (20% higher rates)</h4>
-                      <p>Charge premium rates for Friday-Sunday bookings when foot traffic is higher</p>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Revenue Estimate */}
                 <div className="revenue-estimate-section">
                   <h3>Revenue Estimate</h3>
@@ -1010,18 +947,24 @@ const ListSpacePage: React.FC = () => {
           <h2>Why List with Elaview?</h2>
           <div className="benefits-grid">
             <div className="benefit">
+              <div className="benefit-wrapper">
               <div className="benefit-icon">💰</div>
               <h3>Maximize Revenue</h3>
+              </div>
               <p>Turn unused space into a steady income stream with competitive market rates.</p>
             </div>
             <div className="benefit">
+            <div className="benefit-wrapper">
               <div className="benefit-icon">🎯</div>
               <h3>Targeted Exposure</h3>
+              </div>
               <p>Connect with quality advertisers looking specifically for spaces like yours.</p>
             </div>
             <div className="benefit">
+            <div className="benefit-wrapper">
               <div className="benefit-icon">📋</div>
               <h3>Simple Process</h3>
+              </div>
               <p>We handle the paperwork, payments, and provide support throughout the process.</p>
             </div>
           </div>

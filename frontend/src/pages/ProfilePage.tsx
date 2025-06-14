@@ -63,8 +63,6 @@ export default function ProfilePage() {
             // Profile exists with same email but different ID - update the ID
             console.log('Found profile by email, updating ID...');
             
-            const existingProfile = profileByEmail[0];
-            
             const { data: updatedProfile, error: updateError } = await supabase
               .from('user_profiles')
               .update({ 
@@ -140,7 +138,7 @@ export default function ProfilePage() {
         if (!user) return;
 
         // Check if there's a profile with this email but wrong ID
-        const { data: profiles, error } = await supabase
+        const { data: profiles } = await supabase
           .from('user_profiles')
           .select('*')
           .eq('email', user.email);
@@ -217,9 +215,9 @@ export default function ProfilePage() {
     };
 
     const handleSignOut = async () => {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error('Error signing out:', error);
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) {
+        console.error('Error signing out:', signOutError);
       } else {
         navigate('/signin');
       }

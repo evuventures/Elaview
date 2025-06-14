@@ -14,7 +14,10 @@ import ProtectedRoute from './partials/ProtectedRoute.js';
 import BrowseSpace from './pages/BrowsePage.js';
 import ProfilePage from './pages/ProfilePage.js';
 import MessagingPage from './pages/MessagingPage.js';
-
+import AdminPanel from './components/AdminPanel.js'
+import { useEffect, useState } from 'react';
+import { supabase } from './utils/SupabaseClient';
+import { User } from '@supabase/supabase-js';
 
 function App() {
   const location = useLocation();
@@ -25,65 +28,58 @@ function App() {
       {!hideHeaderFooter && <Header />}
       
       <Routes>
-        {/* Public routes */}
+        {/* Public routes - no authentication required */}
         <Route path="/" element={<Home />} />
+        <Route path="/browse" element={<BrowseSpace />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/test" element={<TestPage />} />
         <Route path="/auth-test" element={<AuthTestPage />} />
-        <Route path='/profile' element={<ProfilePage />} />
 
-        
-        {/* Account questions route - protected but doesn't require completed onboarding */}
+        {/* Semi-protected routes - require auth but not onboarding */}
         <Route path="/account-questions" element={
-          <ProtectedRoute>
+          <ProtectedRoute requireOnboarding={false}>
             <AccountQuestionsForm />
           </ProtectedRoute>
-          
         } />
         
-        {/* Protected routes that require completed onboarding */}
-        <Route path="/browse" element={
-          // <ProtectedRoute>
-          // <OnboardingGuard>
-              <BrowseSpace />
-          // </OnboardingGuard>
-          // </ProtectedRoute> 
+        {/* Protected routes - require auth and completed onboarding */}
+        <Route path='/profile' element={
+          <ProtectedRoute requireOnboarding={true}>
+            <ProfilePage />
+          </ProtectedRoute>
         } />
         
         <Route path="/list" element={
-          // <ProtectedRoute>
-          // <OnboardingGuard>
-              <ListSpace />
-          // </OnboardingGuard>
-          // </ProtectedRoute> 
+          <ProtectedRoute requireRole="landlord" requireOnboarding={true}>
+            <ListSpace />
+          </ProtectedRoute> 
         } />
         
-        <Route path="/detailsPage/:id" element={
-          // <ProtectedRoute>
-          // <OnboardingGuard>
-              <ItemDetailPage />
-           // </OnboardingGuard>
-          // </ProtectedRoute> 
-        } />
+        {/* Details page - could be public for browsing, protected for actions */}
+        <Route path="/detailsPage/:id" element={<ItemDetailPage />} />
 
         <Route path="/messaging" element={
-          // <ProtectedRoute> // (optional, if you want to restrict it)
+          <ProtectedRoute requireOnboarding={true}>
             <MessagingPageWrapper />
-          // </ProtectedRoute>
+          </ProtectedRoute>
         } />
 
+        {/* Admin-only routes */}
+        <Route path="/admin" element={
+          <ProtectedRoute requireRole="admin">
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
       </Routes>
 
       {!hideHeaderFooter && <Footer />}
+      
+      {/* Admin Panel - only shows for admin users */}
+      <AdminPanel />
     </>
   )
 }
-
-import { useEffect, useState } from 'react';
-import { supabase } from './utils/SupabaseClient';
-import { User } from '@supabase/supabase-js';
-
 
 function MessagingPageWrapper() {
   const [user, setUser] = useState<User | null>(null);
@@ -101,5 +97,151 @@ function MessagingPageWrapper() {
   return <MessagingPage user={user} />;
 }
 
+// Simple admin dashboard component
+function AdminDashboard() {
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalListings: 0,
+    totalBookings: 0
+  });
 
-export default App
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        // Load admin statistics
+        const [usersResponse, listingsResponse] = await Promise.all([
+          supabase.from('user_profiles').select('id', { count: 'exact', head: true }),
+          supabase.from('rental_listings').select('id', { count: 'exact', head: true })
+        ]);
+
+        setStats({
+          totalUsers: usersResponse.count || 0,
+          totalListings: listingsResponse.count || 0,
+          totalBookings: 0 // Add bookings count when you have bookings table
+        });
+      } catch (error) {
+        console.error('Failed to load admin stats:', error);
+      }
+    };
+
+    loadStats();
+  }, []);
+
+  return (
+    <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '32px' }}>
+        Admin Dashboard
+      </h1>
+      
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+        gap: '24px',
+        marginBottom: '40px'
+      }}>
+        <div style={{
+          backgroundColor: 'white',
+          padding: '24px',
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          border: '1px solid #e5e7eb'
+        }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>
+            Total Users
+          </h3>
+          <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#3b82f6' }}>
+            {stats.totalUsers}
+          </p>
+        </div>
+
+        <div style={{
+          backgroundColor: 'white',
+          padding: '24px',
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          border: '1px solid #e5e7eb'
+        }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>
+            Total Listings
+          </h3>
+          <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#10b981' }}>
+            {stats.totalListings}
+          </p>
+        </div>
+
+        <div style={{
+          backgroundColor: 'white',
+          padding: '24px',
+          borderRadius: '12px',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          border: '1px solid #e5e7eb'
+        }}>
+          <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '8px' }}>
+            Total Bookings
+          </h3>
+          <p style={{ fontSize: '32px', fontWeight: 'bold', color: '#f59e0b' }}>
+            {stats.totalBookings}
+          </p>
+        </div>
+      </div>
+
+      <div style={{
+        backgroundColor: 'white',
+        padding: '24px',
+        borderRadius: '12px',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        border: '1px solid #e5e7eb'
+      }}>
+        <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
+          Quick Actions
+        </h3>
+        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => window.location.href = '/browse'}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            View All Listings
+          </button>
+          <button
+            onClick={() => window.location.href = '/'}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#10b981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            View Frontend
+          </button>
+          <button
+            onClick={() => console.log('Admin action triggered')}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#f59e0b',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px'
+            }}
+          >
+            Export Data
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
