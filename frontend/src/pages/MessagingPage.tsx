@@ -47,6 +47,7 @@ export default function MessagingPage({ user }: Props) {
     loadConversations();
   }, [user]);
 
+  // UI section
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       <ConversationList
