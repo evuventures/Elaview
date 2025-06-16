@@ -35,7 +35,7 @@ function SignIn() {
   
     return (
       <>
-        <Header />
+        
         <div className="signin-container">
             
             <h2>Sign In</h2>
