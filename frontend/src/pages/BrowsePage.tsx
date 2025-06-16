@@ -2,7 +2,7 @@ import { Box, Checkbox, FormControlLabel, ListItem, List, Typography, TextField,
 import './styles/BrowsePage.css';
 import { Collapse, ListSubheader } from '@mui/material';
 import { ExpandLess, ExpandMore, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Slider } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -64,6 +64,7 @@ function BrowseSpace() {
     const navigate = useNavigate();
 
     // UI State
+    const [open, setOpen] = useState<boolean>(true);
     const [open1, setOpen1] = useState<boolean>(true);
     const [open2, setOpen2] = useState<boolean>(true);
     const [open3, setOpen3] = useState<boolean>(true);
@@ -76,10 +77,12 @@ function BrowseSpace() {
     const [minHeight, setMinHeight] = useState<number>(0);
     const [calendarDate, setcalendarDate] = useState<Date | null>(null);
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const [selectedLocations, setselectedLocations] = useState<string[]>([]);
     const [selectedNeighborhoods, setselectedNeighborhoods] = useState<string[]>([]);
     const [selectedspaceTypes, setselectedspaceTypes] = useState<string[]>([]);
     const [selectedTraffic, setselectedTraffic] = useState<string[]>([]);
     const [selectedAvailability, setselectedAvailability] = useState<string[]>([]);
+    const [sortOption, setSortOption] = useState<string>('Recommended');
 
     // Data State
     const [products, setProducts] = useState<Product[]>([]);
@@ -88,6 +91,7 @@ function BrowseSpace() {
     const [dataSource, setDataSource] = useState<'api' | 'fallback'>('fallback');
 
     // Static filter options
+    const location: string[] = ["SoHo Building Hall", "Times Square", "Chelsea", "DUMBO", "Williamsberg", "Upper East Side"];
     const neighbourhood: string[] = ["SoHo Building Hall", "Times Square", "Chelsea", "DUMBO", "Williamsberg", "Upper East Side"];
     const spaceTypes: string[] = ["Wall", "Window", "Queens", "Billboard", "Vehicle", "Storefront", "Rooftop"];
     const traffic: string[] = ["5,000+ daily", "10,000+ daily", "15,000+ daily", "20,000+ daily"]
@@ -229,6 +233,19 @@ function BrowseSpace() {
         }
     };
 
+    // Checkbox handlers
+    const handleCheckboxChang4 = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let value = event.target.value;
+        let isChecked = event.target.checked;
+        if (isChecked) {
+            setselectedLocations(([...selectedLocations, value]));
+            setCurrentPage(1);
+        }
+        else {
+            setselectedLocations(selectedLocations.filter((item) => item !== value))
+        }
+    };
+
     const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let value = event.target.value;
         let isChecked = event.target.checked;
@@ -272,10 +289,47 @@ function BrowseSpace() {
         }
     };
 
+    // Sorting handlers
+    const handleSortChange = (option: string) => {
+        setSortOption(option);
+    };
+
+    // Filter removal functions
+    const locationFilter = (index: number) => {
+        const newSelectedLocations = [...selectedLocations];
+        newSelectedLocations.splice(index, 1);
+        setselectedLocations(newSelectedLocations);
+    };
+
+    const neighFilter = (index: number) => {
+        const newSelectedNeighborhoods = [...selectedNeighborhoods];
+        newSelectedNeighborhoods.splice(index, 1);
+        setselectedNeighborhoods(newSelectedNeighborhoods);
+    };
+
+    const typeFilter = (index: number) => {
+        const newSelectedTypes = [...selectedspaceTypes];
+        newSelectedTypes.splice(index, 1);
+        setselectedspaceTypes(newSelectedTypes);
+    };
+
+    const trafficFilter = (index: number) => {
+        const newSelectedTraffic = [...selectedTraffic];
+        newSelectedTraffic.splice(index, 1);
+        setselectedTraffic(newSelectedTraffic);
+    };
+
+    const dateFilter = (index: number) => {
+        const newSelectedAvailability = [...selectedAvailability];
+        newSelectedAvailability.splice(index, 1);
+        setselectedAvailability(newSelectedAvailability);
+    };
+
     // Filter products based on selected criteria
     const filteredItems = products.filter((item) => {
         const baseLocation = getBaseLocation(item.location);
-        const locationMatch = selectedNeighborhoods.length === 0 || selectedNeighborhoods.includes(baseLocation);
+        const locationMatch = selectedLocations.length === 0 || selectedLocations.includes(baseLocation);
+        const neighborhoodMatch = selectedNeighborhoods.length === 0 || selectedNeighborhoods.includes(baseLocation);
         const spacetypeMatch = selectedspaceTypes.length === 0 || selectedspaceTypes.includes(item.type);
         const trafficMatch = selectedTraffic.length === 0 || selectedTraffic.includes(item.traffic);
         
@@ -289,14 +343,34 @@ function BrowseSpace() {
         const dateMatch = selectedAvailability.includes('Immediately') ? item.availability === 'Immediately' : true;
         const calendardateMatch = calendarDate ? new Date(item.availability).getTime() === calendarDate.getTime() : true;
 
-        return locationMatch && trafficMatch && spacetypeMatch && PriceMatch && WidthMatch && HeightMatch && dateMatch && calendardateMatch;
+        return locationMatch && neighborhoodMatch && trafficMatch && spacetypeMatch && PriceMatch && WidthMatch && HeightMatch && dateMatch && calendardateMatch;
     });
 
-    const areFiltersActive = selectedNeighborhoods.length > 0 || selectedspaceTypes.length > 0 || selectedTraffic.length > 0 ||
+    // Sorting logic
+    const sortedItems = useMemo(() => {
+        const itemsCopy = [...filteredItems];
+        if (sortOption === 'Newest First') {
+            return itemsCopy.sort((a, b) => {
+                const dateA = a.availability === 'Immediately' ? 0 : new Date(a.availability).getTime();
+                const dateB = b.availability === 'Immediately' ? 0 : new Date(b.availability).getTime();
+                return dateA - dateB;
+            });
+        }
+        if (sortOption === 'Oldest') {
+            return itemsCopy.sort((a, b) => {
+                const dateA = a.availability === 'Immediately' ? 0 : new Date(a.availability).getTime();
+                const dateB = b.availability === 'Immediately' ? 0 : new Date(b.availability).getTime();
+                return dateB - dateA;
+            });
+        }
+        return itemsCopy;
+    }, [filteredItems, sortOption]);
+
+    const areFiltersActive = selectedLocations.length > 0 || selectedNeighborhoods.length > 0 || selectedspaceTypes.length > 0 || selectedTraffic.length > 0 ||
         selectedAvailability.length > 0 || priceRange[0] !== 1000 || priceRange[1] !== 15000 || minWidth > 0 || minHeight > 0 || calendarDate !== null;
 
     let itemsperPage = 8;
-    const itemsToDisplay = areFiltersActive ? filteredItems : products;
+    const itemsToDisplay = areFiltersActive ? sortedItems : products;
     const totalPages = Math.ceil(itemsToDisplay.length / itemsperPage);
 
     const startIndex = (currentPage - 1) * itemsperPage;
@@ -322,10 +396,11 @@ function BrowseSpace() {
         setCurrentPage(currentPage + 1);
     }
 
-    // Only use filteredItems when filters are active, otherwise use currentPageItems
-    const displayedItems: Product[] = areFiltersActive ? filteredItems : currentPageItems;
+    // Only use sortedItems when filters are active, otherwise use currentPageItems
+    const displayedItems: Product[] = areFiltersActive ? sortedItems : currentPageItems;
 
     const reset = () => {
+        setselectedLocations([]);
         setselectedNeighborhoods([]);
         setselectedspaceTypes([]);
         setselectedTraffic([]);
@@ -377,6 +452,30 @@ function BrowseSpace() {
                         )}
                     </Box>
 
+                    {/* Location Filter */}
+                    <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                        <ListSubheader onClick={() => setOpen(!open)} sx={{ cursor: 'pointer' }}>
+                            <Box className='sidebar-top'>
+                                <Box className='sidebar-text'>Location</Box>
+                                <Box>
+                                    {open ? <ExpandLess /> : <ExpandMore />}
+                                </Box>
+                            </Box>
+                        </ListSubheader>
+                        <Collapse in={open}>
+                            <List >
+                                {location.map((location) => (
+                                    <ListItem key={location} sx={{ py: 0 }}>
+                                        <FormControlLabel value={location} checked={selectedLocations.includes(location)}
+                                            control={<Checkbox onChange={handleCheckboxChang4} />}
+                                            label={<span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>{location}</span>} />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </Collapse>
+                    </Box>
+
+                    {/* Neighborhoods Filter */}
                     <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
                         <ListSubheader onClick={() => setOpen1(!open1)} sx={{ cursor: 'pointer' }}>
                             <Box className='sidebar-top'>
@@ -572,8 +671,112 @@ function BrowseSpace() {
                 <Box className='main-content'>
                     <Box className='content-heading'>Advertising Spaces in NYC</Box>
 
-                    <Box sx={{ fontSize: 'calc(1rem + 0.5vh)', textAlign: 'left' }}>
-                        Showing {displayedItems.length} places matching your criteria
+                    {/* Filter Chips */}
+                    <Box sx={{ display: 'flex', gap: '0.5em', flexWrap: 'wrap', marginTop: '1em' }}>
+                        {areFiltersActive && filteredItems.length > 0 && (
+                            <>
+                                {selectedLocations.map((location, index) => (
+                                    <Box key={index} className='selectedFilters'>
+                                        <i className="bi bi-geo-alt-fill" style={{ fontSize: '0.8em' }}></i>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{location}</Box>
+                                        <button className='cancelFilters' onClick={() => locationFilter(index)}>
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                    </Box>
+                                ))}
+                                {selectedNeighborhoods.map((neighborhood, index) => (
+                                    <Box key={`neigh-${index}`} className='selectedFilters'>
+                                        <i className="bi bi-map" style={{ fontSize: '0.9em' }}></i>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{neighborhood}</Box>
+                                        <button className='cancelFilters' onClick={() => neighFilter(index)}>
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                    </Box>
+                                ))}
+                                {selectedspaceTypes.map((space, index) => (
+                                    <Box key={`space-${index}`} className='selectedFilters'>
+                                        <i className="bi bi-layout-text-sidebar" style={{ fontSize: '0.9em' }}></i>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{space}</Box>
+                                        <button className='cancelFilters' onClick={() => typeFilter(index)}>
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                    </Box>
+                                ))}
+                                {selectedTraffic.map((traffic, index) => (
+                                    <Box key={`traffic-${index}`} className='selectedFilters'>
+                                        <i className="bi bi-car-front-fill" style={{ fontSize: '0.9em' }}></i>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{traffic}</Box>
+                                        <button className='cancelFilters' onClick={() => trafficFilter(index)}>
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                    </Box>
+                                ))}
+                                {selectedAvailability.map((availability, index) => (
+                                    <Box key={index} className='selectedFilters'>
+                                        <i className="bi bi-calendar-check-fill" style={{ fontSize: '0.9em' }}></i>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{availability}</Box>
+                                        <button className='cancelFilters' onClick={() => dateFilter(index)}>
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                    </Box>
+                                ))}
+                                {calendarDate && (
+                                    <Box key="calendar-date" className='selectedFilters'>
+                                        <i className="bi bi-calendar-check-fill" style={{ fontSize: '0.9em' }}></i>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>
+                                            {calendarDate && `${String(calendarDate.getMonth() + 1).padStart(2, '0')}/
+                                            ${String(calendarDate.getDate()).padStart(2, '0')}/${calendarDate.getFullYear()}`}
+                                        </Box>
+                                        <button className='cancelFilters' onClick={() => setcalendarDate(null)}>
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                    </Box>
+                                )}
+                                {minWidth > 0 && (
+                                    <Box className='selectedFilters'>
+                                        <i className="bi bi-arrows-angle-expand" style={{ fontSize: '0.9em' }}></i>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{minWidth}ft Width</Box>
+                                        <button className='cancelFilters' onClick={() => setMinWidth(0)}><i className="bi bi-x"></i></button>
+                                    </Box>
+                                )}
+                                {minHeight > 0 && (
+                                    <Box className='selectedFilters'>
+                                        <i className="bi bi-arrows-angle-contract" style={{ fontSize: '0.9em' }}></i>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>{minHeight}ft Height</Box>
+                                        <button className='cancelFilters' onClick={() => setMinHeight(0)}><i className="bi bi-x"></i></button>
+                                    </Box>
+                                )}
+                                {(priceRange[0] !== 1000 || priceRange[1] !== 15000) && (
+                                    <Box className='selectedFilters'>
+                                        <i className="bi bi-cash-stack" style={{ fontSize: '0.9em' }}></i>
+                                        <Box sx={{ fontSize: 'calc(0.9em + 0.1vw)', marginLeft: '0.3em' }}>${priceRange[0]} - ${priceRange[1]}</Box>
+                                        <button className='cancelFilters' onClick={() => setPriceRange([1000, 15000])}><i className="bi bi-x"></i></button>
+                                    </Box>
+                                )}
+                                <button className='reset' onClick={reset}>Clear All</button>
+                            </>
+                        )}
+                    </Box>
+
+                    {/* Sorting Dropdown */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, mb: 2 }}>
+                        <Box sx={{ fontSize: 'calc(1rem + 0.5vh)', textAlign: 'left' }}>
+                            Showing {displayedItems.length} places matching your criteria
+                        </Box>
+                        <Box className="dropdown show">
+                            <button className="btn dropdown-toggle droppy" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {sortOption}
+                            </button>
+                            <ul className="dropdown-menu">
+                                {['Recommended', 'Newest First', 'Oldest'].map(option => (
+                                    <li key={option}>
+                                        <a className="dropdown-item" href="#" onClick={e => { e.preventDefault(); handleSortChange(option); }}>
+                                            {option}
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+                        </Box>
                     </Box>
 
                     <Box className='cards'>
