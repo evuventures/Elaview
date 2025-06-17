@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../utils/SupabaseClient';
 
@@ -20,9 +20,20 @@ interface AdminPanelState {
   availableUsers: AdminUser[];
 }
 
+// Global cache to prevent duplicate API calls across instances
+const globalCache = {
+  adminStatus: new Map<string, { data: AdminUser | null; timestamp: number }>(),
+  availableUsers: { data: null as AdminUser[] | null, timestamp: 0, loading: false },
+  CACHE_DURATION: 5 * 60 * 1000, // 5 minutes
+  USER_CACHE_DURATION: 10 * 60 * 1000, // 10 minutes for user list
+};
+
 const AdminPanel: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const mountTimeRef = useRef<number>(Date.now());
+  const lastCheckRef = useRef<number>(0);
+  const checkTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   
   const [state, setState] = useState<AdminPanelState>({
     isVisible: false,
@@ -48,10 +59,17 @@ const AdminPanel: React.FC = () => {
     { label: '❓ Setup', path: '/account-questions', description: 'Account setup' }
   ], []);
 
-  // Optimized admin check with caching
+  // Debounced admin check with global cache and deduplication
   const checkAdminStatus = useCallback(async () => {
     if (!mounted) return;
     
+    // Prevent rapid consecutive calls
+    const now = Date.now();
+    if (now - lastCheckRef.current < 1000) { // 1 second debounce
+      return;
+    }
+    lastCheckRef.current = now;
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -59,28 +77,51 @@ const AdminPanel: React.FC = () => {
         return;
       }
 
-      // Check cache first
-      const cacheKey = `admin_status_${user.id}`;
-      const cached = sessionStorage.getItem(cacheKey);
+      const cacheKey = user.id;
+      const cached = globalCache.adminStatus.get(cacheKey);
       
-      if (cached) {
+      // Use cache if valid
+      if (cached && (now - cached.timestamp) < globalCache.CACHE_DURATION) {
+        if (cached.data?.role === 'admin') {
+          setState(prev => ({
+            ...prev,
+            isVisible: true,
+            currentUser: cached.data
+          }));
+        }
+        return;
+      }
+
+      // Check session storage as secondary cache
+      const sessionCacheKey = `admin_status_${user.id}`;
+      const sessionCached = sessionStorage.getItem(sessionCacheKey);
+      
+      if (sessionCached) {
         try {
-          const profile = JSON.parse(cached);
-          if (profile.role === 'admin') {
-            setState(prev => ({
-              ...prev,
-              isVisible: true,
-              currentUser: profile as AdminUser
-            }));
+          const profile = JSON.parse(sessionCached);
+          const sessionData = JSON.parse(sessionStorage.getItem(`${sessionCacheKey}_meta`) || '{}');
+          
+          // Use session cache if less than 5 minutes old
+          if (sessionData.timestamp && (now - sessionData.timestamp) < globalCache.CACHE_DURATION) {
+            globalCache.adminStatus.set(cacheKey, { data: profile, timestamp: now });
+            
+            if (profile.role === 'admin') {
+              setState(prev => ({
+                ...prev,
+                isVisible: true,
+                currentUser: profile as AdminUser
+              }));
+            }
             return;
           }
         } catch (e) {
-          // Clear invalid cache
-          sessionStorage.removeItem(cacheKey);
+          sessionStorage.removeItem(sessionCacheKey);
+          sessionStorage.removeItem(`${sessionCacheKey}_meta`);
         }
       }
 
-      // Fetch from database if not cached
+      // Only fetch from database if really necessary
+      console.log('🔍 Admin Panel: Fetching admin status from database');
       const { data: profile, error } = await supabase
         .from('user_profiles')
         .select('id, name, email, role, sub_role')
@@ -93,8 +134,10 @@ const AdminPanel: React.FC = () => {
       }
 
       if (profile) {
-        // Cache the result
-        sessionStorage.setItem(cacheKey, JSON.stringify(profile));
+        // Update all caches
+        globalCache.adminStatus.set(cacheKey, { data: profile, timestamp: now });
+        sessionStorage.setItem(sessionCacheKey, JSON.stringify(profile));
+        sessionStorage.setItem(`${sessionCacheKey}_meta`, JSON.stringify({ timestamp: now }));
         
         if (profile.role === 'admin') {
           setState(prev => ({
@@ -109,17 +152,44 @@ const AdminPanel: React.FC = () => {
     }
   }, [mounted]);
 
-  // Optimized user loading
+  // Optimized user loading with global cache and request deduplication
   const loadAvailableUsers = useCallback(async () => {
+    const now = Date.now();
+    
+    // Use global cache if valid
+    if (globalCache.availableUsers.data && 
+        (now - globalCache.availableUsers.timestamp) < globalCache.USER_CACHE_DURATION) {
+      setState(prev => ({
+        ...prev,
+        availableUsers: globalCache.availableUsers.data!
+      }));
+      return;
+    }
+
+    // Prevent duplicate requests
+    if (globalCache.availableUsers.loading) {
+      return;
+    }
+
     try {
+      globalCache.availableUsers.loading = true;
+      console.log('👥 Admin Panel: Fetching users from database');
+      
       const { data: users } = await supabase
         .from('user_profiles')
         .select('id, name, email, role')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
-        .limit(10); // Reduced limit for performance
+        .limit(20); // Increased limit but still reasonable
 
       if (users) {
+        // Update global cache
+        globalCache.availableUsers = {
+          data: users as AdminUser[],
+          timestamp: now,
+          loading: false
+        };
+        
         setState(prev => ({
           ...prev,
           availableUsers: users as AdminUser[]
@@ -127,18 +197,32 @@ const AdminPanel: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to load users:', error);
+      globalCache.availableUsers.loading = false;
     }
-  }, []); // No dependencies to prevent re-renders
-
-  // Mount effect
-  useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
   }, []);
 
-  // Check admin status on mount and load dev mode state
+  // Mount effect with cleanup
   useEffect(() => {
-    if (mounted) {
+    setMounted(true);
+    return () => {
+      setMounted(false);
+      if (checkTimeoutRef.current) {
+        clearTimeout(checkTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Delayed admin check to prevent hot-reload spam
+  useEffect(() => {
+    if (!mounted) return;
+
+    // Clear any existing timeout
+    if (checkTimeoutRef.current) {
+      clearTimeout(checkTimeoutRef.current);
+    }
+
+    // Delay the check slightly to batch rapid remounts
+    checkTimeoutRef.current = setTimeout(() => {
       checkAdminStatus();
       
       // Check if dev mode was previously enabled
@@ -148,15 +232,32 @@ const AdminPanel: React.FC = () => {
       if (savedDevMode) {
         setState(prev => ({ ...prev, devMode: true }));
       }
-    }
+    }, 500); // 500ms delay
+
+    return () => {
+      if (checkTimeoutRef.current) {
+        clearTimeout(checkTimeoutRef.current);
+      }
+    };
   }, [mounted, checkAdminStatus]);
 
-  // Load users when dev mode is enabled and current user is set
+  // Load users only when really needed, with debouncing
   useEffect(() => {
-    if (state.devMode && state.currentUser && state.availableUsers.length === 0 && !loading) {
-      loadAvailableUsers();
+    if (!state.devMode || !state.currentUser || loading) return;
+    
+    // Only load if we don't have users and enough time has passed
+    if (state.availableUsers.length === 0 || 
+        (globalCache.availableUsers.data && 
+         Date.now() - globalCache.availableUsers.timestamp > globalCache.USER_CACHE_DURATION)) {
+      
+      // Add small delay to prevent rapid requests
+      const timeout = setTimeout(() => {
+        loadAvailableUsers();
+      }, 200);
+      
+      return () => clearTimeout(timeout);
     }
-  }, [state.devMode, state.currentUser?.id, state.availableUsers.length, loading, loadAvailableUsers]);
+  }, [state.devMode, state.currentUser?.id, loading, loadAvailableUsers, state.availableUsers.length]);
 
   const togglePanel = useCallback(() => {
     setState(prev => ({
@@ -199,7 +300,7 @@ const AdminPanel: React.FC = () => {
     }
   }, [navigate]);
 
-  // Function to update admin sub_role in database
+  // Function to update admin sub_role in database with caching
   const updateAdminSubRole = useCallback(async (newSubRole: 'renter' | 'landlord' | null) => {
     if (!state.currentUser || state.currentUser.role !== 'admin') {
       console.error('Only admins can change sub_role');
@@ -222,12 +323,10 @@ const AdminPanel: React.FC = () => {
       }
 
       // Update local state
+      const updatedUser = { ...state.currentUser, sub_role: newSubRole };
       setState(prev => ({
         ...prev,
-        currentUser: prev.currentUser ? {
-          ...prev.currentUser,
-          sub_role: newSubRole
-        } : null
+        currentUser: updatedUser
       }));
 
       // Clear guest mode if setting a role
@@ -236,12 +335,13 @@ const AdminPanel: React.FC = () => {
         localStorage.setItem('admin_dev_mode', 'true');
       }
 
-      // Update cache
-      if (state.currentUser) {
-        const cacheKey = `admin_status_${state.currentUser.id}`;
-        const updatedProfile = { ...state.currentUser, sub_role: newSubRole };
-        sessionStorage.setItem(cacheKey, JSON.stringify(updatedProfile));
-      }
+      // Update all caches
+      const cacheKey = state.currentUser.id;
+      globalCache.adminStatus.set(cacheKey, { data: updatedUser, timestamp: Date.now() });
+      
+      const sessionCacheKey = `admin_status_${state.currentUser.id}`;
+      sessionStorage.setItem(sessionCacheKey, JSON.stringify(updatedUser));
+      sessionStorage.setItem(`${sessionCacheKey}_meta`, JSON.stringify({ timestamp: Date.now() }));
 
       // Trigger header update
       window.dispatchEvent(new Event('admin-role-change'));
@@ -254,7 +354,7 @@ const AdminPanel: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [state.currentUser?.id, state.currentUser?.role, loading]);
+  }, [state.currentUser?.id, state.currentUser?.role, loading, state.currentUser]);
 
   // Function to handle guest mode (session-only)
   const setGuestMode = useCallback(() => {
@@ -299,6 +399,9 @@ const AdminPanel: React.FC = () => {
   const clearState = useCallback(() => {
     localStorage.clear();
     sessionStorage.clear();
+    // Clear global cache
+    globalCache.adminStatus.clear();
+    globalCache.availableUsers = { data: null, timestamp: 0, loading: false };
     alert('Storage cleared!');
   }, []);
 
@@ -399,7 +502,26 @@ const AdminPanel: React.FC = () => {
         </span>
       </button>
 
-      {/* Side Panel */}
+      {/* Debug info in development */}
+      {process.env.NODE_ENV === 'development' && state.isExpanded && (
+        <div style={{
+          position: 'fixed',
+          top: '90px',
+          right: '20px',
+          background: 'rgba(0, 0, 0, 0.8)',
+          color: '#00ff00',
+          padding: '8px',
+          borderRadius: '4px',
+          fontSize: '11px',
+          fontFamily: 'monospace',
+          zIndex: 10002,
+          maxWidth: '300px'
+        }}>
+          🐛 Cache Stats: Admin({globalCache.adminStatus.size}) | Users({globalCache.availableUsers.data?.length || 0}) | Mount: {Math.round((Date.now() - mountTimeRef.current) / 1000)}s
+        </div>
+      )}
+
+      {/* Rest of the component remains the same... */}
       {state.isExpanded && (
         <>
           {/* Overlay with glassmorphism */}
@@ -897,7 +1019,7 @@ const AdminPanel: React.FC = () => {
                   color: 'rgba(156, 163, 175, 0.6)',
                   marginBottom: '8px'
                 }}>
-                  <strong>Admin Panel v2.0</strong>
+                  <strong>Admin Panel v2.1 (Optimized)</strong>
                 </div>
                 <div style={{
                   display: 'inline-block',

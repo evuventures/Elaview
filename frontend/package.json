@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "NODE_ENV=development vite --port 3000",
+    "dev:no-admin": "NODE_ENV=production vite --port 3000",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,6 +16,7 @@
     "@mui/material": "^7.1.1",
     "@mui/x-date-pickers": "^8.3.1",
     "@supabase/supabase-js": "^2.49.10",
+    "data-fns": "^1.1.0",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.509.0",
     "react": "^19.1.0",

@@ -1,28 +1,13 @@
-// backend/src/routes/authRoutes.ts
+// backend/src/routes/authRoutes.ts - Fixed and optimized
 import { Router, Request, Response } from 'express';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../config/supabase.js';
+import { authenticateUser, requireLandlord, AuthenticatedRequest } from '../middleware/auth.js';
 
 const router = Router();
-
-// Lazy-loaded Supabase client to ensure env vars are available
-const getSupabaseClient = () => {
-  if (!process.env.SUPABASE_URL) {
-    throw new Error('SUPABASE_URL environment variable is required');
-  }
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('SUPABASE_SERVICE_ROLE_KEY environment variable is required');
-  }
-  
-  return createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-  );
-};
 
 // Helper function to verify Supabase JWT token
 const verifySupabaseToken = async (token: string) => {
   try {
-    const supabase = getSupabaseClient();
     // Verify the JWT token with Supabase
     const { data: { user }, error } = await supabase.auth.getUser(token);
     
@@ -78,8 +63,6 @@ router.post('/complete-profile', async (req: Request, res: Response) => {
     } else if (wantsToRentSpaces && role === 'landlord') {
       finalRole = 'landlord'; // They selected landlord and want to rent spaces
     }
-    
-    const supabase = getSupabaseClient();
     
     // Check if profile already exists
     const { data: existingProfile, error: checkError } = await supabase
@@ -202,8 +185,6 @@ router.get('/profile', async (req: Request, res: Response) => {
     // Verify the Supabase token
     const supabaseUser = await verifySupabaseToken(token);
     
-    const supabase = getSupabaseClient();
-    
     // Fetch user profile
     const { data: profile, error } = await supabase
       .from('user_profiles')
@@ -263,8 +244,6 @@ router.post('/verify-token', async (req: Request, res: Response) => {
     // Verify the Supabase token
     const supabaseUser = await verifySupabaseToken(token);
     
-    const supabase = getSupabaseClient();
-    
     // Check if user has a profile
     const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
@@ -297,29 +276,18 @@ router.post('/verify-token', async (req: Request, res: Response) => {
   }
 });
 
-// GET /api/auth/test-protected - Test protected route
-router.get('/test-protected', async (req: Request, res: Response) => {
+// GET /api/auth/test-protected - Test protected route (using optimized middleware)
+router.get('/test-protected', authenticateUser, async (req: Request, res: Response) => {
   try {
     console.log('🔒 Testing protected route...');
     
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        error: 'Missing or invalid authorization header'
-      });
-    }
-    
-    const token = authHeader.substring(7);
-    const supabaseUser = await verifySupabaseToken(token);
-    
-    const supabase = getSupabaseClient();
+    const authReq = req as AuthenticatedRequest;
     
     // Fetch user profile for role info
     const { data: profile } = await supabase
       .from('user_profiles')
       .select('name, role, verification_level')
-      .eq('id', supabaseUser.id)
+      .eq('id', authReq.user.id)
       .single();
     
     console.log('✅ Protected route access successful');
@@ -328,8 +296,8 @@ router.get('/test-protected', async (req: Request, res: Response) => {
       data: {
         message: 'Protected route accessed successfully!',
         user: {
-          id: supabaseUser.id,
-          email: supabaseUser.email,
+          id: authReq.user.id,
+          email: authReq.user.email,
           profile: profile
         },
         timestamp: new Date().toISOString()
@@ -338,37 +306,26 @@ router.get('/test-protected', async (req: Request, res: Response) => {
     
   } catch (error) {
     console.error('❌ Protected route access denied:', error);
-    res.status(401).json({
+    res.status(500).json({
       success: false,
-      error: 'Access denied',
-      message: error instanceof Error ? error.message : 'Authentication failed'
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
 
-// GET /api/auth/test-landlord - Test landlord-only route
-router.get('/test-landlord', async (req: Request, res: Response) => {
+// GET /api/auth/test-landlord - Test landlord-only route (using optimized middleware)
+router.get('/test-landlord', authenticateUser, requireLandlord, async (req: Request, res: Response) => {
   try {
     console.log('🏠 Testing landlord route...');
     
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        error: 'Missing or invalid authorization header'
-      });
-    }
+    const authReq = req as AuthenticatedRequest;
     
-    const token = authHeader.substring(7);
-    const supabaseUser = await verifySupabaseToken(token);
-    
-    const supabase = getSupabaseClient();
-    
-    // Check if user has landlord role
+    // Check user profile
     const { data: profile, error } = await supabase
       .from('user_profiles')
       .select('name, role, can_create_listings')
-      .eq('id', supabaseUser.id)
+      .eq('id', authReq.user.id)
       .single();
     
     if (error || !profile) {
@@ -378,22 +335,14 @@ router.get('/test-landlord', async (req: Request, res: Response) => {
       });
     }
     
-    if (profile.role !== 'landlord' && profile.role !== 'both') {
-      return res.status(403).json({
-        success: false,
-        error: 'Access denied - landlord role required',
-        userRole: profile.role
-      });
-    }
-    
     console.log('✅ Landlord route access successful');
     res.status(200).json({
       success: true,
       data: {
         message: 'Landlord route accessed successfully!',
         user: {
-          id: supabaseUser.id,
-          email: supabaseUser.email,
+          id: authReq.user.id,
+          email: authReq.user.email,
           role: profile.role,
           can_create_listings: profile.can_create_listings
         },
@@ -408,10 +357,10 @@ router.get('/test-landlord', async (req: Request, res: Response) => {
     
   } catch (error) {
     console.error('❌ Landlord route access denied:', error);
-    res.status(401).json({
+    res.status(500).json({
       success: false,
-      error: 'Access denied',
-      message: error instanceof Error ? error.message : 'Authentication failed'
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 });
