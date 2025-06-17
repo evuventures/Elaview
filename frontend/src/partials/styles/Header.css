@@ -53,6 +53,7 @@
 
 .action-btn:hover {
   background-color: #f9fafb;
+  color: black;
   border-color: #111827;
 }
 
