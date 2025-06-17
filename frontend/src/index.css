@@ -13,6 +13,18 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* ELAVIEW Color Scheme */
+  --color-primary-1: #e574bc;
+  --color-primary-2: #ea84c9;
+  --color-primary-3: #ef94d5;
+  --color-primary-4: #f9b4ed;
+  --color-primary-5: #eabaf6;
+  --color-primary-6: #dabfff;
+  --color-primary-7: #c4c7ff;
+  --color-primary-8: #adcfff;
+  --color-primary-9: #96d7ff;
+  --color-primary-10: #7fdeff;
 }
 
 a {

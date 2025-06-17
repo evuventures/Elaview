@@ -66,6 +66,7 @@
 
 .signin-btn:hover {
   background-color: #374151;
+  color: white;
 }
 
 /* Regular navigation buttons (Messages, Profile) */
