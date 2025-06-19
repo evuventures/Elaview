@@ -1,284 +1,180 @@
+// Updated ProtectedRoute.js - Add this logic to your existing ProtectedRoute component
+
+import React from 'react';
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/SupabaseClient';
-import { User } from '@supabase/supabase-js';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requireRole?: 'renter' | 'landlord' | 'admin' | 'both' | 'any';
+  requireRole?: string | null;
   requireOnboarding?: boolean;
 }
 
-interface UserProfile {
-  id: string;
-  role: 'renter' | 'landlord' | 'admin' | 'both';
-  onboarding_completed?: boolean;
-  is_active: boolean;
-}
-
-function ProtectedRoute({ 
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
-  requireRole = 'any',
-  requireOnboarding = false 
-}: ProtectedRouteProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  requireRole = null, 
+  requireOnboarding = true 
+}) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [authorized, setAuthorized] = useState(false);
   const [devMode, setDevMode] = useState(false);
 
   useEffect(() => {
-    const checkUser = async () => {
+    const checkAccess = async () => {
       try {
-        // Get current user from Supabase
-        const { data: { user } } = await supabase.auth.getUser();
-        setUser(user);
-
-        if (user) {
-          // Get user profile
-          const { data: profile } = await supabase
-            .from('user_profiles')
-            .select('id, role, onboarding_completed, is_active')
-            .eq('id', user.id)
-            .single();
-
-          if (profile) {
-            setUserProfile(profile);
-            setIsAdmin(profile.role === 'admin');
-            
-            // Only check dev mode if user is admin
-            if (profile.role === 'admin') {
-              const devModeEnabled = localStorage.getItem('admin_dev_mode') === 'true' || 
-                                   sessionStorage.getItem('admin_dev_mode') === 'true';
-              setDevMode(devModeEnabled);
-            } else {
-              setDevMode(false);
-            }
-          }
+        // Check dev mode first
+        const devModeEnabled = localStorage.getItem('dev_mode') === 'true';
+        setDevMode(devModeEnabled);
+        
+        // If dev mode is enabled, bypass all checks
+        if (devModeEnabled) {
+          console.log('🔧 ProtectedRoute: Dev mode enabled - bypassing all checks');
+          setAuthorized(true);
+          setLoading(false);
+          return;
         }
+
+        // Normal auth checks
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        
+        if (authError || !user) {
+          console.log('❌ ProtectedRoute: No authenticated user');
+          navigate('/signin');
+          return;
+        }
+
+        // If no role requirement, just check if user is authenticated
+        if (!requireRole) {
+          console.log('✅ ProtectedRoute: User authenticated, no role required');
+          setAuthorized(true);
+          setLoading(false);
+          return;
+        }
+
+        // Check user profile for role requirements
+        const { data: profile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('role, sub_role, onboarding_completed')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError || !profile) {
+          console.log('❌ ProtectedRoute: Profile not found');
+          navigate('/account-questions');
+          return;
+        }
+
+        // Check onboarding requirement
+        if (requireOnboarding && !profile.onboarding_completed) {
+          console.log('❌ ProtectedRoute: Onboarding not completed');
+          navigate('/account-questions');
+          return;
+        }
+
+        // Check role requirement
+        const userRole = profile.role === 'admin' && profile.sub_role ? profile.sub_role : profile.role;
+        
+        if (requireRole && userRole !== requireRole) {
+          console.log(`❌ ProtectedRoute: Role mismatch. Required: ${requireRole}, User: ${userRole}`);
+          navigate('/');
+          return;
+        }
+
+        console.log(`✅ ProtectedRoute: Access granted. Role: ${userRole}`);
+        setAuthorized(true);
+
       } catch (error) {
-        console.error('Auth check failed:', error);
+        console.error('❌ ProtectedRoute: Access check failed:', error);
+        navigate('/signin');
       } finally {
         setLoading(false);
       }
     };
 
-    checkUser();
+    checkAccess();
 
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        await checkUser();
+    // Listen for dev mode changes
+    const handleDevModeChange = () => {
+      const devModeEnabled = localStorage.getItem('dev_mode') === 'true';
+      setDevMode(devModeEnabled);
+      
+      if (devModeEnabled) {
+        setAuthorized(true);
       } else {
-        setUserProfile(null);
-        setIsAdmin(false);
-        setDevMode(false);
-        setLoading(false);
-      }
-    });
-
-    // Listen for dev mode changes (from admin panel)
-    const handleStorageChange = () => {
-      if (isAdmin) {
-        const devModeEnabled = localStorage.getItem('admin_dev_mode') === 'true' || 
-                             sessionStorage.getItem('admin_dev_mode') === 'true';
-        setDevMode(devModeEnabled);
+        // If dev mode is turned off, re-check access
+        checkAccess();
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-
+    window.addEventListener('dev-mode-change', handleDevModeChange);
+    
     return () => {
-      subscription.unsubscribe();
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('dev-mode-change', handleDevModeChange);
     };
-  }, [isAdmin]);
+  }, [navigate, requireRole, requireOnboarding]);
 
   if (loading) {
     return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '200px',
-        fontSize: '16px',
-        color: '#6b7280'
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '60vh',
+        flexDirection: 'column',
+        gap: '1rem'
       }}>
-        Loading...
+        <div style={{
+          width: '40px',
+          height: '40px',
+          border: '4px solid #e5e7eb',
+          borderTop: '4px solid #22c55e',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }} />
+        <p style={{ color: '#6b7280' }}>
+          {devMode ? 'Loading in dev mode...' : 'Checking access...'}
+        </p>
+        <style>
+          {`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}
+        </style>
       </div>
     );
   }
 
-  // Admin bypass: If user is admin and dev mode is enabled, bypass all checks
-  if (isAdmin && devMode) {
-    return (
-      <div>
-        {/* Show dev mode indicator */}
+  if (!authorized) {
+    return null; // Navigation will happen in useEffect
+  }
+
+  return (
+    <>
+      {devMode && (
         <div style={{
           position: 'fixed',
-          top: '0',
-          left: '0',
-          right: '0',
-          backgroundColor: '#fee2e2',
-          color: '#dc2626',
-          padding: '8px',
-          textAlign: 'center',
+          bottom: '20px',
+          left: '20px',
+          background: 'rgba(239, 68, 68, 0.9)',
+          color: 'white',
+          padding: '8px 12px',
+          borderRadius: '8px',
           fontSize: '12px',
           fontWeight: '600',
-          zIndex: 1000,
-          borderBottom: '2px solid #fecaca'
+          zIndex: 9999,
+          boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)',
+          backdropFilter: 'blur(8px)'
         }}>
-          🔧 DEVELOPER MODE ACTIVE - Auth checks bypassed
+          🔧 Dev Mode Active
         </div>
-        <div style={{ paddingTop: '40px' }}>
-          {children}
-        </div>
-      </div>
-    );
-  }
-
-  // Standard auth checks
-  if (!user) {
-    return <Navigate to="/signin" replace />;
-  }
-
-  if (!userProfile) {
-    return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '200px',
-        fontSize: '16px',
-        color: '#6b7280',
-        textAlign: 'center'
-      }}>
-        <p>Profile not found</p>
-        <button 
-          onClick={() => window.location.href = '/profile'}
-          style={{
-            marginTop: '16px',
-            padding: '8px 16px',
-            backgroundColor: '#3b82f6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer'
-          }}
-        >
-          Create Profile
-        </button>
-      </div>
-    );
-  }
-
-  // Check if user account is active
-  if (!userProfile.is_active) {
-    return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '200px',
-        fontSize: '16px',
-        color: '#dc2626',
-        textAlign: 'center'
-      }}>
-        <p>Your account has been deactivated</p>
-        <p>Please contact support for assistance</p>
-      </div>
-    );
-  }
-
-  // Check role requirements
-  if (requireRole !== 'any') {
-    const hasRequiredRole = 
-      requireRole === userProfile.role || 
-      userProfile.role === 'admin' || // Admins can access any role
-      (requireRole === 'landlord' && userProfile.role === 'both') ||
-      (requireRole === 'renter' && userProfile.role === 'both');
-
-    if (!hasRequiredRole) {
-      return (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '200px',
-          fontSize: '16px',
-          color: '#dc2626',
-          textAlign: 'center'
-        }}>
-          <p>Access denied</p>
-          <p>This page requires {requireRole} access</p>
-          <p>Your current role: {userProfile.role}</p>
-        </div>
-      );
-    }
-  }
-
-  // Check onboarding requirements
-  if (requireOnboarding && !userProfile.onboarding_completed) {
-    return <Navigate to="/account-questions" replace />;
-  }
-
-  return <>{children}</>;
-}
+      )}
+      {children}
+    </>
+  );
+};
 
 export default ProtectedRoute;
-
-// Export additional utility functions for admin panel
-export const AdminUtils = {
-  // Enable dev mode (call from admin panel)
-  enableDevMode: () => {
-    localStorage.setItem('admin_dev_mode', 'true');
-    window.dispatchEvent(new Event('storage'));
-  },
-
-  // Disable dev mode
-  disableDevMode: () => {
-    localStorage.removeItem('admin_dev_mode');
-    sessionStorage.removeItem('admin_dev_mode');
-    window.dispatchEvent(new Event('storage'));
-  },
-
-  // Check if current user is admin
-  checkAdminStatus: async (): Promise<boolean> => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return false;
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      return profile?.role === 'admin';
-    } catch {
-      return false;
-    }
-  },
-
-  // Get current user profile
-  getCurrentUserProfile: async (): Promise<UserProfile | null> => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('id, role, onboarding_completed, is_active')
-        .eq('id', user.id)
-        .single();
-
-      return profile;
-    } catch {
-      return null;
-    }
-  }
-};

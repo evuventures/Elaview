@@ -41,6 +41,7 @@
 
 .browse-btn:hover {
   background-color: #f9fafb;
+  color: black; /* Add this line */
 }
 
 /* Action buttons (List Your Space / View Bookings) - white background, thin dark border, black text */
@@ -52,6 +53,7 @@
 
 .action-btn:hover {
   background-color: #f9fafb;
+  color: black;
   border-color: #111827;
 }
 
@@ -64,6 +66,7 @@
 
 .signin-btn:hover {
   background-color: #374151;
+  color: white;
 }
 
 /* Regular navigation buttons (Messages, Profile) */

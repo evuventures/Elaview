@@ -375,7 +375,7 @@ body {
 }
 
 .HeroButtons {
-  display: flex;
+  display: auto;
   gap: 1rem;
 }
 
@@ -387,6 +387,7 @@ body {
   border-radius: 0.375rem;
   font-weight: 600;
   cursor: pointer;
+  margin-right: 1rem;
 }
 
 .PrimaryButton:hover {

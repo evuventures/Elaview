@@ -17,6 +17,7 @@ import chelseaImg from "/images/chelsea.png";
 
 // for displaying the featured spaces
 interface SpaceCardProps {
+  id: string; // Added only this field
   title: string;
   location: string;
   price: string;
@@ -28,6 +29,7 @@ interface SpaceCardProps {
 }
 
 const SpaceCard = ({
+  id, // Added only this parameter
   title,
   location,
   price,
@@ -52,7 +54,7 @@ const SpaceCard = ({
           <p>Size: {size}</p>
           <p>Traffic: {traffic}</p>
         </div>
-        <button className="DetailsButton">View Details</button>
+        <Link to={`/detailsPage/${id}`} className="DetailsButton" style={{display: 'block', textDecoration: 'none'}}>View Details</Link>
       </div>
     </div>
   );
@@ -63,6 +65,7 @@ export default function Home() {
   // can replace with actual spaces later
   const spaces: SpaceCardProps[] = [
     {
+      id: "soho-wall-space", // Added only this field
       title: "SoHo Building Wall",
       location: "SoHo",
       price: "$8,500/week",
@@ -73,6 +76,7 @@ export default function Home() {
       featured: true,
     },
     {
+      id: "times-square-window", // Added only this field
       title: "Times Square Window",
       location: "Times Square",
       price: "$12,000/week",
@@ -83,6 +87,7 @@ export default function Home() {
       featured: true,
     },
     {
+      id: "brooklyn-warehouse-side", // Added only this field
       title: "Brooklyn Warehouse Side",
       location: "DUMBO",
       price: "$6,200/week",
@@ -93,6 +98,7 @@ export default function Home() {
       featured: false,
     },
     {
+      id: "chelsea-gallery-exterior", // Added only this field
       title: "Chelsea Gallery Exterior",
       location: "Chelsea",
       price: "$5,800/week",
@@ -123,7 +129,7 @@ export default function Home() {
               <img src={profile3} alt="Profile 3" />
               <img src={profile4} alt="Profile 4" />
             </div>
-            <span>Trusted by <strong>500+</strong> property owners in NYC</span>
+            <span>Trusted by <strong>500+</strong> property owners</span>
           </div>
         </div>
         
@@ -135,7 +141,7 @@ export default function Home() {
               <p className="CardTitle">SoHo Wall Space</p>
               <p className="CardSubtext">30 × 40 ft • High Traffic • $5,000/week</p>
             </div>
-            <button className="DetailsButton">View Details</button>
+            <Link to="/detailsPage/soho-hero-space" className="DetailsButton" style={{display: 'block', textDecoration: 'none'}}>View Details</Link>
           </div>
         </div>
       </div>
@@ -151,7 +157,7 @@ export default function Home() {
           ))}
         </div>
         <div className="CenterButton">
-          <button className="ViewAllButton">View All Spaces</button>
+          <Link to="/browse" className="ViewAllButton">View All Spaces</Link>
         </div>
       </div>
 
@@ -159,7 +165,7 @@ export default function Home() {
         <section className="HowItWorks">
           <h2>How Elaview Works</h2>
           <p className="Subtitle">
-            A simple process to connect property owners with advertisers looking for prime NYC locations.
+            A simple process to connect property owners with advertisers looking for prime advertising locations.
           </p>
           <div className="Steps">
             {[
@@ -208,7 +214,7 @@ export default function Home() {
             ].map((card, idx) => (
               <div className="TestimonialCard" key={idx}>
                 <div className="Stars">{'⭐️'.repeat(card.stars)}{'☆'.repeat(5 - card.stars)}</div>
-                <p className="Quote">“{card.quote}”</p>
+                <p className="Quote">"{card.quote}"</p>
                 <div className="User">
                   <img src={card.avatar} alt={card.name} className="Avatar" />
                   <div>
@@ -224,13 +230,13 @@ export default function Home() {
       <div className="HeroSection">
         <div className="HeroContent">
           <div className="HeroText">
-            <h1>Ready to Transform NYC's Advertising Landscape?</h1>
+            <h1>Ready to Transform Your Advertising Landscape?</h1>
             <p>
-              Whether you own prime real estate or need impactful advertising space, Pinpoint connects you to the right opportunities.
+              Whether you own prime real estate or need impactful advertising space, Elaview connects you to the right opportunities.
             </p>
             <div className="HeroButtons">
-              <button className="PrimaryButton">Find Ad Space</button>
-              <button className="OutlineButton">List Your Property</button>
+              <Link to="/browse" className="PrimaryButton">Find Ad Space</Link>
+              <Link to="/list" className="OutlineButton">List Your Property</Link>
             </div>
           </div>
 
