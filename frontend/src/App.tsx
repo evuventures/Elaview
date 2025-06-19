@@ -1,7 +1,7 @@
 import './App.css';
 import Header from './partials/Header';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import ListSpace from './pages/ListSpacePage.js';
+import ListSpacePage from './pages/ListSpacePage';
 import SignIn from './pages/SignInPage';
 import SignUp from './pages/SignUpPage';
 import Home from './pages/HomePage';
@@ -54,7 +54,7 @@ function App() {
         
         <Route path="/list" element={
           <ProtectedRoute requireRole="landlord" requireOnboarding={true}>
-            <ListSpace />
+            <ListSpacePage />
           </ProtectedRoute> 
         } />
 
