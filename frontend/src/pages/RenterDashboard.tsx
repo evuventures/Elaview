@@ -423,7 +423,7 @@ const RenterDashboard: React.FC = () => {
                 <div className="empty-icon">📋</div>
                 <h3>No bookings yet</h3>
                 <p>Start by browsing available spaces</p>
-                <button className="browse-btn" onClick={handleBrowseSpaces}>
+                <button className="renter-browse-btn" onClick={handleBrowseSpaces}>
                   Browse Spaces
                 </button>
               </div>
