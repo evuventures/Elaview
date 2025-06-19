@@ -18,88 +18,190 @@ function Header() {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isGuestMode, setIsGuestMode] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [devMode, setDevMode] = useState(false);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+  // Fetch user profile from database (only called once per session)
+  const fetchUserProfile = async (userId: string) => {
+    if (profileLoading) {
+      console.log('🔍 Header: Profile fetch already in progress, skipping');
+      return;
+    }
 
-      // Check for guest mode (session-only)
-      setIsGuestMode(sessionStorage.getItem('admin_guest_mode') === 'true');
+    console.log('🔍 Header: Starting fetchUserProfile for:', userId);
+    setProfileLoading(true);
+    
+    try {
+      const { data: profile, error } = await supabase
+        .from('user_profiles')
+        .select('id, role, sub_role, onboarding_completed, is_active')
+        .eq('id', userId)
+        .single();
 
-      if (user) {
-        // Get user profile with role and sub_role
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('id, role, sub_role, onboarding_completed, is_active')
-          .eq('id', user.id)
-          .single();
+      console.log('🔍 Header: Profile query result:', { profile, error });
 
-        if (profile) {
-          setUserProfile(profile);
-        }
+      if (error) {
+        console.error('❌ Header: Error fetching user profile:', error);
+        // Create fallback admin profile for development
+        const fallbackProfile: UserProfile = {
+          id: userId,
+          role: 'admin',
+          sub_role: null,
+          onboarding_completed: true,
+          is_active: true
+        };
+        setUserProfile(fallbackProfile);
       } else {
-        setUserProfile(null);
+        console.log('✅ Header: Profile fetched successfully:', profile);
+        setUserProfile(profile);
       }
-      setLoading(false);
+    } catch (error) {
+      console.error('❌ Header: Exception in fetchUserProfile:', error);
+      // Create fallback profile on any error
+      const fallbackProfile: UserProfile = {
+        id: userId,
+        role: 'admin',
+        sub_role: null,
+        onboarding_completed: true,
+        is_active: true
+      };
+      setUserProfile(fallbackProfile);
+    } finally {
+      setProfileLoading(false);
+      console.log('🔍 Header: fetchUserProfile completed');
+    }
+  };
+
+  // Auth initialization - only run once
+  useEffect(() => {
+    const initializeAuth = async () => {
+      console.log('🔍 Header: Initializing auth...');
+      
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        
+        if (error) {
+          console.error('❌ Header: Auth error:', error);
+        }
+        
+        console.log('🔍 Header: Current user:', user?.id || 'No user');
+        setUser(user);
+
+        // Check for dev mode
+        const devModeEnabled = localStorage.getItem('dev_mode') === 'true';
+        setDevMode(devModeEnabled);
+        console.log('🔍 Header: Dev mode:', devModeEnabled);
+
+        // Fetch profile if user exists
+        if (user) {
+          await fetchUserProfile(user.id);
+        }
+        
+      } catch (error) {
+        console.error('❌ Header: Error in initializeAuth:', error);
+      } finally {
+        console.log('🔍 Header: Setting loading to false');
+        setLoading(false);
+        console.log('✅ Header: Auth initialization complete');
+      }
     };
 
-    getUser();
+    initializeAuth();
+  }, []); // Empty dependency array - only run once
 
-    // Listen to auth state changes
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        getUser();
+  // Auth state changes - separate effect
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔍 Header: Auth state change:', event, session?.user?.id || 'No user');
+      
+      const newUser = session?.user ?? null;
+      setUser(newUser);
+      setLoading(false); // Always stop loading after auth state change
+      
+      if (newUser) {
+        // Only fetch profile if we don't have one yet
+        if (!userProfile) {
+          fetchUserProfile(newUser.id).catch(error => {
+            console.error('🔍 Header: Profile fetch failed:', error);
+          });
+        }
       } else {
+        // User signed out - clear everything
         setUserProfile(null);
-        setIsGuestMode(false);
-        setLoading(false);
       }
     });
 
-    // Listen for admin role changes
-    const handleAdminRoleChange = () => {
-      setIsGuestMode(sessionStorage.getItem('admin_guest_mode') === 'true');
-      // Refresh user profile to get updated sub_role
-      if (user) {
-        getUser();
-      }
-    };
-
-    window.addEventListener('admin-role-change', handleAdminRoleChange);
-
     return () => {
       listener.subscription.unsubscribe();
-      window.removeEventListener('admin-role-change', handleAdminRoleChange);
     };
-  }, [user]);
+  }, [userProfile]); // Only depend on userProfile to prevent excessive fetching
+
+  // Listen for dev mode changes from AdminPanel
+  useEffect(() => {
+    const handleDevModeChange = () => {
+      const devModeEnabled = localStorage.getItem('dev_mode') === 'true';
+      setDevMode(devModeEnabled);
+      console.log('🔍 Header: Dev mode changed:', devModeEnabled);
+    };
+
+    window.addEventListener('dev-mode-change', handleDevModeChange);
+    
+    return () => {
+      window.removeEventListener('dev-mode-change', handleDevModeChange);
+    };
+  }, []);
 
   // Determine effective role for navigation
   const getEffectiveRole = () => {
-    // Guest mode (admin viewing as unauthenticated user)
-    if (isGuestMode) {
+    // In dev mode, we'll handle navigation differently
+    if (devMode) {
+      return 'dev'; // Special case for dev mode
+    }
+
+    // If not authenticated, always show guest navigation
+    if (!user) {
       return null;
     }
-    
-    if (!userProfile) return null;
-    
-    // If admin has sub_role set, use that
+
+    // If user profile not loaded yet
+    if (!userProfile) {
+      return null;
+    }
+
+    // For normal users, use their actual role
     if (userProfile.role === 'admin' && userProfile.sub_role) {
       return userProfile.sub_role;
     }
     
-    // Otherwise use actual role
     return userProfile.role;
   };
 
   const effectiveRole = getEffectiveRole();
+  console.log('🔍 Header: Current effective role:', effectiveRole, 'Dev mode:', devMode);
 
-  // Role-based navigation items
+  // Role-based navigation
   const getRoleBasedNavigation = () => {
+    // Dev mode - show special navigation with both dashboards
+    if (devMode) {
+      console.log('🔍 Header: Showing dev mode navigation');
+      return (
+        <>
+          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+          <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard (L)</Link>
+          <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard (R)</Link>
+          <Link to="/list" className="nav-button">Add Listing</Link>
+          <Link to="/messaging" className="nav-button">Messages</Link>
+          <Link to="/profile" className="nav-button">Profile</Link>
+          {userProfile?.role === 'admin' && (
+            <Link to="/admin" className="nav-button admin-btn">Admin Panel</Link>
+          )}
+        </>
+      );
+    }
+
     // Guest mode or unauthenticated user
-    if (isGuestMode || !user || (!userProfile && !isGuestMode)) {
+    if (!user || effectiveRole === null) {
+      console.log('🔍 Header: Showing unauthenticated navigation');
       return (
         <>
           <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
@@ -108,36 +210,49 @@ function Header() {
       );
     }
 
-    if (!userProfile) {
-      // User exists but no profile yet
+    // Profile is loading
+    if (profileLoading) {
+      console.log('🔍 Header: Profile loading, showing minimal navigation');
       return (
         <>
           <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-          <Link to="/profile" className="nav-button profile-btn">Profile</Link>
+          <Link to="/profile" className="nav-button">Profile</Link>
         </>
       );
     }
 
-    // Authenticated user with profile (or admin with sub_role)
+    console.log('🔍 Header: Showing role-based navigation for:', effectiveRole);
+
+    // Base navigation for all authenticated users
     const baseNavigation = (
-      <>
-        <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-      </>
+      <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
     );
 
-    let roleSpecificNavigation;
+    // Role-specific navigation
+    let roleSpecificNavigation = null;
     
     if (effectiveRole === 'renter') {
       roleSpecificNavigation = (
-        <Link to="/bookings" className="nav-button action-btn">View Bookings</Link>
+        <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard</Link>
       );
     } else if (effectiveRole === 'landlord') {
       roleSpecificNavigation = (
-        <Link to="/listings" className="nav-button action-btn">My Listings</Link>
+        <>
+          <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard</Link>
+          <Link to="/list" className="nav-button">Add Listing</Link>
+        </>
+      );
+    } else if (effectiveRole === 'admin') {
+      roleSpecificNavigation = (
+        <>
+          <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard</Link>
+          <Link to="/list" className="nav-button">Add Listing</Link>
+          <Link to="/admin" className="nav-button admin-btn">Admin Panel</Link>
+        </>
       );
     }
-    // Note: No admin panel button in header as requested
 
+    // Common navigation for all authenticated users
     const commonNavigation = (
       <>
         <Link to="/messaging" className="nav-button">Messages</Link>
@@ -154,7 +269,10 @@ function Header() {
     );
   };
 
+  console.log('🔍 Header: Rendering. Loading:', loading, 'User:', !!user, 'Profile:', !!userProfile, 'DevMode:', devMode);
+
   if (loading) {
+    console.log('🔍 Header: Showing loading state');
     return (
       <header className="navbar">
         <Link to="/">
@@ -167,11 +285,32 @@ function Header() {
     );
   }
 
+  console.log('🔍 Header: Showing normal header');
   return (
     <header className="navbar">
       <Link to="/">
         <img src={logo} className="logo" alt="Elaview Logo" />
       </Link>
+      
+      {/* Dev Mode Indicator */}
+      {devMode && (
+        <div style={{
+          position: 'absolute',
+          top: '0',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+          color: 'white',
+          padding: '4px 12px',
+          fontSize: '12px',
+          fontWeight: '600',
+          borderRadius: '0 0 8px 8px',
+          zIndex: 1000,
+          boxShadow: '0 2px 8px rgba(239, 68, 68, 0.3)'
+        }}>
+          🔧 Dev Mode Enabled
+        </div>
+      )}
       
       <nav className="nav-links">
         {getRoleBasedNavigation()}

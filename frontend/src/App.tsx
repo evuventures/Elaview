@@ -14,7 +14,9 @@ import ProtectedRoute from './partials/ProtectedRoute.js';
 import BrowseSpace from './pages/BrowsePage.js';
 import ProfilePage from './pages/ProfilePage.js';
 import MessagingPage from './pages/MessagingPage.js';
-import AdminPanel from './components/AdminPanel.js'
+import LandlordDashboard from './pages/LandlordDashboard';
+import RenterDashboard from './pages/RenterDashboard'; // NEW: Added RenterDashboard import
+import SimplifiedAdminPanel from './partials/SimplifiedAdminPanel.js'
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/SupabaseClient';
 import { User } from '@supabase/supabase-js';
@@ -55,6 +57,20 @@ function App() {
             <ListSpace />
           </ProtectedRoute> 
         } />
+
+        {/* Landlord Dashboard - landlord specific route */}
+        <Route path="/landlord-dashboard" element={
+          <ProtectedRoute requireRole="landlord" requireOnboarding={true}>
+            <LandlordDashboard />
+          </ProtectedRoute>
+        } />
+
+        {/* NEW: Renter Dashboard - renter specific route */}
+        <Route path="/renter-dashboard" element={
+          <ProtectedRoute requireRole="renter" requireOnboarding={true}>
+            <RenterDashboard />
+          </ProtectedRoute>
+        } />
         
         {/* Details page - could be public for browsing, protected for actions */}
         <Route path="/detailsPage/:id" element={<ItemDetailPage />} />
@@ -62,6 +78,78 @@ function App() {
         <Route path="/messaging" element={
           <ProtectedRoute requireOnboarding={true}>
             <MessagingPageWrapper />
+          </ProtectedRoute>
+        } />
+
+        {/* Future routes for landlord dashboard features */}
+        <Route path="/messages/:bookingId" element={
+          <ProtectedRoute requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Individual Message Thread</h2>
+              <p>Coming soon - detailed conversation view</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/content-approval/:bookingId" element={
+          <ProtectedRoute requireRole="landlord" requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Content Approval Interface</h2>
+              <p>Coming soon - review and approve renter ad designs</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/installation/:bookingId" element={
+          <ProtectedRoute requireRole="landlord" requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Installation Scheduling</h2>
+              <p>Coming soon - coordinate installation dates and details</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/edit-listing/:id" element={
+          <ProtectedRoute requireRole="landlord" requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Edit Listing</h2>
+              <p>Coming soon - edit existing listing details</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        {/* NEW: Future renter-specific routes */}
+        <Route path="/booking/:bookingId" element={
+          <ProtectedRoute requireRole="renter" requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Booking Details</h2>
+              <p>Coming soon - detailed booking information and actions</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/booking/:bookingId/upload-design" element={
+          <ProtectedRoute requireRole="renter" requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Upload Ad Design</h2>
+              <p>Coming soon - upload and submit ad designs for approval</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/saved" element={
+          <ProtectedRoute requireRole="renter" requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Saved Spaces</h2>
+              <p>Coming soon - view all your saved/favorited spaces</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
           </ProtectedRoute>
         } />
 
@@ -75,8 +163,8 @@ function App() {
 
       {!hideHeaderFooter && <Footer />}
       
-      {/* Admin Panel - only shows for admin users */}
-      <AdminPanel />
+      {/* Simplified Admin Panel - shows for admin users or when dev mode enabled */}
+      <SimplifiedAdminPanel />
     </>
   )
 }

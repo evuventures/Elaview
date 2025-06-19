@@ -158,13 +158,13 @@ body {
   font-size: 1rem;
   font-weight: 600;
   background-color: var(--color-primary-7);
-  color: white;
+  color: black;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 0.5rem;
-  box-shadow: 0 2px 8px rgba(218, 191, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(218, 191, 255, .2);
 }
 
 .signin-button:hover:not(:disabled) {
