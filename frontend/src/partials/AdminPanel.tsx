@@ -55,55 +55,45 @@ const SimplifiedAdminPanel: React.FC = () => {
     if (!mounted) return;
     
     const now = Date.now();
-    if (now - lastCheckRef.current < 1000) return; // Debounce
+    if (now - lastCheckRef.current < 1000) return;
     lastCheckRef.current = now;
-
+  
     try {
-      // Always show in development
-      if (process.env.NODE_ENV === 'development') {
-        setState(prev => ({ ...prev, isVisible: true }));
-        return;
-      }
-
-      // Show if dev mode is enabled
-      const devModeEnabled = localStorage.getItem('dev_mode') === 'true';
-      if (devModeEnabled) {
-        setState(prev => ({ ...prev, isVisible: true }));
-        return;
-      }
-
-      // Show for admin users
+      // ALWAYS check auth first - even in dev mode
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setState(prev => ({ ...prev, isVisible: false, currentUser: null }));
         return;
       }
-
+  
+      // ALWAYS check if user is admin - even in dev mode  
       const { data: profile, error } = await supabase
         .from('user_profiles')
         .select('id, name, email, role')
         .eq('id', user.id)
         .single();
-
+  
       if (error) {
         console.error('Admin check failed:', error);
+        setState(prev => ({ ...prev, isVisible: false, currentUser: null }));
         return;
       }
-
+  
+      // ONLY show if user is actually admin
       if (profile?.role === 'admin') {
         setState(prev => ({
           ...prev,
           isVisible: true,
           currentUser: profile as AdminUser
         }));
-        
-        // Load online admins
         loadOnlineAdmins();
       } else {
         setState(prev => ({ ...prev, isVisible: false, currentUser: null }));
       }
+      
     } catch (error) {
       console.error('Admin check failed:', error);
+      setState(prev => ({ ...prev, isVisible: false, currentUser: null }));
     }
   }, [mounted]);
 
