@@ -13,6 +13,7 @@ type Conversation = {
   renter_id: string;
   unread_by_landlord: number;
   unread_by_renter: number;
+  last_message_text: string;
 };
 
 type User = {
@@ -34,7 +35,17 @@ export default function MessagingPage({ user }: Props) {
     const loadConversations = async () => {
       const { data, error } = await supabase
         .from('conversations')
-        .select('*')
+        .select(`
+          id,
+          subject,
+          listing_id,
+          last_message_at,
+          landlord_id,
+          renter_id,
+          unread_by_landlord,
+          unread_by_renter,
+          last_message_text
+        `)
         .or(`landlord_id.eq.${user.id},renter_id.eq.${user.id}`)
         .order('last_message_at', { ascending: false });
     
@@ -47,6 +58,7 @@ export default function MessagingPage({ user }: Props) {
     loadConversations();
   }, [user]);
 
+  // UI section
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
       <ConversationList
