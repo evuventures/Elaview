@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControlLabel, ListItem, List, Typography, TextField, IconButton, Stack } from '@mui/material';
+import { Box, Checkbox, FormControlLabel, ListItem, List, Typography, TextField, IconButton, Stack, Drawer } from '@mui/material';
 import './styles/BrowsePage.css';
 import { Collapse, ListSubheader } from '@mui/material';
 import { ExpandLess, ExpandMore, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
@@ -83,6 +83,16 @@ function BrowseSpace() {
     const [selectedTraffic, setselectedTraffic] = useState<string[]>([]);
     const [selectedAvailability, setselectedAvailability] = useState<string[]>([]);
     const [sortOption, setSortOption] = useState<string>('Recommended');
+    const [drawerOpen, setDrawerOpen] = useState(false);
+
+
+
+    const toggleDrawer = (open: boolean) => (_: React.KeyboardEvent | React.MouseEvent) => {
+        setDrawerOpen(open);
+    };
+
+
+
 
     // Data State
     const [products, setProducts] = useState<Product[]>([]);
@@ -136,9 +146,9 @@ function BrowseSpace() {
         try {
             setLoading(true);
             setError(null);
-            
+
             console.log('🔄 Fetching listings directly from Supabase...');
-            
+
             // Fetch directly from Supabase
             const { data, error: supabaseError } = await supabase
                 .from('public_listings')
@@ -180,8 +190,8 @@ function BrowseSpace() {
                 id: listing.id,
                 location: listing.title || 'Unknown Location',
                 price: listing.price_per_week || (listing.price_per_day ? listing.price_per_day * 7 : 0),
-                pricePerMonth: listing.price_per_week 
-                    ? Math.round(listing.price_per_week * 4.3) 
+                pricePerMonth: listing.price_per_week
+                    ? Math.round(listing.price_per_week * 4.3)
                     : (listing.price_per_day ? Math.round(listing.price_per_day * 30) : 0),
                 img: listing.primary_image_url || 'https://via.placeholder.com/400x300?text=No+Image',
                 type: listing.type || 'Other',
@@ -199,11 +209,11 @@ function BrowseSpace() {
             setProducts(transformedListings);
             setDataSource('api');
             console.log(`✅ Successfully fetched ${transformedListings.length} listings from Supabase`);
-            
+
         } catch (err) {
             console.error('❌ Error fetching listings:', err);
             console.log('🔄 Falling back to static data...');
-            
+
             // Use fallback data
             setProducts(fallbackProducts);
             setDataSource('fallback');
@@ -332,12 +342,12 @@ function BrowseSpace() {
         const neighborhoodMatch = selectedNeighborhoods.length === 0 || selectedNeighborhoods.includes(baseLocation);
         const spacetypeMatch = selectedspaceTypes.length === 0 || selectedspaceTypes.includes(item.type);
         const trafficMatch = selectedTraffic.length === 0 || selectedTraffic.includes(item.traffic);
-        
+
         const currentPriceRange = getCurrentPriceRange();
         const itemPrice = getCurrentPrice(item);
         const PriceMatch = currentPriceRange[0] !== undefined && currentPriceRange[1] !== undefined &&
             itemPrice >= currentPriceRange[0] && itemPrice <= currentPriceRange[1];
-            
+
         const WidthMatch = minWidth === 0 || parseInt(item.width) >= minWidth;
         const HeightMatch = minHeight === 0 || parseInt(item.height) >= minHeight;
         const dateMatch = selectedAvailability.includes('Immediately') ? item.availability === 'Immediately' : true;
@@ -415,6 +425,269 @@ function BrowseSpace() {
     return (
         <>
             <Box className='layout'>
+
+                <Box className='menu'>
+                    <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+                        <Box role="presentation" onKeyDown={toggleDrawer(false)}>
+
+                            <Box className='drawer'>
+
+                                <Box className='sidebar-top'>
+                                    <Box className='filters'>Filters</Box>
+                                    <button onClick={reset} className='reset'>Reset All</button>
+                                </Box>
+
+                                {/* Data Source Indicator */}
+                                <Box sx={{ px: 2, py: 1, fontSize: '0.8rem', color: '#666', borderBottom: '1px solid #eee' }}>
+                                    {loading ? (
+                                        <span>🔄 Loading listings...</span>
+                                    ) : dataSource === 'api' ? (
+                                        <span>✅ Live data ({products.length} listings)</span>
+                                    ) : (
+                                        <span>⚠️ Demo data ({products.length} listings)</span>
+                                    )}
+                                    {error && (
+                                        <div style={{ color: '#ff6b6b', fontSize: '0.75rem', marginTop: '4px' }}>
+                                            {error}
+                                            <button
+                                                onClick={fetchListings}
+                                                style={{
+                                                    marginLeft: '8px',
+                                                    padding: '2px 6px',
+                                                    fontSize: '0.7rem',
+                                                    backgroundColor: '#1976d2',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '3px',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                Retry
+                                            </button>
+                                        </div>
+                                    )}
+                                </Box>
+
+                                {/* Location Filter */}
+                                <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                    <ListSubheader onClick={() => setOpen(!open)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Location</Box>
+                                            <Box>
+                                                {open ? <ExpandLess /> : <ExpandMore />}
+                                            </Box>
+                                        </Box>
+                                    </ListSubheader>
+                                    <Collapse in={open}>
+                                        <List >
+                                            {location.map((location) => (
+                                                <ListItem key={location} sx={{ py: 0 }}>
+                                                    <FormControlLabel value={location} checked={selectedLocations.includes(location)}
+                                                        control={<Checkbox onChange={handleCheckboxChang4} />}
+                                                        label={<span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>{location}</span>} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Collapse>
+                                </Box>
+
+                                {/* Neighborhoods Filter */}
+                                <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                    <ListSubheader onClick={() => setOpen1(!open1)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Neighborhoods</Box>
+                                            <Box>
+                                                {open1 ? <ExpandLess /> : <ExpandMore />}
+                                            </Box>
+                                        </Box>
+                                    </ListSubheader>
+
+                                    <Collapse in={open1}>
+                                        <List>
+                                            {neighbourhood.map((location) => (
+                                                <ListItem key={location} sx={{ py: 0 }}>
+                                                    <FormControlLabel value={location} checked={selectedNeighborhoods.includes(location)}
+                                                        control={<Checkbox onChange={handleCheckboxChange} />}
+                                                        label={<span style={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>{location}</span>} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Collapse>
+                                </Box>
+
+                                <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                    <ListSubheader onClick={() => setOpen2(!open2)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Space Types</Box>
+                                            <Box> {open2 ? <ExpandLess /> : <ExpandMore />}</Box>
+                                        </Box>
+                                    </ListSubheader>
+
+                                    <Collapse in={open2}>
+                                        <List>
+                                            {spaceTypes.map((type) => (
+                                                <ListItem key={type} sx={{ py: 0 }}>
+                                                    <FormControlLabel value={type} checked={selectedspaceTypes.includes(type)}
+                                                        control={<Checkbox onChange={handleCheckboxChange1} />}
+                                                        label={<span style={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>{type}</span>} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Collapse>
+                                </Box>
+
+                                <Box sx={{ py: 2, borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                    <ListSubheader onClick={() => setOpen6(!open6)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Price Range</Box>
+                                            <Box> {open6 ? <ExpandLess /> : <ExpandMore />}</Box>
+                                        </Box>
+                                    </ListSubheader>
+
+                                    <Collapse in={open6} sx={{ px: 2 }}>
+                                        <Slider value={priceRange} onChange={(_, newValue) => setPriceRange(newValue as number[])}
+                                            valueLabelDisplay="off" min={1000} max={15000}
+                                            step={500} sx={{ color: 'black', '& .MuiSlider-thumb': { backgroundColor: 'black' } }} />
+
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                                            <span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>${priceRange[0]}</span>
+                                            <span style={{ fontSize: 'calc(1rem + 0.1vw)' }}>${priceRange[1]}</span>
+                                        </Box>
+
+                                        <Box sx={{ mt: 3 }}>
+                                            <select className="form-select" value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}
+                                                style={{ outline: 'none', boxShadow: 'none', border: '1px solid rgb(211, 210, 210)', fontSize: 'calc(1rem + 0.1vw)' }}>
+                                                <option value="week">Week</option>
+                                                <option value="month">Month</option>
+                                            </select>
+                                        </Box>
+                                    </Collapse>
+                                </Box>
+
+                                <Box sx={{ py: 3, borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                    <ListSubheader onClick={() => setOpen5(!open5)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Size</Box>
+                                            <Box> {open5 ? <ExpandLess /> : <ExpandMore />}</Box>
+                                        </Box>
+                                    </ListSubheader>
+
+                                    <Collapse in={open5}>
+                                        <Box className='sidebar-dimensions'>
+                                            <Box>
+                                                <Typography sx={{ mb: 0.5, fontSize: 'calc(0.9rem + 0.1vw)' }}>Width (ft)</Typography>
+                                                <Box sx={{
+                                                    display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgb(211, 210, 210)',
+                                                    padding: '0.3em', borderRadius: '0.4em'
+                                                }}>
+                                                    <TextField value={minWidth.toString()} onChange={(e) => setMinWidth(e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
+                                                        variant="outlined" size="small" sx={{ width: 80, border: 'none', '& fieldset': { border: 'none' } }} />
+                                                    <Stack sx={{ borderRadius: '0 4px 4px 0', backgroundColor: '#f5f5f5' }}>
+                                                        <IconButton onClick={() => setMinWidth(minWidth + 1)} size="small"
+                                                            sx={{ p: 0, borderRadius: 0, borderBottom: '1px solid #d3d2d2' }}>
+                                                            <KeyboardArrowUp fontSize="small" />
+                                                        </IconButton>
+                                                        <IconButton onClick={() => setMinWidth(Math.max(0, minWidth - 1))} size="small" sx={{ p: 0, borderRadius: 0 }}>
+                                                            <KeyboardArrowDown fontSize="small" />
+                                                        </IconButton>
+                                                    </Stack>
+                                                </Box>
+                                            </Box>
+
+                                            <Box>
+                                                <Typography sx={{ mb: 0.5, fontSize: 'calc(0.9rem + 0.1vw)' }}>Height (ft)</Typography>
+                                                <Box sx={{
+                                                    display: 'flex', alignItems: 'center', width: 'fit-content', border: '1px solid rgb(211, 210, 210)',
+                                                    padding: '0.3em', borderRadius: '0.4em'
+                                                }}>
+                                                    <TextField value={minHeight.toString()} onChange={(e) => setMinHeight(e.target.value === '' ? 0 : parseInt(e.target.value) || 0)}
+                                                        variant="outlined" size="small" sx={{ width: 80, border: 'none', '& fieldset': { border: 'none' } }} />
+                                                    <Stack sx={{ backgroundColor: '#f5f5f5' }}>
+                                                        <IconButton onClick={() => setMinHeight(minHeight + 1)} size="small"
+                                                            sx={{ p: 0, borderRadius: 0, borderBottom: '1px solid #d3d2d2' }}>
+                                                            <KeyboardArrowUp fontSize="small" />
+                                                        </IconButton>
+                                                        <IconButton onClick={() => setMinHeight(Math.max(0, minHeight - 1))} size="small" sx={{ p: 0, borderRadius: 0 }}>
+                                                            <KeyboardArrowDown fontSize="small" />
+                                                        </IconButton>
+                                                    </Stack>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                    </Collapse>
+                                </Box>
+
+                                <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                    <ListSubheader onClick={() => setOpen3(!open3)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Traffic</Box>
+                                            <Box>{open3 ? <ExpandLess /> : <ExpandMore />}</Box>
+                                        </Box>
+                                    </ListSubheader>
+
+                                    <Collapse in={open3}>
+                                        <List>
+                                            {traffic.map((number) => (
+                                                <ListItem key={number} sx={{ py: 0 }}>
+                                                    <FormControlLabel value={number} checked={selectedTraffic.includes(number)}
+                                                        control={<Checkbox onChange={handleCheckboxChange2} />}
+                                                        label={<span style={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>{number}</span>} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+                                    </Collapse>
+                                </Box>
+
+                                <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                    <ListSubheader onClick={() => setOpen4(!open4)} sx={{ cursor: 'pointer' }}>
+                                        <Box className='sidebar-top'>
+                                            <Box className='sidebar-text'>Availability</Box>
+                                            <Box>{open4 ? <ExpandLess /> : <ExpandMore />}</Box>
+                                        </Box>
+                                    </ListSubheader>
+
+                                    <Collapse in={open4}>
+                                        <List>
+                                            {availability.map((date) => (
+                                                <ListItem key={date} sx={{ py: 0 }}>
+                                                    <FormControlLabel control={<Checkbox checked={selectedAvailability.includes('Immediately')} onChange={handleCheckboxChang3} />}
+                                                        label={<span style={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>{date}</span>} />
+                                                </ListItem>
+                                            ))}
+                                        </List>
+
+                                        <Box sx={{ px: 2 }}>
+                                            <Typography sx={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>Available From</Typography>
+                                            <Box sx={{ mb: 3 }}>
+                                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                                    <DatePicker value={calendarDate} onChange={(newValue: Date | null) => setcalendarDate(newValue)}
+                                                        slots={{ openPickerIcon: CalendarToday }}
+                                                        slotProps={{
+                                                            textField: {
+                                                                size: 'small', sx: {
+                                                                    width: '100%', '& .MuiOutlinedInput-root': {
+                                                                        borderRadius: '4px', '& fieldset': { borderColor: '#d3d2d2', },
+                                                                    },
+                                                                    '& .MuiInputBase-input': { py: 0.5, height: 'auto' },
+                                                                },
+                                                            },
+                                                            popper: { sx: { zIndex: 9999 } }
+                                                        }} />
+                                                </LocalizationProvider>
+                                            </Box>
+                                        </Box>
+                                    </Collapse>
+                                </Box>
+
+                                <Box sx={{ py: 2, display: 'flex', justifyContent: 'center' }}>
+                                    <button>Apply Filters</button>
+                                </Box>
+                            </Box>
+                        </Box>
+                    </Drawer>
+                </Box >
+
+
                 <Box className='sidebar'>
                     <Box className='sidebar-top'>
                         <Box className='filters'>Filters</Box>
@@ -433,11 +706,11 @@ function BrowseSpace() {
                         {error && (
                             <div style={{ color: '#ff6b6b', fontSize: '0.75rem', marginTop: '4px' }}>
                                 {error}
-                                <button 
+                                <button
                                     onClick={fetchListings}
-                                    style={{ 
-                                        marginLeft: '8px', 
-                                        padding: '2px 6px', 
+                                    style={{
+                                        marginLeft: '8px',
+                                        padding: '2px 6px',
                                         fontSize: '0.7rem',
                                         backgroundColor: '#1976d2',
                                         color: 'white',
@@ -529,7 +802,7 @@ function BrowseSpace() {
                         </ListSubheader>
 
                         <Collapse in={open6} sx={{ px: 2 }}>
-                            <Slider value={priceRange} onChange={(_, newValue) => setPriceRange(newValue as number[])} 
+                            <Slider value={priceRange} onChange={(_, newValue) => setPriceRange(newValue as number[])}
                                 valueLabelDisplay="off" min={1000} max={15000}
                                 step={500} sx={{ color: 'black', '& .MuiSlider-thumb': { backgroundColor: 'black' } }} />
 
@@ -669,7 +942,13 @@ function BrowseSpace() {
                 </Box>
 
                 <Box className='main-content'>
-                    <Box className='content-heading'>Advertising Spaces in NYC</Box>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5em' }}>
+                        <i onClick={toggleDrawer(true)} className="bi bi-list drawer" style={{ zIndex: 1200, padding: 2, fontSize: '24px', cursor: 'pointer' }}></i>
+                        <Box className='content-heading'>Advertising Spaces in NYC</Box>
+
+                    </Box>
+
 
                     {/* Filter Chips */}
                     <Box sx={{ display: 'flex', gap: '0.5em', flexWrap: 'wrap', marginTop: '1em' }}>
@@ -758,26 +1037,40 @@ function BrowseSpace() {
                         )}
                     </Box>
 
-                    {/* Sorting Dropdown */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, mb: 2 }}>
-                        <Box sx={{ fontSize: 'calc(1rem + 0.5vh)', textAlign: 'left' }}>
-                            Showing {displayedItems.length} places matching your criteria
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2, mb: 2, flexWrap:'wrap' }}>
+                        <Box sx={{ fontSize: 'calc(1rem + 0.2vw)', textAlign: 'left', color: 'rgb(110, 109, 109)', fontWeight: '500', marginTop: '1em' }}>
+                            {
+                                itemsToDisplay.length === 0 ? (null) :
+                                    (
+                                        itemsToDisplay.length > 1 ? `Showing ${displayedItems.length} spaces matching your criteria` :
+                                            `Showing ${displayedItems.length} space matching your criteria`
+                                    )
+                            }
                         </Box>
-                        <Box className="dropdown show">
-                            <button className="btn dropdown-toggle droppy" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                {sortOption}
-                            </button>
-                            <ul className="dropdown-menu">
-                                {['Recommended', 'Newest First', 'Oldest'].map(option => (
-                                    <li key={option}>
-                                        <a className="dropdown-item" href="#" onClick={e => { e.preventDefault(); handleSortChange(option); }}>
-                                            {option}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </Box>
+
+
+
+                        {/* Sorting Dropdown */}
+                        {
+                            itemsToDisplay.length === 0 ? (null) : (<Box className="dropdown show">
+                                <button className="btn dropdown-toggle droppy" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {sortOption}
+                                </button>
+                                <ul className="dropdown-menu">
+                                    {['Recommended', 'Newest First', 'Oldest'].map(option => (
+                                        <li key={option}>
+                                            <a className="dropdown-item" href="#" onClick={e => { e.preventDefault(); handleSortChange(option); }}>
+                                                {option}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </Box>)
+                        }
                     </Box>
+
+
 
                     <Box className='cards'>
                         <Box className='car'>
@@ -794,18 +1087,19 @@ function BrowseSpace() {
                                     </Box>
                                 ))
                             ) : filteredItems.length === 0 && areFiltersActive ? (
-                                <p style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 'calc(1rem + 2vh)' }}>
+                                <p style={{ marginTop: '3em', display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 'calc(1rem + 1vw)' }}>
                                     No items match your selected filters. Try changing your filters.
                                 </p>
+
                             ) : (
                                 displayedItems.map((product) => {
                                     const currentPrice = getCurrentPrice(product);
                                     const priceLabel = selectedOption === "week" ? "/week" : "/month";
-                                    
+
                                     return (
                                         <Box key={product.id} className="card">
-                                            <img 
-                                                src={product.img} 
+                                            <img
+                                                src={product.img}
                                                 style={{ height: '15em', objectFit: 'cover' }}
                                                 alt={getBaseLocation(product.location)}
                                                 onError={(e) => {
@@ -846,11 +1140,11 @@ function BrowseSpace() {
                                                 </Box>
 
                                                 <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                                                    <button 
+                                                    <button className='DetailsButton'
                                                         style={{ width: '100%', fontSize: 'calc(0.7em + 0.1vw)' }}
                                                         onClick={() => handleViewDetails(product.id)}
                                                     >
-                                                        View Details
+                                                        <i className="bi bi-eye"></i> View Details
                                                     </button>
                                                 </Box>
                                             </Box>
@@ -865,32 +1159,28 @@ function BrowseSpace() {
                         <Box sx={{ mt: 4 }}>
                             <nav aria-label="Page navigation example">
                                 <ul style={{ display: 'flex', alignItems: 'center' }} className="pagination justify-content-center">
-                                    <li className="page-item" onClick={prevButton} tabIndex={-1}><i className="bi bi-arrow-left"></i></li>
-                                    <li className="page-item" onClick={nextButton} >
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.3em', width: '100%' }}>
+                                    <li className="page-item leftstyle" onClick={prevButton} ><i className="bi bi-arrow-left"></i></li>
+                                    <li className="page-item">
+                                        <Box sx={{ display: 'flex' }}>
                                             {pageNumbers.map((num) => {
                                                 return (
-                                                    <Box key={num}>
+                                                    <Box key={num} sx={{ padding: '0.2em' }}>
                                                         <Box>
-                                                            <button 
-                                                                className={`pageBtn ${currentPage === num ? 'active' : ''}`} 
-                                                                onClick={() => setCurrentPage(num)}
-                                                            >
-                                                                {num}
-                                                            </button>
+                                                            <button className={`pageBtn ${currentPage === num ? 'active' : ''}`}
+                                                                onClick={() => setCurrentPage(num)}>{num}</button>
                                                         </Box>
                                                     </Box>
                                                 );
                                             })}
                                         </Box>
                                     </li>
-                                    <li className="page-item" onClick={nextButton} ><i className="bi bi-arrow-right"></i></li>
+                                    <li className="page-item rightstyle" onClick={nextButton} ><i className="bi bi-arrow-right"></i></li>
                                 </ul>
                             </nav>
                         </Box>
                     )}
                 </Box>
-            </Box>
+            </Box >
         </>
     );
 }
