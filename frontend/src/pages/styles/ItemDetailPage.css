@@ -26,7 +26,6 @@
 .sidebaar {
   display: flex;
   flex-direction: column;
-  flex: 0 0 30%; /* Fixed 30% width */
   max-width: 30%;
   min-width: 280px; /* Minimum width to prevent sidebar from getting too narrow */
 }
@@ -111,7 +110,7 @@
 .icons:hover {
   background-color: #f3f3f3;
   color: #222;
-  border: none;
+  border: 1px solid rgb(211, 210, 210);
 }
 
 /* Ensure sections don't get too wide */

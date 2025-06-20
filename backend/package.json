@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "NODE_ENV=development nodemon --exec tsx src/index.ts",
-    "dev:prod": "NODE_ENV=production nodemon --exec tsx src/index.ts",
+    "dev": "cross-env NODE_ENV=development nodemon --exec tsx src/index.ts",
+    "dev:prod": "cross-env NODE_ENV=production nodemon --exec tsx src/index.ts",
     "build": "tsc",
     "build:watch": "tsc --watch",
     "type-check": "tsc --noEmit",
@@ -26,6 +26,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.16",
+    "cross-env": "^7.0.3",
     "nodemon": "^3.0.3",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.4",

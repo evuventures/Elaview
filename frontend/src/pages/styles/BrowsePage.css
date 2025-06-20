@@ -1,6 +1,5 @@
 .layout {
     display: flex;
-    margin-top: 3em;
     padding: 3em;
     gap: 1em;
     box-sizing: border-box;

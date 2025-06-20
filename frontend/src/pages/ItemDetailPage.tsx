@@ -327,7 +327,7 @@ export default function ItemDetailPage() {
   ];
 
   return (
-    <Box sx={{ marginTop: '4em' }}>
+    <Box sx={{ marginTop: '2em' }}>
       <div className="item-detail-container">
         {/* Top navigation */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '2em' }}>
