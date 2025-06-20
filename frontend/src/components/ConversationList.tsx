@@ -9,6 +9,7 @@ type Conversation = {
   renter_id: string;
   unread_by_landlord: number;
   unread_by_renter: number;
+  last_message_text: string;
 };
 
 type User = {
