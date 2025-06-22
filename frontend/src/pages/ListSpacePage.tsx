@@ -2,6 +2,13 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/SupabaseClient';
+import { 
+  categorizedSpaceTypes, 
+  betaCities, 
+  trafficEstimates, 
+  visibilityOptions, 
+  availableFeatures 
+} from '../constants/spaceTypes.ts';
 import './styles/ListSpacePage.css';
 
 interface ListingFormData {
@@ -11,22 +18,22 @@ interface ListingFormData {
   address_line1: string;
   address_line2: string;
   city: string;
+  state: string;
   zip_code: string;
   neighborhood: string;
-  borough: string;
   visibility: string;
   width_ft: string;
   height_ft: string;
   daily_foot_traffic: string;
   daily_vehicle_traffic: string;
   
-  // Step 2: Photos & Details (for future)
+  // Step 2: Photos & Details
   description: string;
   features: string[];
   primary_image: File | null;
   additional_images: File[];
   
-  // Step 3: Pricing & Availability (for future)
+  // Step 3: Pricing & Availability
   price_per_day: string;
   minimum_rental_days: string;
   maximum_rental_days: string;
@@ -47,10 +54,10 @@ const ListSpacePage: React.FC = () => {
     title: '',
     address_line1: '',
     address_line2: '',
-    city: 'New York',
+    city: Object.keys(betaCities)[0], // Default to first beta city
+    state: betaCities[Object.keys(betaCities)[0] as keyof typeof betaCities].state,
     zip_code: '',
     neighborhood: '',
-    borough: 'Manhattan',
     visibility: '',
     width_ft: '',
     height_ft: '',
@@ -82,10 +89,22 @@ const ListSpacePage: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Handle city change to update state and reset neighborhood
+    if (name === 'city') {
+      const selectedCity = betaCities[value as keyof typeof betaCities];
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        state: selectedCity?.state || '',
+        neighborhood: '' // Reset neighborhood when city changes
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSaveDraft = async () => {
@@ -113,9 +132,10 @@ const ListSpacePage: React.FC = () => {
         address_line1: formData.address_line1,
         address_line2: formData.address_line2,
         city: formData.city,
-        state: 'NY',
+        state: formData.state,
         postal_code: formData.zip_code,
         country: 'US',
+        neighborhood: formData.neighborhood,
         width_ft: parseFloat(formData.width_ft) || null,
         height_ft: parseFloat(formData.height_ft) || null,
         price_per_day: 0, // Default for draft
@@ -227,9 +247,10 @@ const ListSpacePage: React.FC = () => {
         address_line1: formData.address_line1,
         address_line2: formData.address_line2,
         city: formData.city,
-        state: 'NY',
+        state: formData.state,
         postal_code: formData.zip_code,
         country: 'US',
+        neighborhood: formData.neighborhood,
         width_ft: parseFloat(formData.width_ft) || null,
         height_ft: parseFloat(formData.height_ft) || null,
         price_per_day: parseFloat(formData.price_per_day) || 0,
@@ -266,60 +287,11 @@ const ListSpacePage: React.FC = () => {
     }
   };
 
-  const spaceTypes = [
-    'Wall',
-    'Window', 
-    'Billboard',
-    'Vehicle',
-    'Storefront',
-    'Rooftop',
-    'Queens',
-    'Other'
-  ];
-
-  const neighborhoods = [
-    'SoHo Building Hall',
-    'Times Square',
-    'Chelsea', 
-    'DUMBO',
-    'Williamsberg',
-    'Upper East Side',
-    'Upper West Side',
-    'Midtown',
-    'Lower East Side',
-    'Tribeca'
-  ];
-
-  const trafficEstimates = [
-    'Under 1,000 daily',
-    '1,000 - 5,000 daily',
-    '5,000 - 10,000 daily',
-    '10,000 - 15,000 daily',
-    '15,000 - 20,000 daily',
-    '20,000+ daily'
-  ];
-
-  const visibilityOptions = [
-    'High - Street Level',
-    'Medium - Elevated',
-    'Low - Partially Obstructed',
-    'Variable - Depends on Time'
-  ];
-
-  const availableFeatures = [
-    'High visibility from Broadway and Spring St',
-    'Unobstructed view from multiple angles',
-    'Professional installation available',
-    'Illuminated at night',
-    'Weather-resistant surface',
-    'Traffic analytics provided monthly',
-    'Digital display compatible',
-    'Easy access for installation',
-    'Parking available nearby',
-    'Security monitoring',
-    'Climate controlled access',
-    'Premium location'
-  ];
+  // Get neighborhoods for selected city
+  const getNeighborhoodsForCity = () => {
+    const cityData = betaCities[formData.city as keyof typeof betaCities];
+    return cityData?.neighborhoods || [];
+  };
 
   if (!user) {
     return <div>Loading...</div>;
@@ -328,21 +300,20 @@ const ListSpacePage: React.FC = () => {
   return (
     <div className="list-space-page">
       <button 
-            className="back-button"
-            onClick={() => navigate('/')}
-          >
-            ← Back to home
-          </button>
+        className="back-button"
+        onClick={() => navigate('/')}
+      >
+        ← Back to home
+      </button>
+      
       {/* Main Content */}
       <div className="list-space-container">
-        {/* Sticky Back Button */}
-
         <div className="page-title-section">
           <h1>List Your Advertising Space</h1>
           <p>Turn your unused building space into revenue with Elaview</p>
         </div>
 
-        {/* Step Indicators - Updated to match mockup */}
+        {/* Step Indicators */}
         <div className="step-indicators">
           <div className={`step ${currentStep >= 1 ? 'active' : ''} ${currentStep > 1 ? 'completed' : ''}`}>
             <div className="step-number-wrapper">
@@ -376,7 +347,7 @@ const ListSpacePage: React.FC = () => {
                 <h2>Basic Information</h2>
                 <p>Let's start with the essential details about your advertising space</p>
 
-                {/* Space Type */}
+                {/* Space Type - Enhanced with Categories */}
                 <div className="form-group">
                   <label htmlFor="space_type">Space Type</label>
                   <select
@@ -387,10 +358,15 @@ const ListSpacePage: React.FC = () => {
                     required
                   >
                     <option value="">Select space type</option>
-                    {spaceTypes.map(type => (
-                      <option key={type} value={type}>{type}</option>
+                    {categorizedSpaceTypes.map(({ category, types }) => (
+                      <optgroup key={category} label={category}>
+                        {types.map(type => (
+                          <option key={type} value={type}>{type}</option>
+                        ))}
+                      </optgroup>
                     ))}
                   </select>
+                  <small>Choose the category that best describes your advertising space</small>
                 </div>
 
                 {/* Title */}
@@ -400,7 +376,7 @@ const ListSpacePage: React.FC = () => {
                     type="text"
                     id="title"
                     name="title"
-                    placeholder="e.g., SoHo Building Wall, Times Square Window Display"
+                    placeholder="e.g., Downtown Billboard on Main Street, Tech District Digital Display"
                     value={formData.title}
                     onChange={handleInputChange}
                     required
@@ -408,7 +384,7 @@ const ListSpacePage: React.FC = () => {
                   <small>A clear, descriptive title helps advertisers find your space</small>
                 </div>
 
-                {/* Address Section */}
+                {/* Address Section - Updated for Beta Cities */}
                 <div className="address-section">
                   <div className="section-row">
                     <div className="form-group flex-2">
@@ -424,17 +400,16 @@ const ListSpacePage: React.FC = () => {
                       />
                     </div>
                     <div className="form-group flex-1">
-                      <label htmlFor="neighborhood">Neighborhood</label>
+                      <label htmlFor="city">City</label>
                       <select
-                        id="neighborhood"
-                        name="neighborhood"
-                        value={formData.neighborhood}
+                        id="city"
+                        name="city"
+                        value={formData.city}
                         onChange={handleInputChange}
                         required
                       >
-                        <option value="">Select neighborhood</option>
-                        {neighborhoods.map(hood => (
-                          <option key={hood} value={hood}>{hood}</option>
+                        {Object.keys(betaCities).map(city => (
+                          <option key={city} value={city}>{city}</option>
                         ))}
                       </select>
                     </div>
@@ -452,18 +427,18 @@ const ListSpacePage: React.FC = () => {
                       />
                     </div>
                     <div className="form-group flex-1">
-                      <label htmlFor="borough">Borough</label>
+                      <label htmlFor="neighborhood">Neighborhood/District</label>
                       <select
-                        id="borough"
-                        name="borough"
-                        value={formData.borough}
+                        id="neighborhood"
+                        name="neighborhood"
+                        value={formData.neighborhood}
                         onChange={handleInputChange}
+                        required
                       >
-                        <option value="Manhattan">Manhattan</option>
-                        <option value="Brooklyn">Brooklyn</option>
-                        <option value="Queens">Queens</option>
-                        <option value="Bronx">Bronx</option>
-                        <option value="Staten Island">Staten Island</option>
+                        <option value="">Select neighborhood</option>
+                        {getNeighborhoodsForCity().map(hood => (
+                          <option key={hood} value={hood}>{hood}</option>
+                        ))}
                       </select>
                     </div>
                     <div className="form-group flex-1">
@@ -474,7 +449,7 @@ const ListSpacePage: React.FC = () => {
                         value={formData.visibility}
                         onChange={handleInputChange}
                       >
-                        <option value="">Select</option>
+                        <option value="">Select visibility level</option>
                         {visibilityOptions.map(option => (
                           <option key={option} value={option}>{option}</option>
                         ))}
@@ -484,14 +459,18 @@ const ListSpacePage: React.FC = () => {
 
                   <div className="section-row">
                     <div className="form-group flex-1">
+                      <label htmlFor="state">State</label>
                       <input
                         type="text"
-                        value="New York"
+                        id="state"
+                        name="state"
+                        value={formData.state}
                         disabled
                         className="disabled-input"
                       />
                     </div>
                     <div className="form-group flex-1">
+                      <label htmlFor="zip_code">ZIP Code</label>
                       <input
                         type="text"
                         id="zip_code"
@@ -555,6 +534,7 @@ const ListSpacePage: React.FC = () => {
                       </select>
                     </div>
                   </div>
+                  <small>Accurate dimensions help advertisers determine if your space fits their needs</small>
                 </div>
 
                 {/* Estimated Traffic */}
@@ -590,7 +570,7 @@ const ListSpacePage: React.FC = () => {
                       </select>
                     </div>
                   </div>
-                  <small>Don't worry if you don't have exact numbers. We can help estimate based on location.</small>
+                  <small>Don't worry if you don't have exact numbers. Our AI will help estimate based on location.</small>
                 </div>
               </>
             )}
@@ -701,7 +681,7 @@ const ListSpacePage: React.FC = () => {
                   <small>A detailed description helps advertisers understand the value of your space</small>
                 </div>
 
-                {/* Features */}
+                {/* Features - Enhanced */}
                 <div className="features-section">
                   <h3>Features & Amenities</h3>
                   <p>Select all features that apply to your advertising space</p>
@@ -948,22 +928,22 @@ const ListSpacePage: React.FC = () => {
           <div className="benefits-grid">
             <div className="benefit">
               <div className="benefit-wrapper">
-              <div className="benefit-icon">💰</div>
-              <h3>Maximize Revenue</h3>
+                <div className="benefit-icon">💰</div>
+                <h3>Maximize Revenue</h3>
               </div>
               <p>Turn unused space into a steady income stream with competitive market rates.</p>
             </div>
             <div className="benefit">
-            <div className="benefit-wrapper">
-              <div className="benefit-icon">🎯</div>
-              <h3>Targeted Exposure</h3>
+              <div className="benefit-wrapper">
+                <div className="benefit-icon">🎯</div>
+                <h3>Targeted Exposure</h3>
               </div>
               <p>Connect with quality advertisers looking specifically for spaces like yours.</p>
             </div>
             <div className="benefit">
-            <div className="benefit-wrapper">
-              <div className="benefit-icon">📋</div>
-              <h3>Simple Process</h3>
+              <div className="benefit-wrapper">
+                <div className="benefit-icon">📋</div>
+                <h3>Simple Process</h3>
               </div>
               <p>We handle the paperwork, payments, and provide support throughout the process.</p>
             </div>

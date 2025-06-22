@@ -1,5 +1,6 @@
 import './App.css';
-import Header from './partials/Header';
+// Remove old Header import and use the new ElaviewHeader
+import ElaviewHeader from './partials/ElaviewHeader';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import ListSpacePage from './pages/ListSpacePage';
 import SignIn from './pages/SignInPage';
@@ -15,11 +16,11 @@ import BrowseSpace from './pages/BrowsePage.js';
 import ProfilePage from './pages/ProfilePage.js';
 import MessagingPage from './pages/MessagingPage.js';
 import LandlordDashboard from './pages/LandlordDashboard';
-import RenterDashboard from './pages/RenterDashboard'; // NEW: Added RenterDashboard import
-import SimplifiedAdminPanel from './partials/SimplifiedAdminPanel.js'
+import RenterDashboard from './pages/RenterDashboard';
+import SimplifiedAdminPanel from './partials/SimplifiedAdminPanel.js';
 import { useEffect, useState } from 'react';
 import { supabase } from './utils/SupabaseClient';
-import { User } from '@supabase/supabase-js';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 
 function App() {
   const location = useLocation();
@@ -27,7 +28,8 @@ function App() {
 
   return (
     <>
-      {!hideHeaderFooter && <Header />}
+      {/* Use the new AI-powered ElaviewHeader instead of old Header */}
+      {!hideHeaderFooter && <ElaviewHeader />}
       
       <Routes>
         {/* Public routes - no authentication required */}
@@ -58,6 +60,13 @@ function App() {
           </ProtectedRoute> 
         } />
 
+        {/* Dashboard routes */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute requireOnboarding={true}>
+            <DashboardRedirect />
+          </ProtectedRoute>
+        } />
+
         {/* Landlord Dashboard - landlord specific route */}
         <Route path="/landlord-dashboard" element={
           <ProtectedRoute requireRole="landlord" requireOnboarding={true}>
@@ -65,7 +74,7 @@ function App() {
           </ProtectedRoute>
         } />
 
-        {/* NEW: Renter Dashboard - renter specific route */}
+        {/* Renter Dashboard - renter specific route */}
         <Route path="/renter-dashboard" element={
           <ProtectedRoute requireRole="renter" requireOnboarding={true}>
             <RenterDashboard />
@@ -78,6 +87,76 @@ function App() {
         <Route path="/messaging" element={
           <ProtectedRoute requireOnboarding={true}>
             <MessagingPageWrapper />
+          </ProtectedRoute>
+        } />
+
+        {/* Additional routes for AI-powered header functionality */}
+        <Route path="/messages" element={
+          <ProtectedRoute requireOnboarding={true}>
+            <MessagingPageWrapper />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/campaigns" element={
+          <ProtectedRoute requireRole="renter" requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>My Campaigns</h2>
+              <p>Coming soon - view and manage your advertising campaigns</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/saved-searches" element={
+          <ProtectedRoute requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Saved Searches</h2>
+              <p>Coming soon - view your saved search criteria and get alerts</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/settings" element={
+          <ProtectedRoute requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Account Settings</h2>
+              <p>Coming soon - manage your account preferences and settings</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/become-landlord" element={
+          <ProtectedRoute requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Become a Landlord</h2>
+              <p>Coming soon - upgrade your account to start listing spaces</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/refer" element={
+          <ProtectedRoute requireOnboarding={true}>
+            <div style={{ padding: '2rem', textAlign: 'center' }}>
+              <h2>Refer a Friend</h2>
+              <p>Coming soon - invite friends and earn referral bonuses</p>
+              <button onClick={() => window.history.back()}>← Back</button>
+            </div>
+          </ProtectedRoute>
+        } />
+
+        {/* Role switching routes */}
+        <Route path="/switch-to-renter" element={
+          <ProtectedRoute requireOnboarding={true}>
+            <RoleSwitchHandler targetRole="renter" />
+          </ProtectedRoute>
+        } />
+
+        <Route path="/switch-to-landlord" element={
+          <ProtectedRoute requireOnboarding={true}>
+            <RoleSwitchHandler targetRole="landlord" />
           </ProtectedRoute>
         } />
 
@@ -122,7 +201,7 @@ function App() {
           </ProtectedRoute>
         } />
 
-        {/* NEW: Future renter-specific routes */}
+        {/* Renter-specific routes */}
         <Route path="/booking/:bookingId" element={
           <ProtectedRoute requireRole="renter" requireOnboarding={true}>
             <div style={{ padding: '2rem', textAlign: 'center' }}>
@@ -169,8 +248,113 @@ function App() {
   )
 }
 
+// Dashboard redirect component to send users to appropriate dashboard
+function DashboardRedirect() {
+  const [userProfile, setUserProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('role, sub_role')
+            .eq('id', user.id)
+            .single();
+          
+          setUserProfile(profile);
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  useEffect(() => {
+    if (!loading && userProfile) {
+      const effectiveRole = userProfile.role === 'admin' && userProfile.sub_role 
+        ? userProfile.sub_role 
+        : userProfile.role;
+      
+      if (effectiveRole === 'landlord' || effectiveRole === 'admin') {
+        window.location.href = '/landlord-dashboard';
+      } else if (effectiveRole === 'renter') {
+        window.location.href = '/renter-dashboard';
+      }
+    }
+  }, [loading, userProfile]);
+
+  if (loading) {
+    return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>;
+  }
+
+  return (
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <h2>Redirecting to Dashboard...</h2>
+    </div>
+  );
+}
+
+// Role switching component
+function RoleSwitchHandler({ targetRole }: { targetRole: 'renter' | 'landlord' }) {
+  const [switching, setSwitching] = useState(false);
+
+  useEffect(() => {
+    const handleRoleSwitch = async () => {
+      setSwitching(true);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          // Update user's sub_role for admin users, or main role for others
+          const { data: currentProfile } = await supabase
+            .from('user_profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+
+          if (currentProfile?.role === 'admin') {
+            // Admin users switch via sub_role
+            await supabase
+              .from('user_profiles')
+              .update({ sub_role: targetRole })
+              .eq('id', user.id);
+          } else {
+            // Regular users switch main role
+            await supabase
+              .from('user_profiles')
+              .update({ role: targetRole })
+              .eq('id', user.id);
+          }
+
+          // Redirect to appropriate dashboard
+          window.location.href = targetRole === 'landlord' ? '/landlord-dashboard' : '/renter-dashboard';
+        }
+      } catch (error) {
+        console.error('Error switching role:', error);
+      } finally {
+        setSwitching(false);
+      }
+    };
+
+    handleRoleSwitch();
+  }, [targetRole]);
+
+  return (
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <h2>Switching to {targetRole === 'landlord' ? 'Landlord' : 'Advertiser'} Mode...</h2>
+      {switching && <p>Please wait...</p>}
+    </div>
+  );
+}
+
 function MessagingPageWrapper() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
 
   useEffect(() => {
     const getUser = async () => {

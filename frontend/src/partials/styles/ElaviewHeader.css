@@ -1,0 +1,354 @@
+/* frontend/src/components/Header/Header.css */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: relative;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-button {
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+  display: inline-block;
+}
+
+/* Browse Spaces - black text, white background, no border */
+.browse-btn {
+  background-color: white;
+  color: black;
+  border: none;
+}
+
+.browse-btn:hover {
+  background-color: #f9fafb;
+  color: black;
+}
+
+/* Action buttons (List Your Space / View Bookings) - white background, thin dark border, black text */
+.action-btn {
+  background-color: white;
+  color: black;
+  border: 1px solid #374151;
+}
+
+.action-btn:hover {
+  background-color: #f9fafb;
+  color: black;
+  border-color: #111827;
+}
+
+/* Sign In button - black background, no border, white text */
+.signin-btn {
+  background-color: black;
+  color: white;
+  border: none;
+}
+
+.signin-btn:hover {
+  background-color: #374151;
+  color: white;
+}
+
+/* Regular navigation buttons (Messages, Profile) */
+.nav-button:not(.browse-btn):not(.action-btn):not(.signin-btn):not(.admin-btn) {
+  background-color: white;
+  color: black;
+  border: none;
+}
+
+.nav-button:not(.browse-btn):not(.action-btn):not(.signin-btn):not(.admin-btn):hover {
+  background-color: #f3f4f6;
+}
+
+/* Admin button */
+.admin-btn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+}
+
+.admin-btn:hover {
+  background-color: #2563eb;
+  color: white;
+}
+
+/* Loading state */
+.nav-loading {
+  color: #6b7280;
+  font-size: 14px;
+  padding: 0.5rem 1rem;
+}
+
+/* Search container improvements */
+.search-container {
+  position: relative;
+  flex: 1;
+  max-width: 768px;
+  margin: 0 2rem;
+}
+
+/* AI suggestions dropdown */
+.ai-suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+
+.ai-suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: none;
+  width: 100%;
+  text-align: left;
+  background: none;
+}
+
+.ai-suggestion-item:hover {
+  background-color: #f9fafb;
+}
+
+.ai-suggestion-icon {
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.ai-suggestion-content {
+  flex: 1;
+}
+
+.ai-suggestion-title {
+  font-weight: 500;
+  color: #111827;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.ai-suggestion-description {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.ai-suggestion-score {
+  color: #3b82f6;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* User profile dropdown */
+.user-profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 8px;
+  width: 256px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 50;
+}
+
+.user-profile-header {
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.user-profile-name {
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.user-profile-role {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.user-profile-menu {
+  padding: 8px;
+}
+
+.user-profile-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  color: #374151;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.user-profile-menu-item:hover {
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+.user-profile-menu-item.danger {
+  color: #dc2626;
+}
+
+.user-profile-menu-item.danger:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+.user-profile-menu-section {
+  border-top: 1px solid #f3f4f6;
+  padding: 8px;
+}
+
+/* Notification badges */
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Quick filter bar */
+.quick-filter-bar {
+  background-color: #f9fafb;
+  border-top: 1px solid #f3f4f6;
+  padding: 12px 24px;
+}
+
+.quick-filter-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.quick-filter-items {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.quick-filter-label {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.quick-filter-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.quick-filter-link:hover {
+  color: #1d4ed8;
+}
+
+/* Dev mode indicator */
+.dev-mode-indicator {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 0 0 8px 8px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 1024px) {
+  .nav-links {
+    display: none;
+  }
+  
+  .search-container {
+    margin: 0 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+  }
+  
+  .search-container {
+    margin: 0 0.5rem;
+  }
+  
+  .quick-filter-container {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .quick-filter-items {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.75rem;
+  }
+  
+  .user-profile-dropdown {
+    width: 240px;
+    right: -40px;
+  }
+  
+  .quick-filter-items {
+    gap: 8px;
+  }
+  
+  .quick-filter-link {
+    font-size: 13px;
+  }
+}
