@@ -68,7 +68,7 @@ function SignUp() {
       }
 
       // Step 3: Sign in the user automatically
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });

@@ -22,7 +22,7 @@ interface AdminPanelState {
 const SimplifiedAdminPanel: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const mountTimeRef = useRef<number>(Date.now());
+  // const mountTimeRef = useRef<number>(Date.now());
   const lastCheckRef = useRef<number>(0);
   const checkTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
   
@@ -33,7 +33,7 @@ const SimplifiedAdminPanel: React.FC = () => {
     onlineAdmins: []
   });
 
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [devMode, setDevMode] = useState(false);
 

@@ -177,9 +177,9 @@ const LandlordDashboard: React.FC = () => {
       }
 
       // Calculate basic stats from available data
-      const totalViews = listings?.reduce((sum, l) => sum + (l.view_count || 0), 0) || 0;
+      // const totalViews = listings?.reduce((sum, l) => sum + (l.view_count || 0), 0) || 0;
       const totalInquiries = listings?.reduce((sum, l) => sum + (l.inquiry_count || 0), 0) || 0;
-      const totalBookings = listings?.reduce((sum, l) => sum + (l.booking_count || 0), 0) || 0;
+      // const totalBookings = listings?.reduce((sum, l) => sum + (l.booking_count || 0), 0) || 0;
       const mostViewed = listings?.sort((a, b) => (b.view_count || 0) - (a.view_count || 0))[0];
 
       // Try to get monthly inquiries with fallback

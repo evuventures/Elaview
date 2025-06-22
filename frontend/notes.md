@@ -1,0 +1,1 @@
+need login redirect to go to /, not /profile
