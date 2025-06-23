@@ -4,7 +4,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: #F6F6FD;
   min-height: 100vh;
 }
 
@@ -47,8 +47,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Stats Grid */
@@ -57,6 +62,14 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-bottom: 3rem;
+  margin: 0 auto 3rem auto;
+  /* center the grid container */
+  justify-content: center;
+  /* center grid items if possible */
+  max-width: 650px;
+  /* ⬅️ limit total grid width */
+  padding: 0 1rem;
+  /* ⬅️ optional: add breathing room on small screens */
 }
 
 .stat-card {
@@ -69,6 +82,7 @@
   align-items: center;
   gap: 1rem;
   transition: transform 0.2s, box-shadow 0.2s;
+  max-width: 100%;
 }
 
 .stat-card:hover {
@@ -88,7 +102,7 @@
 .stat-content h3 {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #666;
+  color: #000000;
   margin: 0 0 0.5rem 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -145,11 +159,12 @@
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid #e5e7eb;
+  text-align: left;
 }
 
 .section-header {
   display: flex;
-  justify-content: between;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
   border-bottom: 1px solid #e5e7eb;
@@ -169,7 +184,11 @@
 }
 
 /* Buttons */
-.btn-primary, .btn-secondary, .btn-action, .btn-toggle, .btn-edit {
+.btn-primary,
+.btn-secondary,
+.btn-action,
+.btn-toggle,
+.btn-edit {
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: 500;
@@ -180,21 +199,22 @@
   text-decoration: none;
   display: inline-block;
   text-align: center;
+
 }
 
 .btn-primary {
-  background-color: #2e7d32;
-  color: white;
+  background-color: #DABFFF;
+  color: rgb(0, 0, 0);
 }
 
 .btn-primary:hover {
-  background-color: #1b5e20;
+  background-color: #DABFFF;
   transform: translateY(-1px);
 }
 
 .btn-secondary {
   background-color: #f5f5f5;
-  color: #333;
+  color: #000000;
   border: 1px solid #ddd;
 }
 
@@ -536,7 +556,7 @@
   .dashboard-content {
     grid-template-columns: 1fr;
   }
-  
+
   .stats-grid {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
@@ -546,35 +566,35 @@
   .landlord-dashboard {
     padding: 1rem;
   }
-  
+
   .dashboard-header h1 {
     font-size: 2rem;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .listings-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .section-actions {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   .message-thread {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .thread-actions {
     flex-direction: row;
     justify-content: space-between;
