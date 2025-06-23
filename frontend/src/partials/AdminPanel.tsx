@@ -465,6 +465,7 @@ const SimplifiedAdminPanel: React.FC = () => {
                 </div>
               </div>
 
+
               {/* Online Admins */}
               {state.onlineAdmins.length > 0 && (
                 <div style={{ marginBottom: '32px' }}>

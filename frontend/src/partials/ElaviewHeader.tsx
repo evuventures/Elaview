@@ -91,13 +91,12 @@ const ElaviewHeader = () => {
     );
   };
 
-  // Fetch user profile from database
   const fetchUserProfile = async (userId: string) => {
     if (profileLoading) {
       console.log('🔍 Header: Profile fetch already in progress, skipping');
       return;
     }
-
+  
     console.log('🔍 Header: Starting fetchUserProfile for:', userId);
     setProfileLoading(true);
     
@@ -107,22 +106,43 @@ const ElaviewHeader = () => {
         .select('id, role, sub_role, onboarding_completed, is_active')
         .eq('id', userId)
         .single();
-
+  
       console.log('🔍 Header: Profile query result:', { profile, error });
-
+  
       if (error) {
         console.error('❌ Header: Error fetching user profile:', error);
         // Create fallback admin profile for development
         const fallbackProfile: UserProfile = {
           id: userId,
           role: 'admin',
-          sub_role: null,
+          sub_role: 'renter', // Default to renter
           onboarding_completed: true,
           is_active: true
         };
         setUserProfile(fallbackProfile);
       } else {
         console.log('✅ Header: Profile fetched successfully:', profile);
+        
+        // If this is an admin user without a sub_role, set it to renter by default
+        if (profile.role === 'admin' && !profile.sub_role) {
+          console.log('🔍 Header: Admin user without sub_role, setting default to renter');
+          
+          const { error: updateError } = await supabase
+            .from('user_profiles')
+            .update({ 
+              sub_role: 'renter',
+              updated_at: new Date().toISOString() 
+            })
+            .eq('id', userId);
+  
+          if (updateError) {
+            console.error('❌ Header: Failed to set default sub_role:', updateError);
+          }
+  
+          // Update the profile object with the default sub_role
+          profile.sub_role = 'renter';
+        }
+        
         setUserProfile(profile);
       }
     } catch (error) {
@@ -131,7 +151,7 @@ const ElaviewHeader = () => {
       const fallbackProfile: UserProfile = {
         id: userId,
         role: 'admin',
-        sub_role: null,
+        sub_role: 'renter', // Default to renter
         onboarding_completed: true,
         is_active: true
       };
@@ -240,22 +260,23 @@ const ElaviewHeader = () => {
     if (devMode) {
       return 'dev'; // Special case for dev mode
     }
-
+  
     // If not authenticated, always show guest navigation
     if (!user) {
       return null;
     }
-
+  
     // If user profile not loaded yet
     if (!userProfile) {
       return null;
     }
-
-    // For normal users, use their actual role
-    if (userProfile.role === 'admin' && userProfile.sub_role) {
-      return userProfile.sub_role;
+  
+    // For admin users, use sub_role (default to renter if sub_role is null/undefined)
+    if (userProfile.role === 'admin') {
+      return userProfile.sub_role || 'renter';
     }
     
+    // For normal users, use their actual role
     return userProfile.role;
   };
 
@@ -298,68 +319,64 @@ const ElaviewHeader = () => {
   console.log('🔍 Header: Current effective role:', effectiveRole, 'Dev mode:', devMode);
 
   // Center navigation based on role
-  const getCenterNavigation = () => {
-    // Dev mode - show special navigation with both dashboards
-    if (devMode) {
-      console.log('🔍 Header: Showing dev mode navigation');
-      return (
-        <>
-          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-          <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard (L)</Link>
-          <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard (R)</Link>
-          <Link to="/list" className="nav-button">Add Listing</Link>
-        </>
-      );
-    }
+  // Replace the getCenterNavigation function in ElaviewHeader.tsx with this:
 
-    // Guest mode or unauthenticated user
-    if (!user || effectiveRole === null) {
-      console.log('🔍 Header: Showing unauthenticated navigation');
-      return (
+const getCenterNavigation = () => {
+  // Dev mode - show special navigation with both dashboards
+  if (devMode) {
+    console.log('🔍 Header: Showing dev mode navigation');
+    return (
+      <>
         <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-      );
-    }
+        <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard (L)</Link>
+        <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard (R)</Link>
+        <Link to="/list" className="nav-button">Add Listing</Link>
+      </>
+    );
+  }
 
-    // Profile is loading
-    if (profileLoading) {
-      console.log('🔍 Header: Profile loading, showing minimal navigation');
-      return (
-        <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-      );
-    }
-
-    console.log('🔍 Header: Showing role-based navigation for:', effectiveRole);
-
-    // Role-specific navigation
-    if (effectiveRole === 'renter') {
-      return (
-        <>
-          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-          <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard</Link>
-        </>
-      );
-    } else if (effectiveRole === 'landlord') {
-      return (
-        <>
-          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-          <Link to="/list" className="nav-button action-btn">New Listing</Link>
-          <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard</Link>
-        </>
-      );
-    } else if (effectiveRole === 'admin') {
-      return (
-        <>
-          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-          <Link to="/list" className="nav-button action-btn">New Listing</Link>
-          <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard</Link>
-        </>
-      );
-    }
-
+  // Guest mode or unauthenticated user
+  if (!user || effectiveRole === null) {
+    console.log('🔍 Header: Showing unauthenticated navigation');
     return (
       <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
     );
-  };
+  }
+
+  // Profile is loading
+  if (profileLoading) {
+    console.log('🔍 Header: Profile loading, showing minimal navigation');
+    return (
+      <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+    );
+  }
+
+  console.log('🔍 Header: Showing role-based navigation for:', effectiveRole);
+
+  // Role-specific navigation
+  // Note: effectiveRole for admin users will be their sub_role ('renter' or 'landlord')
+  if (effectiveRole === 'renter') {
+    return (
+      <>
+        <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+        <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard</Link>
+      </>
+    );
+  } else if (effectiveRole === 'landlord') {
+    return (
+      <>
+        <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+        <Link to="/list" className="nav-button action-btn">New Listing</Link>
+        <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard</Link>
+      </>
+    );
+  }
+
+  // Fallback for any unexpected cases
+  return (
+    <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+  );
+};
 
   // Hamburger menu content based on auth state
   const getHamburgerMenuContent = () => {
@@ -447,27 +464,54 @@ const ElaviewHeader = () => {
             )}
 
             {/* Authenticated state */}
-            {user && (
-              <>
-                {/* Role-based text for authenticated users */}
-                {effectiveRole === 'renter' && (
-                  <Link to="/become-landlord" className="become-landlord-text">
-                    Become a Landlord
-                  </Link>
-                )}
-                {effectiveRole === 'landlord' && (
-                  <Link to="/switch-to-renter" className="become-landlord-text">
-                    Switch to Advertiser
-                  </Link>
-                )}
-                
-                <Link to="/profile" className="user-avatar-link">
-                  <div className="user-avatar">
-                    {mockUser.avatar}
-                  </div>
-                </Link>
-              </>
-            )}
+           
+{user && (
+  <>
+    {/* Role-based text for authenticated users */}
+    {(() => {
+      // For admin users, check their sub_role (default to renter if null)
+      if (userProfile?.role === 'admin') {
+        const currentSubRole = userProfile.sub_role || 'renter';
+        if (currentSubRole === 'renter') {
+          return (
+            <Link to="/become-landlord" className="become-landlord-text">
+              Switch to Landlord
+            </Link>
+          );
+        } else {
+          return (
+            <Link to="/switch-to-renter" className="become-landlord-text">
+              Switch to Advertiser
+            </Link>
+          );
+        }
+      }
+      
+      // For regular users
+      if (effectiveRole === 'renter') {
+        return (
+          <Link to="/become-landlord" className="become-landlord-text">
+            Become a Landlord
+          </Link>
+        );
+      } else if (effectiveRole === 'landlord') {
+        return (
+          <Link to="/switch-to-renter" className="become-landlord-text">
+            Switch to Advertiser
+          </Link>
+        );
+      }
+      
+      return null;
+    })()}
+    
+    <Link to="/profile" className="user-avatar-link">
+      <div className="user-avatar">
+        {mockUser.avatar}
+      </div>
+    </Link>
+  </>
+)}
 
             {/* Hamburger Menu */}
             <div className="hamburger-container">

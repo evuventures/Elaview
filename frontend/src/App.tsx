@@ -14,6 +14,7 @@ import AccountQuestionsForm from './partials/AccountQuestionsForm.js';
 import ProtectedRoute from './partials/ProtectedRoute.js';
 import BrowseSpace from './pages/BrowsePage.js';
 import ProfilePage from './pages/ProfilePage.js';
+import BecomeLandlordPage from './pages/BecomeLandlordPage';
 import MessagingPage from './pages/MessagingPage.js';
 import LandlordDashboard from './pages/LandlordDashboard';
 import RenterDashboard from './pages/RenterDashboard';
@@ -129,11 +130,7 @@ function App() {
 
         <Route path="/become-landlord" element={
           <ProtectedRoute requireOnboarding={true}>
-            <div style={{ padding: '2rem', textAlign: 'center' }}>
-              <h2>Become a Landlord</h2>
-              <p>Coming soon - upgrade your account to start listing spaces</p>
-              <button onClick={() => window.history.back()}>← Back</button>
-            </div>
+            <BecomeLandlordPage/>
           </ProtectedRoute>
         } />
 
@@ -302,41 +299,67 @@ function DashboardRedirect() {
 }
 
 // Role switching component
+// Replace the existing RoleSwitchHandler component in App.tsx with this:
+
 function RoleSwitchHandler({ targetRole }: { targetRole: 'renter' | 'landlord' }) {
   const [switching, setSwitching] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const handleRoleSwitch = async () => {
       setSwitching(true);
+      setError('');
+      
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          // Update user's sub_role for admin users, or main role for others
-          const { data: currentProfile } = await supabase
-            .from('user_profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single();
-
-          if (currentProfile?.role === 'admin') {
-            // Admin users switch via sub_role
-            await supabase
-              .from('user_profiles')
-              .update({ sub_role: targetRole })
-              .eq('id', user.id);
-          } else {
-            // Regular users switch main role
-            await supabase
-              .from('user_profiles')
-              .update({ role: targetRole })
-              .eq('id', user.id);
-          }
-
-          // Redirect to appropriate dashboard
-          window.location.href = targetRole === 'landlord' ? '/landlord-dashboard' : '/renter-dashboard';
+        if (!user) {
+          setError('User not authenticated');
+          return;
         }
+
+        // Get current user profile to determine if admin
+        const { data: currentProfile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('role, sub_role')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          setError('Failed to load user profile');
+          return;
+        }
+
+        let updateData: any = {
+          updated_at: new Date().toISOString()
+        };
+
+        if (currentProfile.role === 'admin') {
+          // Admin users: update sub_role
+          updateData.sub_role = targetRole;
+          console.log(`Admin switching sub_role to: ${targetRole}`);
+        } else {
+          // Regular users: update main role
+          updateData.role = targetRole;
+          console.log(`Regular user switching role to: ${targetRole}`);
+        }
+
+        const { error: updateError } = await supabase
+          .from('user_profiles')
+          .update(updateData)
+          .eq('id', user.id);
+
+        if (updateError) {
+          setError(`Failed to switch role: ${updateError.message}`);
+          return;
+        }
+
+        // Success! Redirect to appropriate dashboard
+        const dashboardPath = targetRole === 'landlord' ? '/landlord-dashboard' : '/renter-dashboard';
+        window.location.href = dashboardPath;
+
       } catch (error) {
         console.error('Error switching role:', error);
+        setError('An unexpected error occurred');
       } finally {
         setSwitching(false);
       }
@@ -345,10 +368,41 @@ function RoleSwitchHandler({ targetRole }: { targetRole: 'renter' | 'landlord' }
     handleRoleSwitch();
   }, [targetRole]);
 
+  if (error) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <h2>Role Switch Failed</h2>
+        <p style={{ color: 'red', marginBottom: '1rem' }}>{error}</p>
+        <button onClick={() => window.history.back()}>← Go Back</button>
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: '2rem', textAlign: 'center' }}>
       <h2>Switching to {targetRole === 'landlord' ? 'Landlord' : 'Advertiser'} Mode...</h2>
-      {switching && <p>Please wait...</p>}
+      {switching && (
+        <div>
+          <p>Please wait while we update your account...</p>
+          <div style={{ 
+            display: 'inline-block',
+            width: '20px',
+            height: '20px',
+            border: '2px solid #f3f3f3',
+            borderTop: '2px solid #3498db',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }} />
+        </div>
+      )}
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
     </div>
   );
 }

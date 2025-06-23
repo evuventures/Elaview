@@ -4,11 +4,12 @@ import { supabase } from '../utils/SupabaseClient.js';
 import { useNavigate } from 'react-router-dom';
 
 interface UserProfile {
-    id: string;
-    name: string;
-    email: string;
-    phone: string;
-    role: string;
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: string;
+  sub_role?: string | null;
 }
 
 export default function ProfilePage() {
@@ -39,7 +40,7 @@ export default function ProfilePage() {
           // First, try to find profile by user ID
           const { data: profileById, error: idError } = await supabase
             .from('user_profiles')
-            .select('id, name, email, phone, role')
+            .select('id, name, email, phone, role, sub_role')
             .eq('id', user.id);
   
           console.log('Profile by ID query:', { profileById, idError }); // Debug log
@@ -54,7 +55,7 @@ export default function ProfilePage() {
           // If no profile found by ID, try to find by email
           const { data: profileByEmail, error: emailError } = await supabase
             .from('user_profiles')
-            .select('id, name, email, phone, role')
+            .select('id, name, email, phone, role, sub_role')
             .eq('email', user.email);
 
           console.log('Profile by email query:', { profileByEmail, emailError }); // Debug log
@@ -70,7 +71,7 @@ export default function ProfilePage() {
                 updated_at: new Date().toISOString()
               })
               .eq('email', user.email)
-              .select('id, name, email, phone, role')
+              .select('id, name, email, phone, role, sub_role')
               .single();
 
             if (updateError) {
@@ -92,6 +93,7 @@ export default function ProfilePage() {
                   name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
                   phone: user.user_metadata?.phone || '',
                   role: 'renter',
+                  sub_role: null,
                   is_active: true,
                   is_verified: false,
                   phone_verified: false,
@@ -100,7 +102,7 @@ export default function ProfilePage() {
                   updated_at: new Date().toISOString(),
                 }
               ])
-              .select('id, name, email, phone, role')
+              .select('id, name, email, phone, role, sub_role')
               .single();
   
             if (createError) {
@@ -152,7 +154,7 @@ export default function ProfilePage() {
               updated_at: new Date().toISOString()
             })
             .eq('email', user.email)
-            .select('id, name, email, phone, role')
+            .select('id, name, email, phone, role, sub_role')
             .single();
 
           if (syncError) {
@@ -190,15 +192,22 @@ export default function ProfilePage() {
           setError('User not authenticated');
           return;
         }
+
+        let updateData: any = {
+          name: profile.name,
+          phone: profile.phone,
+          role: profile.role,
+          updated_at: new Date().toISOString(),
+        };
+
+        // Include sub_role for admin users
+        if (profile.role === 'admin') {
+          updateData.sub_role = profile.sub_role;
+        }
   
         const { error: updateError } = await supabase
           .from('user_profiles')
-          .update({
-            name: profile.name,
-            phone: profile.phone,
-            role: profile.role,
-            updated_at: new Date().toISOString(),
-          })
+          .update(updateData)
           .eq('id', user.id);
   
         if (updateError) {
@@ -312,8 +321,26 @@ export default function ProfilePage() {
               <select id="role" name="role" value={profile.role} onChange={handleChange}>
                 <option value="renter">Renter</option>
                 <option value="landlord">Landlord</option>
+                <option value="admin">Admin</option>
               </select>
             </div>
+
+            {/* Sub-role editing for admin users */}
+            {profile.role === 'admin' && (
+              <div className="form-group">
+                <label htmlFor="sub_role">Current Mode</label>
+                <select 
+                  id="sub_role" 
+                  name="sub_role" 
+                  value={profile.sub_role || 'renter'} 
+                  onChange={handleChange}
+                >
+                  <option value="renter">Renter Mode</option>
+                  <option value="landlord">Landlord Mode</option>
+                </select>
+                <small>As an admin, you can switch between renter and landlord modes</small>
+              </div>
+            )}
   
             <div className="form-actions">
               <button type="submit" className="save-btn">Save Changes</button>
@@ -334,9 +361,33 @@ export default function ProfilePage() {
               <div className="info-item">
                 <strong>Phone:</strong> {profile.phone || 'Not provided'}
               </div>
+              
+              {/* Enhanced Role Display */}
               <div className="info-item">
-                <strong>Role:</strong> {profile.role}
-              </div>
+  <strong>Account Type:</strong> {profile.role}
+  {profile.role === 'admin' && (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      backgroundColor: '#f3f4f6', 
+      borderRadius: '6px',
+      border: '1px solid #d1d5db',
+      marginLeft: '6px',
+      padding: '8px',
+      marginTop: '4px'
+    }}>
+      
+      <div style={{ 
+        fontSize: '16px', 
+        fontWeight: '600',
+        color: profile.sub_role === 'landlord' ? '#059669' : '#2563eb'
+      }}>
+        {profile.sub_role === 'landlord' ? '🏢 Landlord' : '🏠 Renter'}
+      </div>
+    </div>
+  )}
+</div>
+              
             </div>
             <button onClick={() => setEditing(true)} className="edit-btn">
               Edit Profile
@@ -357,4 +408,4 @@ export default function ProfilePage() {
         )}
       </div>
     );
-  }
+}
