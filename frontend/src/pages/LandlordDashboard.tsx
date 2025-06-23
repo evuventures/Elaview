@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/SupabaseClient';
 import './styles/LandlordDashboard.css';
+import { Box, Button, Card, CardContent, Chip, IconButton, Stack, Typography } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
 // TypeScript Interfaces matching your database structure
 interface DashboardStats {
@@ -54,6 +58,8 @@ const LandlordDashboard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentListings, setRecentListings] = useState<LandlordListing[]>([]);
+  const [activeListingsCount, setActiveListingsCount] = useState<number>(0);
+
   const [messageThreads, setMessageThreads] = useState<MessageThread[]>([]);
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -64,25 +70,25 @@ const LandlordDashboard: React.FC = () => {
 
   const loadDashboardData = async () => {
     console.log('🚀 Starting dashboard load...');
-    
+
     try {
       // Get current user
       console.log('🔍 Checking authentication...');
       const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
+
       if (authError) {
         console.error('❌ Auth error:', authError);
         setError('Authentication error: ' + authError.message);
         setLoading(false);
         return;
       }
-      
+
       if (!user) {
         console.log('❌ No user found, redirecting to signin');
         navigate('/signin');
         return;
       }
-      
+
       console.log('✅ User authenticated:', user.id);
       setUser(user);
 
@@ -93,16 +99,16 @@ const LandlordDashboard: React.FC = () => {
         .select('id, title, landlord_id')
         .eq('landlord_id', user.id)
         .limit(1);
-      
+
       if (testError) {
         console.error('❌ Test query error:', testError);
         setError('Database error: ' + testError.message);
         setLoading(false);
         return;
       }
-      
+
       console.log('✅ Test query success:', testListings);
-      
+
       if (!testListings || testListings.length === 0) {
         console.log('⚠️ No listings found for this user. Creating empty dashboard...');
         setStats({
@@ -122,12 +128,12 @@ const LandlordDashboard: React.FC = () => {
 
       // Load all dashboard data with proper error handling
       console.log('🔍 Loading dashboard data...');
-      
+
       // Load data sequentially with fallbacks
       await loadStats(user.id);
       await loadRecentListings(user.id);
       await loadMessageThreads(user.id);
-      
+
       console.log('✅ Dashboard data loaded successfully');
     } catch (error) {
       console.error('❌ Error loading dashboard:', error);
@@ -140,7 +146,7 @@ const LandlordDashboard: React.FC = () => {
 
   const loadStats = async (landlordId: string) => {
     console.log('📊 Loading stats for landlord:', landlordId);
-    
+
     try {
       // Use simpler queries with proper error handling
       const { data: listings, error: listingsError } = await supabase
@@ -163,7 +169,7 @@ const LandlordDashboard: React.FC = () => {
           .select('amount')
           .eq('landlord_id', landlordId)
           .eq('status', 'succeeded');
-        
+
         if (paymentsError) {
           console.log('⚠️ Payment transactions not accessible (this is OK):', paymentsError.message);
           totalEarnings = 0; // Default to 0 if table doesn't exist yet
@@ -239,7 +245,7 @@ const LandlordDashboard: React.FC = () => {
 
       console.log('✅ Calculated stats:', calculatedStats);
       setStats(calculatedStats);
-      
+
     } catch (error) {
       console.error('❌ Error in loadStats:', error);
       // Set default stats on error
@@ -257,7 +263,7 @@ const LandlordDashboard: React.FC = () => {
 
   const loadRecentListings = async (landlordId: string) => {
     console.log('🏠 Loading recent listings for landlord:', landlordId);
-    
+
     try {
       // Simplified query first - just get basic listing data
       const { data: listings, error: listingsError } = await supabase
@@ -327,6 +333,9 @@ const LandlordDashboard: React.FC = () => {
       }) || [];
 
       console.log('✅ Transformed listings:', transformedListings.length);
+      var activeListings = transformedListings.filter(l => l.status == 'active').length;
+
+      setActiveListingsCount(activeListings);
       setRecentListings(transformedListings);
     } catch (error) {
       console.error('❌ Error loading recent listings:', error);
@@ -336,7 +345,7 @@ const LandlordDashboard: React.FC = () => {
 
   const loadMessageThreads = async (landlordId: string) => {
     console.log('💬 Loading message threads for landlord:', landlordId);
-    
+
     try {
       // Try to load conversations with fallback to empty array
       const { data: conversations, error: conversationsError } = await supabase
@@ -388,12 +397,12 @@ const LandlordDashboard: React.FC = () => {
 
   const formatTimeAgo = (timestamp: string | null): string => {
     if (!timestamp) return 'No messages';
-    
+
     try {
       const now = new Date();
       const messageTime = new Date(timestamp);
       const diffInMinutes = Math.floor((now.getTime() - messageTime.getTime()) / (1000 * 60));
-      
+
       if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
       if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hours ago`;
       return `${Math.floor(diffInMinutes / 1440)} days ago`;
@@ -412,7 +421,7 @@ const LandlordDashboard: React.FC = () => {
 
   const toggleListingStatus = async (listingId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'paused' : 'active';
-    
+
     try {
       const { error } = await supabase
         .from('rental_listings')
@@ -447,17 +456,16 @@ const LandlordDashboard: React.FC = () => {
   return (
     <div className="landlord-dashboard">
       {/* Header Section */}
-      <div className="dashboard-header">
-        <h1>Welcome back, {user?.user_metadata?.name || 'Landlord'}!</h1>
-        <p className="dashboard-subtitle">Here's what's happening with your advertising spaces</p>
-      </div>
+      <Box textAlign='left'>
+        <h2>Dashboard</h2>
+      </Box>
 
       {/* Error Display */}
       {error && (
-        <div style={{ 
-          marginBottom: '2rem', 
-          padding: '1rem', 
-          background: '#ffebee', 
+        <div style={{
+          marginBottom: '2rem',
+          padding: '1rem',
+          background: '#ffebee',
           borderRadius: '8px',
           border: '1px solid #f5c6cb'
         }}>
@@ -465,46 +473,53 @@ const LandlordDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Stats Grid */}
-      <div className="stats-grid">
-        <div className="stat-card earnings-card">
-          <div className="stat-icon">💰</div>
-          <div className="stat-content">
-            <h3>Total Earnings</h3>
-            <p className="stat-value">${stats?.totalEarnings?.toLocaleString() || '0'}</p>
-            <span className={`trend-indicator ${stats?.revenuetrend || 'stable'}`}>
-              {stats?.revenuetrend === 'up' ? '↗️ +12%' : stats?.revenuetrend === 'down' ? '↘️ -5%' : '→ 0%'} from last month
-            </span>
-          </div>
-        </div>
 
+      <div className="stats-grid">
+
+        {/*
         <div className="stat-card">
-          <div className="stat-icon">📈</div>
+        
           <div className="stat-content">
             <h3>Monthly Inquiries</h3>
             <p className="stat-value">{stats?.monthlyInquiries || 0}</p>
             <span className="stat-subtitle">{stats?.activeInquiries || 0} pending response</span>
           </div>
-        </div>
+        </div> */}
 
+        {/*
         <div className="stat-card">
-          <div className="stat-icon">⏱️</div>
+     
           <div className="stat-content">
             <h3>Avg Response Time</h3>
             <p className="stat-value">{stats?.avgResponseTime || 'No data'}</p>
             <span className="stat-subtitle">Industry avg: 4.2 hours</span>
           </div>
         </div>
+          */}
 
         <div className="stat-card">
-          <div className="stat-icon">🏆</div>
+
           <div className="stat-content">
-            <h3>Most Viewed</h3>
-            <p className="stat-value-small">{stats?.mostViewedListing || 'No listings'}</p>
-            <span className="stat-subtitle">{stats?.totalListings || 0} total listings</span>
+            <h3>Active Listings</h3>
+            <span className="stat-value">{activeListingsCount || 0}</span>
+          </div>
+        </div>
+        <div className="stat-card earnings-card">
+
+          <div className="stat-content">
+            <h3>Total Earnings</h3>
+            <p className="stat-value">${stats?.totalEarnings?.toLocaleString() || '0'}</p>
+
+            {/*
+             //this is for stats
+            <span className={`trend-indicator ${stats?.revenuetrend || 'stable'}`}>
+              {stats?.revenuetrend === 'up' ? '↗️ +12%' : stats?.revenuetrend === 'down' ? '↘️ -5%' : '→ 0%'} from last month
+            </span>
+            */}
           </div>
         </div>
       </div>
+
 
       {/* Main Content Grid */}
       <div className="dashboard-content">
@@ -513,13 +528,13 @@ const LandlordDashboard: React.FC = () => {
           <div className="section-header">
             <h2>Your Listings</h2>
             <div className="section-actions">
-              <button 
+              <button
                 className="btn-secondary"
                 onClick={() => navigate('/browse')}
               >
                 View All
               </button>
-              <button 
+              <button
                 className="btn-primary"
                 onClick={() => navigate('/list')}
               >
@@ -528,91 +543,94 @@ const LandlordDashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="listings-grid">
+          <Box
+            sx={{
+
+              display: 'flex',
+              flexDirection: 'column',
+              gap: .5,              // More space between boxes
+              mt: '40px',
+              ml: '20px',
+              pr: '20px',
+
+            }}
+          >
             {recentListings.length > 0 ? (
               recentListings.map(listing => (
-                <div key={listing.id} className="listing-card">
-                  <div className="listing-image">
-                    <img 
-                      src={listing.primary_image_url || '/images/placeholder-space.jpg'} 
-                      alt={listing.title}
-                    />
-                    <div className="listing-status-badge">
-                      <span className={`status-dot ${listing.status}`}></span>
-                      {listing.status}
-                    </div>
-                    {listing.current_inquiry && (
-                      <div className="booking-indicator">
-                        {listing.current_inquiry.requires_content_approval ? (
-                          <span className="approval-needed">⚠️ Content Review</span>
-                        ) : listing.current_inquiry.status === 'pending' ? (
-                          <span className="inquiry-pending">🔔 New Inquiry</span>
-                        ) : (
-                          <span className="inquiry-active">✅ Active Inquiry</span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="listing-content">
-                    <h3>{listing.title}</h3>
-                    <p className="listing-type">{listing.type}</p>
-                    
-                    <div className="listing-stats">
-                      <div className="stat-item">
-                        <span className="stat-label">Visibility</span>
-                        <span className="visibility-score">{listing.visibility_score}</span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Views</span>
-                        <span>{listing.view_count}</span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Inquiries</span>
-                        <span>{listing.inquiry_count}</span>
-                      </div>
-                    </div>
 
-                    <div className="listing-actions">
-                      <button 
-                        className="btn-toggle"
-                        onClick={() => toggleListingStatus(listing.id, listing.status)}
-                      >
-                        {listing.status === 'active' ? 'Pause' : 'Activate'}
-                      </button>
-                      <button 
-                        className="btn-edit"
-                        onClick={() => navigate(`/edit-listing/${listing.id}`)}
-                      >
-                        Edit
-                      </button>
-                      <span className="listing-price">
-                        ${typeof listing.price_per_week === 'number' && listing.price_per_week > 0
-                          ? `${listing.price_per_week}/week`
-                          : `${listing.price_per_day}/day`}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <Card sx={{ bgcolor: '#F6F6FD' }}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', pl: '20px', pr: '20px' }}>
+                      <Box
+                        component="img"
+                        sx={{
+                          height: 233,
+                          width: 350,
+                          maxHeight: { xs: 233, md: 167 },
+                          maxWidth: { xs: 350, md: 250 },
+                        }}
+                        // alt={listing.title}
+                        src={listing.primary_image_url || '/images/brooklyn.png'}
+                      />
+
+                      <Stack >
+                        <Box>
+                          <Typography sx={{ fontWeight: 'bold' }}>{listing.title}</Typography>
+                        </Box>
+                        <Box>
+                          <Typography sx={{ color: '#797985' }}>{listing.address ? listing.address : "ABC street"}</Typography>
+                        </Box>
+
+                        <Box>
+                          <Typography>${listing.price_per_week ? listing.price_per_week + "/week" : listing.price_per_week + "/day"}</Typography>
+                        </Box>
+                      </Stack>
+
+                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Box>
+                          <Chip label={listing.status} sx={{ color: (listing.status == 'Active') ? '#2648B2' : '#226C40', backgroundColor: (listing.status == 'active') ? '#E7F1F3' : '#E5ECFA' }} />
+                        </Box>
+                        <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 1 }}>
+                          <TrendingUpIcon />
+                          <Typography sx={{ fontWeight: 'bold' }}>{listing.visibility_score}</Typography>
+                          <Typography>Visibility Score</Typography>
+                        </Box>
+                      </Box>
+
+                      <Box>
+                        <IconButton onClick={() => toggleListingStatus(listing.id, listing.status)} sx={{ color: 'black' }}>
+                          <DeleteIcon />
+                        </IconButton>
+
+                        <IconButton onClick={() => navigate(`/edit-listing/${listing.id}`)} sx={{ color: 'black' }}>
+                          <EditIcon />
+                        </IconButton>
+
+                      </Box>
+
+                    </Box>
+                  </CardContent>
+                </Card>
+
               ))
             ) : (
-              <div style={{ 
-                gridColumn: '1 / -1', 
-                textAlign: 'center', 
+              <div style={{
+                gridColumn: '1 / -1',
+                textAlign: 'center',
                 padding: '2rem',
                 color: '#666'
               }}>
                 <p>No listings found. <button className="btn-primary" onClick={() => navigate('/list')}>Create your first listing</button></p>
               </div>
             )}
-          </div>
+          </Box>
         </div>
 
         {/* Recent Messages Section */}
         <div className="dashboard-section messages-section">
           <div className="section-header">
             <h2>Recent Messages</h2>
-            <button 
+            <button
               className="btn-secondary"
               onClick={() => navigate('/messages')}
             >
@@ -623,13 +641,13 @@ const LandlordDashboard: React.FC = () => {
           <div className="messages-list">
             {messageThreads.length > 0 ? (
               messageThreads.map(thread => (
-                <div 
-                  key={thread.id} 
+                <div
+                  key={thread.id}
                   className={`message-thread ${thread.unread_by_landlord > 0 ? 'unread' : ''}`}
                 >
                   <div className="thread-avatar">
-                    <img 
-                      src={thread.renter_avatar || '/images/default-avatar.png'} 
+                    <img
+                      src={thread.renter_avatar || '/images/default-avatar.png'}
                       alt={thread.renter_name}
                     />
                     {thread.unread_by_landlord > 0 && (
@@ -644,11 +662,11 @@ const LandlordDashboard: React.FC = () => {
                     </div>
                     <p className="thread-listing">{thread.listing_title}</p>
                     <p className="thread-preview">{thread.last_message_text}</p>
-                    
+
                     {thread.requires_action && (
                       <div className="action-required">
                         {thread.action_type === 'content_approval' && (
-                          <button 
+                          <button
                             className="btn-action"
                             onClick={() => handleContentApproval(thread.id)}
                           >
@@ -656,7 +674,7 @@ const LandlordDashboard: React.FC = () => {
                           </button>
                         )}
                         {thread.action_type === 'inquiry_response' && (
-                          <button 
+                          <button
                             className="btn-action"
                             onClick={() => handleQuickReply(thread.conversation_id)}
                           >
@@ -668,7 +686,7 @@ const LandlordDashboard: React.FC = () => {
                   </div>
 
                   <div className="thread-actions">
-                    <button 
+                    <button
                       className="quick-reply-btn"
                       onClick={() => handleQuickReply(thread.conversation_id)}
                       title="Quick Reply"
@@ -682,8 +700,8 @@ const LandlordDashboard: React.FC = () => {
                 </div>
               ))
             ) : (
-              <div style={{ 
-                textAlign: 'center', 
+              <div style={{
+                textAlign: 'center',
                 padding: '2rem',
                 color: '#666'
               }}>
