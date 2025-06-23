@@ -244,7 +244,7 @@ const SimplifiedAdminPanel: React.FC = () => {
         onClick={togglePanel}
         style={{
           position: 'fixed',
-          top: '20px',
+          bottom: '20px',
           right: '20px',
           background: devMode 
             ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' 

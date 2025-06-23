@@ -1,10 +1,11 @@
 // frontend/src/partials/ElaviewHeader.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, MapPin, Calendar, Filter, MessageSquare, Bell, User as UserIcon, Menu, Sparkles, TrendingUp } from 'lucide-react';
+import { Search, MapPin, Calendar, Filter, MessageSquare, Bell, User as UserIcon, Menu, Sparkles, TrendingUp, Globe } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/SupabaseClient';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
-import './styles/Header.css'
+import logo from '../assets/logo.png';
+import './styles/ElaviewHeader.css'
 
 // Types
 interface UserProfile {
@@ -49,35 +50,35 @@ const ElaviewHeader = () => {
     const suggestions: AISuggestion[] = [
       {
         type: 'ai-interpretation',
-        icon: <Sparkles className="ai-sparkles-icon" />,
+        icon: <Sparkles />,
         text: `Looking for: ${query}`,
         interpretation: 'Billboard near downtown, budget $2-5K, tech audience',
         confidence: 95
       },
       {
         type: 'location',
-        icon: <MapPin className="location-icon" />,
+        icon: <MapPin />,
         text: 'Downtown Tech District',
         description: 'High foot traffic • Young professionals • $3,200 avg',
         score: 89
       },
       {
         type: 'location',
-        icon: <MapPin className="location-icon" />,
+        icon: <MapPin />,
         text: 'Business District',
         description: 'Premium visibility • Business audience • $4,800 avg',
         score: 92
       },
       {
         type: 'space-type',
-        icon: <TrendingUp className="trending-icon" />,
+        icon: <TrendingUp />,
         text: 'Digital Billboards',
         description: '12 available • High engagement • Perfect for tech',
         count: 12
       },
       {
         type: 'space-type',
-        icon: <TrendingUp className="trending-icon" />,
+        icon: <TrendingUp />,
         text: 'Building Walls',
         description: '8 available • Creative freedom • Lower cost',
         count: 8
@@ -293,18 +294,11 @@ const ElaviewHeader = () => {
     setSearchFocused(false);
   };
 
-  const quickFilters = [
-    { label: 'Billboards', count: 234 },
-    { label: 'Digital Displays', count: 156 },
-    { label: 'Vehicle Wraps', count: 89 },
-    { label: 'Storefronts', count: 312 }
-  ];
-
   const effectiveRole = getEffectiveRole();
   console.log('🔍 Header: Current effective role:', effectiveRole, 'Dev mode:', devMode);
 
-  // Role-based navigation
-  const getRoleBasedNavigation = () => {
+  // Center navigation based on role
+  const getCenterNavigation = () => {
     // Dev mode - show special navigation with both dashboards
     if (devMode) {
       console.log('🔍 Header: Showing dev mode navigation');
@@ -314,11 +308,6 @@ const ElaviewHeader = () => {
           <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard (L)</Link>
           <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard (R)</Link>
           <Link to="/list" className="nav-button">Add Listing</Link>
-          <Link to="/messaging" className="nav-button">Messages</Link>
-          <Link to="/profile" className="nav-button">Profile</Link>
-          {userProfile?.role === 'admin' && (
-            <Link to="/admin" className="nav-button admin-btn">Admin Panel</Link>
-          )}
         </>
       );
     }
@@ -327,10 +316,7 @@ const ElaviewHeader = () => {
     if (!user || effectiveRole === null) {
       console.log('🔍 Header: Showing unauthenticated navigation');
       return (
-        <>
-          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-          <Link to="/signin" className="nav-button signin-btn">Sign In</Link>
-        </>
+        <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
       );
     }
 
@@ -338,58 +324,74 @@ const ElaviewHeader = () => {
     if (profileLoading) {
       console.log('🔍 Header: Profile loading, showing minimal navigation');
       return (
-        <>
-          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-          <Link to="/profile" className="nav-button">Profile</Link>
-        </>
+        <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
       );
     }
 
     console.log('🔍 Header: Showing role-based navigation for:', effectiveRole);
 
-    // Base navigation for all authenticated users
-    const baseNavigation = (
-      <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-    );
-
     // Role-specific navigation
-    let roleSpecificNavigation = null;
-    
     if (effectiveRole === 'renter') {
-      roleSpecificNavigation = (
-        <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard</Link>
+      return (
+        <>
+          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+          <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard</Link>
+        </>
       );
     } else if (effectiveRole === 'landlord') {
-      roleSpecificNavigation = (
+      return (
         <>
+          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+          <Link to="/list" className="nav-button action-btn">New Listing</Link>
           <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard</Link>
-          <Link to="/list" className="nav-button action-btn">List Space</Link>
         </>
       );
     } else if (effectiveRole === 'admin') {
-      roleSpecificNavigation = (
+      return (
         <>
+          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+          <Link to="/list" className="nav-button action-btn">New Listing</Link>
           <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard</Link>
-          <Link to="/list" className="nav-button action-btn">List Space</Link>
-          <Link to="/admin" className="nav-button admin-btn">Admin Panel</Link>
         </>
       );
     }
 
     return (
-      <>
-        {baseNavigation}
-        {roleSpecificNavigation}
-      </>
+      <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
     );
+  };
+
+  // Hamburger menu content based on auth state
+  const getHamburgerMenuContent = () => {
+    if (!user) {
+      // Unauthenticated user menu
+      return (
+        <div className="hamburger-dropdown">
+          <Link to="/help" className="hamburger-menu-item">Help Center</Link>
+          <Link to="/become-landlord" className="hamburger-menu-item">Become a Landlord</Link>
+          <Link to="/signin" className="hamburger-menu-item">Login or Sign Up</Link>
+        </div>
+      );
+    } else {
+      // Authenticated user menu (simplified)
+      return (
+        <div className="hamburger-dropdown">
+          <Link to="/help" className="hamburger-menu-item">Help Center</Link>
+          <Link to="/settings" className="hamburger-menu-item">Settings</Link>
+          <button 
+            onClick={() => supabase.auth.signOut()}
+            className="hamburger-menu-item"
+          >
+            Sign Out
+          </button>
+        </div>
+      );
+    }
   };
 
   const mockUser = {
     name: user?.email?.split('@')[0] || 'User',
-    role: effectiveRole === 'renter' ? 'Advertiser' : effectiveRole === 'landlord' ? 'Landlord' : 'User',
-    avatar: user?.email?.charAt(0).toUpperCase() || 'P',
-    notifications: 3,
-    messages: 2
+    avatar: user?.email?.charAt(0).toUpperCase() || 'G',
   };
 
   console.log('🔍 Header: Rendering. Loading:', loading, 'User:', !!user, 'Profile:', !!userProfile, 'DevMode:', devMode);
@@ -399,7 +401,7 @@ const ElaviewHeader = () => {
     return (
       <header className="navbar">
         <Link to="/">
-          <div className="logo-text">Elaview</div>
+        <img src={logo} alt="Elaview" className="logo-img" />
         </Link>
         <nav className="nav-links">
           <div className="nav-loading">Loading...</div>
@@ -413,94 +415,136 @@ const ElaviewHeader = () => {
     <div className="main-header">
       {/* Main Header */}
       <div className="header-container">
-        <div className="header-content">
+        
+        {/* Top Row - Logo, Navigation, and User Controls */}
+        <div className="header-top-row">
           
-          {/* Logo */}
+          {/* Left: Logo */}
           <div className="logo-section">
-            <Link to="/" className="logo-text">
-              Elaview
+            <Link to="/">
+            <img src={logo} alt="Elaview" className="logo-img"/>
             </Link>
           </div>
 
-          {/* AI-Powered Search Bar */}
-          <div className="search-section">
-            <form onSubmit={handleSearchSubmit}>
-              <div className={`search-wrapper ${searchFocused ? 'search-focused' : ''}`}>
+          {/* Center: Navigation */}
+          <div className="nav-section">
+            {getCenterNavigation()}
+          </div>
+
+          {/* Right: User Controls */}
+          <div className="user-controls-section">
+            
+            {/* Unauthenticated state */}
+            {!user && (
+              <>
+                <Link to="/become-landlord" className="become-landlord-text">
+                  Become a Landlord
+                </Link>
+                <div className="user-avatar globe-avatar">
+                  <Globe />
+                </div>
+              </>
+            )}
+
+            {/* Authenticated state */}
+            {user && (
+              <>
+                {/* Role-based text for authenticated users */}
+                {effectiveRole === 'renter' && (
+                  <Link to="/become-landlord" className="become-landlord-text">
+                    Become a Landlord
+                  </Link>
+                )}
+                {effectiveRole === 'landlord' && (
+                  <Link to="/switch-to-renter" className="become-landlord-text">
+                    Switch to Advertiser
+                  </Link>
+                )}
                 
-                {/* Search Input Container */}
-                <div className={`search-input-container ${searchFocused ? 'input-focused' : ''}`}>
-                  
-                  {/* Search Icon */}
-                  <div className="search-icon-wrapper">
-                    <Search className={`search-icon ${searchFocused ? 'icon-focused' : ''}`} />
+                <Link to="/profile" className="user-avatar-link">
+                  <div className="user-avatar">
+                    {mockUser.avatar}
                   </div>
+                </Link>
+              </>
+            )}
 
-                  {/* Search Input */}
-                  <input
-                    ref={searchRef}
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={handleSearchFocus}
-                    onBlur={handleSearchBlur}
-                    placeholder="Find your perfect ad space... Try: 'billboard near tech companies under $3000'"
-                    className="search-input"
-                  />
+            {/* Hamburger Menu */}
+            <div className="hamburger-container">
+              <button 
+                className="hamburger-menu"
+                onClick={() => setShowUserMenu(!showUserMenu)}
+              >
+                <Menu />
+              </button>
 
-                  {/* AI Badge */}
-                  {searchQuery && (
-                    <div className="ai-badge">
-                      <Sparkles className="ai-badge-icon" />
-                      <span>AI</span>
-                    </div>
-                  )}
+              {/* Hamburger Dropdown */}
+              {showUserMenu && getHamburgerMenuContent()}
+            </div>
+          </div>
+        </div>
 
-                  {/* Quick Filters */}
-                  <div className="search-controls">
-                    <button type="button" className="search-control-btn">
-                      <MapPin className="search-control-icon" />
-                    </button>
-                    <button type="button" className="search-control-btn">
-                      <Calendar className="search-control-icon" />
-                    </button>
-                    <button type="button" className="search-control-btn">
-                      <Filter className="search-control-icon" />
-                    </button>
+        {/* Search Row - Prominent Search Bar */}
+        <div className="header-search-row">
+          <div className="search-section-prominent">
+            <form onSubmit={handleSearchSubmit} className="search-form">
+              <div className={`search-wrapper ${searchFocused ? 'focused' : ''}`}>
+                <div className="search-icon-container">
+                  <Search className="search-icon" />
+                </div>
+                <input
+                  ref={searchRef}
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={handleSearchFocus}
+                  onBlur={handleSearchBlur}
+                  placeholder="Describe your ideal space..."
+                  className="search-input"
+                />
+                {searchQuery && (
+                  <div className="ai-badge">
+                    <Sparkles />
+                    <span>AI</span>
                   </div>
+                )}
+                <div className="search-controls">
+                  <button type="button" className="search-control-btn">
+                    <MapPin />
+                  </button>
+                  <button type="button" className="search-control-btn">
+                    <Calendar />
+                  </button>
+                  <button type="button" className="search-control-btn">
+                    <Filter />
+                  </button>
                 </div>
               </div>
             </form>
 
-            {/* AI Search Results Dropdown */}
+            {/* AI Suggestions Dropdown */}
             {showResults && aiSuggestions.length > 0 && (
-              <div className="ai-suggestions-dropdown">
-                
-                {/* AI Interpretation */}
+              <div className="suggestions-dropdown">
                 {aiSuggestions.find(s => s.type === 'ai-interpretation') && (
-                  <div className="ai-interpretation-section">
+                  <div className="ai-interpretation">
                     <button
                       onClick={() => handleSuggestionClick(aiSuggestions.find(s => s.type === 'ai-interpretation')!)}
-                      className="ai-interpretation-button"
+                      className="ai-interpretation-btn"
                     >
-                      <Sparkles className="ai-interpretation-icon" />
-                      <div className="ai-interpretation-content">
-                        <div className="ai-interpretation-title">AI Understanding</div>
-                        <div className="ai-interpretation-text">
+                      <Sparkles />
+                      <div className="ai-content">
+                        <div className="ai-title">AI Understanding</div>
+                        <div className="ai-text">
                           {aiSuggestions.find(s => s.type === 'ai-interpretation')?.interpretation}
                         </div>
-                        <div className="ai-interpretation-confidence">
-                          95% confidence • Click to search
-                        </div>
+                        <div className="ai-confidence">95% confidence • Click to search</div>
                       </div>
                     </button>
                   </div>
                 )}
 
-                {/* Location Suggestions */}
                 <div className="suggestions-section">
-                  <div className="suggestions-header">
-                    Recommended Locations
-                  </div>
+                  <div className="suggestions-header">Recommended Locations</div>
                   {aiSuggestions.filter(s => s.type === 'location').map((suggestion, idx) => (
                     <button
                       key={idx}
@@ -512,18 +556,13 @@ const ElaviewHeader = () => {
                         <div className="suggestion-title">{suggestion.text}</div>
                         <div className="suggestion-description">{suggestion.description}</div>
                       </div>
-                      <div className="suggestion-score">
-                        Score: {suggestion.score}
-                      </div>
+                      <div className="suggestion-score">Score: {suggestion.score}</div>
                     </button>
                   ))}
                 </div>
 
-                {/* Space Type Suggestions */}
-                <div className="suggestions-section bordered">
-                  <div className="suggestions-header">
-                    Matching Ad Spaces
-                  </div>
+                <div className="suggestions-section">
+                  <div className="suggestions-header">Matching Ad Spaces</div>
                   {aiSuggestions.filter(s => s.type === 'space-type').map((suggestion, idx) => (
                     <button
                       key={idx}
@@ -535,123 +574,12 @@ const ElaviewHeader = () => {
                         <div className="suggestion-title">{suggestion.text}</div>
                         <div className="suggestion-description">{suggestion.description}</div>
                       </div>
-                      <div className="suggestion-count">
-                        {suggestion.count} available
-                      </div>
+                      <div className="suggestion-count">{suggestion.count} available</div>
                     </button>
                   ))}
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Navigation & User Controls */}
-          <div className="controls-section">
-            
-            {/* Role-based Navigation */}
-            <div className="nav-desktop">
-              {getRoleBasedNavigation()}
-            </div>
-
-            {/* Switch Role */}
-            {user && effectiveRole !== 'admin' && (
-              <Link 
-                to={effectiveRole === 'landlord' ? '/switch-to-renter' : '/switch-to-landlord'}
-                className="switch-role-btn"
-              >
-                Switch to {effectiveRole === 'landlord' ? 'Advertiser' : 'Landlord'}
-              </Link>
-            )}
-
-            {/* Messages */}
-            {user && (
-              <Link to="/messages" className="icon-button">
-                <MessageSquare className="icon-button-icon" />
-                {mockUser.messages > 0 && (
-                  <span className="notification-badge">
-                    {mockUser.messages}
-                  </span>
-                )}
-              </Link>
-            )}
-
-            {/* Notifications */}
-            {user && (
-              <button className="icon-button">
-                <Bell className="icon-button-icon" />
-                {mockUser.notifications > 0 && (
-                  <span className="notification-badge">
-                    {mockUser.notifications}
-                  </span>
-                )}
-              </button>
-            )}
-
-            {/* User Profile Dropdown */}
-            {user && (
-              <div className="user-profile-container">
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="user-profile-button"
-                >
-                  <div className="user-avatar">
-                    {mockUser.avatar}
-                  </div>
-                  <div className="user-info">
-                    <div className="user-name">{mockUser.name}</div>
-                    <div className="user-role">{mockUser.role}</div>
-                  </div>
-                </button>
-
-                {/* User Dropdown Menu */}
-                {showUserMenu && (
-                  <div className="user-profile-dropdown">
-                    <div className="user-profile-header">
-                      <div className="user-profile-name">{mockUser.name}</div>
-                      <div className="user-profile-role">{mockUser.role}</div>
-                    </div>
-                    
-                    <div className="user-profile-menu">
-                      <Link to="/dashboard" className="user-profile-menu-item">
-                        Dashboard
-                      </Link>
-                      <Link to="/campaigns" className="user-profile-menu-item">
-                        My Campaigns
-                      </Link>
-                      <Link to="/saved-searches" className="user-profile-menu-item">
-                        Saved Searches
-                      </Link>
-                      <Link to="/settings" className="user-profile-menu-item">
-                        Account Settings
-                      </Link>
-                    </div>
-
-                    <div className="user-profile-menu-section">
-                      <Link to="/become-landlord" className="user-profile-menu-item featured">
-                        Become a Landlord
-                      </Link>
-                      <Link to="/refer" className="user-profile-menu-item">
-                        Refer a Friend
-                      </Link>
-                    </div>
-
-                    <div className="user-profile-menu-section">
-                      <button 
-                        onClick={() => supabase.auth.signOut()}
-                        className="user-profile-menu-item danger"
-                      >
-                        Sign Out
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Hamburger Menu */}
-            <button className="hamburger-menu">
-              <Menu className="hamburger-icon" />
-            </button>
           </div>
         </div>
       </div>
@@ -662,31 +590,6 @@ const ElaviewHeader = () => {
           🔧 Dev Mode Enabled
         </div>
       )}
-
-      {/* Quick Filter Bar */}
-      <div className="quick-filter-bar">
-        <div className="quick-filter-container">
-          <div className="quick-filter-items">
-            <span className="quick-filter-label">Popular:</span>
-            {quickFilters.map((filter, idx) => (
-              <Link
-                key={idx}
-                to={`/browse?type=${encodeURIComponent(filter.label)}`}
-                className="quick-filter-link"
-              >
-                {filter.label} ({filter.count})
-              </Link>
-            ))}
-          </div>
-          
-          <Link
-            to="/browse?advanced=true"
-            className="advanced-filter-link"
-          >
-            Advanced Filters
-          </Link>
-        </div>
-      </div>
     </div>
   );
 };

@@ -37,6 +37,7 @@ interface LandlordListing {
     expires_at: string;
     requires_content_approval?: boolean;
   };
+  address?: string;
 }
 
 interface MessageThread {
