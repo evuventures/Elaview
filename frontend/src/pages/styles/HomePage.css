@@ -14,51 +14,97 @@ body {
 
 .Home {
   display: flex;
-  justify-content: space-around;
+  justify-content: flex-start;
   align-items: center;
-  padding: 10px;
-  gap: 40px;
-  flex-wrap: wrap;
+  padding: 0;
   background-color: #fff;
+  
+  /* Background image properties */
+  background-size: cover;           /* Ensures the image covers the entire container */
+  background-position: center;      /* Centers the background image */
+  background-repeat: no-repeat;     /* Prevents image repetition */
+  background-attachment: fixed;     /* Optional: creates a parallax effect */
+  
+  /* Ensure sufficient height to show the background */
+  min-height: 100vh;               /* Full viewport height */
+  
+  /* Optional: Add overlay for better text readability */
+  position: relative;
+}
+
+/* Optional: Add a semi-transparent overlay for better text contrast */
+.Home::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1); /* Light white overlay */
+  pointer-events: none; /* Allows clicking through the overlay */
+  z-index: 1;
 }
 
 .HomeLeftSection {
-  flex: 1;
-  max-width: 500px;
+  flex: 3; /* 3/5 = 60% */
+  padding: 40px 80px 80px 80px; /* More padding on left and right sides */
+  position: relative;
+  z-index: 2;
+  
+  /* Glass morphism effect for better readability */
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 20px 0 0 20px; /* top-left, top-right, bottom-right, bottom-left */
+  box-shadow: none;
+  border: none;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 20px 0 20px 40px;
 }
 
 .HomeLeftSection h1 {
   font-size: 3rem;
-  font-weight: bold;
-  line-height: 1.2;
+  font-weight: 800; /* Bolder for better impact */
+  line-height: 1.1; /* Tighter line height */
   margin-bottom: 20px;
+  color: #1a1a1a; /* Darker for better contrast */
+  letter-spacing: -0.02em; /* Tighter letter spacing */
 }
 
 .HomeLeftSection p {
-  font-size: 1rem;
-  color: #555;
+  font-size: 1.1rem; /* Slightly larger */
+  color: #444; /* Better contrast than #555 */
   margin-bottom: 30px;
+  line-height: 1.6; /* Better readability */
 }
 
 .NavButton {
-  padding: 0.5rem 1rem;
-  background-color: #555;
+  padding: 0.75rem 1.5rem; /* Larger padding */
+  background: #1a1a1a; /* Darker background */
   color: white;
-  border: none;
-  border-radius: 4px;
+  border: 2px solid #1a1a1a;
+  border-radius: 8px; /* More rounded */
   text-decoration: none;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  font-weight: 600; /* Bolder */
+  transition: all 0.3s ease;
   margin-right: 15px;
+  display: inline-block;
 }
+
 .NavButton:hover {
-  background-color: #f3f3f3;
-  color: #222
+  background: transparent;
+  color: #1a1a1a;
+  border: 2px solid #1a1a1a;
+  transform: translateY(-2px); /* Subtle lift effect */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .Reviews {
   display: flex;
   align-items: center;
+  justify-content: center;
   margin-top: 25px;
 }
 
@@ -68,39 +114,104 @@ body {
   border-radius: 50%;
   border: 2px solid white;
   margin-right: -10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 .Reviews span {
-  margin-left: 15px;
+
   font-size: 0.9rem;
-  color: #666;
+  color: #555;
+  font-weight: 500; /* Slightly bolder */
 }
 
+/* Alternative option: If you prefer white text with shadows instead */
+.HomeLeftSection.white-text {
+  background: transparent;
+  backdrop-filter: none;
+  padding: 80px 40px 80px 80px;
+  box-shadow: none;
+  border: none;
+}
+
+.HomeLeftSection.white-text h1 {
+  color: white;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+  font-weight: 800;
+}
+
+.HomeLeftSection.white-text p {
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.HomeLeftSection.white-text .Reviews span {
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+.HomeLeftSection.white-text .NavButton {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.HomeLeftSection.white-text .NavButton:hover {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+/* Update the HomeRightSection to remove relative positioning conflicts */
 .HomeRightSection {
   position: relative;
-  flex: 1;
-  max-width: 500px;
-  max-height: 500px;
+  flex: 2; /* 2/5 = 40% */
+  padding: 40px 80px 80px 80px;
+  z-index: 2;
+  
+  /* Glass morphism effect for better readability - matching HomeLeftSection */
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 0 20px 20px 0; /* top-left, top-right, bottom-right, bottom-left */
+  box-shadow: none;
+  border: none;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 20px 40px 20px 0;
 }
 
-.Billboard1 {
+/* Create a container for the billboard and card */
+.BillboardContainer {
+  position: relative;
   width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Make the billboard image larger */
+.Billboard1 {
+  width: 120%; /* Increased from 100% - adjust this value as needed */
+  max-width: 500px; /* Optional: set a maximum width */
+  height: auto;
   border-radius: 10px;
   box-shadow: 0 4px 30px rgba(0,0,0,0.1);
 }
 
-
+/* Position the card inside the image, near the bottom */
 .Card {
   position: absolute;
-  bottom: 20px;
-  left: 30px;
-  right: 30px;
+  bottom: 15px; /* Closer to the bottom of the image */
+  left: 15px;
+  right: 15px;
   background-color: rgba(255,255,255,0.95);
   padding: 16px 20px;
   border-radius: 8px;
-  display: center;
+  display: flex;
   justify-content: space-between;
   align-items: center;
+  backdrop-filter: blur(5px); /* Add slight blur for better glass effect */
 }
 
 .CardTitle {
@@ -442,20 +553,33 @@ body {
   .Home {
     flex-direction: column;
     align-items: center;
-    padding: 80px 20px 60px 20px;
+    padding: 0;
+    min-height: 100vh; /* Maintain full height on mobile */
+    background-attachment: scroll; /* Better performance on mobile */
   }
 
   .HomeLeftSection, 
   .HomeRightSection {
-    max-width: 100%;
     flex: unset;
+    width: 100%;
     text-align: left;
+    position: relative;
+    z-index: 2;
+    min-height: auto;
+    padding: 40px 20px;
+  }
+
+  .HomeLeftSection {
+    display: block;
+  }
+
+  .HomeRightSection {
+    display: block;
   }
 
   .HomeLeftSection h1 {
     font-size: 2rem;
   }
-
 
   .NavButton {
     font-size: 0.85rem;
@@ -476,7 +600,6 @@ body {
     margin-right: -10px;
   }
   
-
   .Avatar {
     width: 30px;
     height: 30px;
@@ -487,7 +610,6 @@ body {
   .HeroText {
     text-align: left;
   }
-
 
   .HeroOverlay {
     position: absolute;
@@ -503,6 +625,5 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
     z-index: 1;
-    
   }
 }

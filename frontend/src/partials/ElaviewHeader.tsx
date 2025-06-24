@@ -43,6 +43,16 @@ const ElaviewHeader = () => {
   const [aiSuggestions, setAiSuggestions] = useState<AISuggestion[]>([]);
   const searchRef = useRef<HTMLInputElement>(null);
 
+  // Collapse states
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const headerRef = useRef<HTMLDivElement>(null);
+  
+  // Scroll collapse configuration with hysteresis
+  const COLLAPSE_THRESHOLD = 100; // Pixels to scroll before collapsing
+  const EXPAND_THRESHOLD = 60;    // Pixels to scroll back up before expanding (creates dead zone)
+  const SCROLL_DELTA_THRESHOLD = 8; // Minimum scroll delta to trigger (increased for stability)
+
   // Mock AI suggestions based on natural language processing
   const generateAiSuggestions = (query: string): AISuggestion[] => {
     if (!query) return [];
@@ -241,6 +251,70 @@ const ElaviewHeader = () => {
     };
   }, []);
 
+  // Scroll collapse handler with hysteresis and direction detection
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const scrollDelta = Math.abs(currentScrollY - lastScrollY);
+          const scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
+          
+          // Only process scroll if delta is significant enough
+          if (scrollDelta < SCROLL_DELTA_THRESHOLD) {
+            ticking = false;
+            return;
+          }
+          
+          // Hysteresis logic: different thresholds for collapsing vs expanding
+          if (!isCollapsed && currentScrollY > COLLAPSE_THRESHOLD && scrollDirection === 'down') {
+            setIsCollapsed(true);
+            console.log('🔍 Header: Collapsed at scroll position:', currentScrollY);
+          } else if (isCollapsed && currentScrollY <= EXPAND_THRESHOLD && scrollDirection === 'up') {
+            setIsCollapsed(false);
+            console.log('🔍 Header: Expanded at scroll position:', currentScrollY);
+          }
+          
+          setLastScrollY(currentScrollY);
+          ticking = false;
+        });
+        
+        ticking = true;
+      }
+    };
+    
+    // Passive event listener for better performance
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isCollapsed, lastScrollY]);
+  
+  // Debounced resize handler to recalculate on window resize
+  useEffect(() => {
+    let resizeTimeout: NodeJS.Timeout;
+    
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        // Reset collapse state on significant resize
+        const currentScrollY = window.scrollY;
+        if (currentScrollY <= EXPAND_THRESHOLD) {
+          setIsCollapsed(false);
+        }
+      }, 150);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimeout);
+    };
+  }, []);
+
   // AI search suggestions effect
   useEffect(() => {
     if (searchQuery) {
@@ -302,6 +376,30 @@ const ElaviewHeader = () => {
     }
   };
 
+  // Handle search focus in collapsed state
+  const handleCollapsedSearchFocus = () => {
+    if (isCollapsed) {
+      setSearchFocused(true);
+      if (searchQuery) setShowResults(true);
+    }
+  };
+  
+  const handleCollapsedSearchBlur = () => {
+    setTimeout(() => {
+      setSearchFocused(false);
+      setShowResults(false);
+    }, 200);
+  };
+  
+  const handleCollapsedSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/browse?q=${encodeURIComponent(searchQuery)}`);
+      setShowResults(false);
+      setSearchFocused(false);
+    }
+  };
+
   const handleSuggestionClick = (suggestion: AISuggestion) => {
     if (suggestion.type === 'ai-interpretation') {
       setSearchQuery(suggestion.text);
@@ -316,67 +414,109 @@ const ElaviewHeader = () => {
   };
 
   const effectiveRole = getEffectiveRole();
-  console.log('🔍 Header: Current effective role:', effectiveRole, 'Dev mode:', devMode);
+  console.log('🔍 Header: Current effective role:', effectiveRole, 'Dev mode:', devMode, 'Collapsed:', isCollapsed);
 
   // Center navigation based on role
-  // Replace the getCenterNavigation function in ElaviewHeader.tsx with this:
+  const getCenterNavigation = () => {
+    // Dev mode - show special navigation with both dashboards
+    if (devMode) {
+      console.log('🔍 Header: Showing dev mode navigation');
+      return (
+        <>
+          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+          <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard (L)</Link>
+          <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard (R)</Link>
+          <Link to="/list" className="nav-button">Add Listing</Link>
+        </>
+      );
+    }
 
-const getCenterNavigation = () => {
-  // Dev mode - show special navigation with both dashboards
-  if (devMode) {
-    console.log('🔍 Header: Showing dev mode navigation');
-    return (
-      <>
+    // Guest mode or unauthenticated user
+    if (!user || effectiveRole === null) {
+      console.log('🔍 Header: Showing unauthenticated navigation');
+      return (
         <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-        <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard (L)</Link>
-        <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard (R)</Link>
-        <Link to="/list" className="nav-button">Add Listing</Link>
-      </>
-    );
-  }
+      );
+    }
 
-  // Guest mode or unauthenticated user
-  if (!user || effectiveRole === null) {
-    console.log('🔍 Header: Showing unauthenticated navigation');
+    // Profile is loading
+    if (profileLoading) {
+      console.log('🔍 Header: Profile loading, showing minimal navigation');
+      return (
+        <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+      );
+    }
+
+    console.log('🔍 Header: Showing role-based navigation for:', effectiveRole);
+
+    // Role-specific navigation
+    // Note: effectiveRole for admin users will be their sub_role ('renter' or 'landlord')
+    if (effectiveRole === 'renter') {
+      return (
+        <>
+          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+          <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard</Link>
+        </>
+      );
+    } else if (effectiveRole === 'landlord') {
+      return (
+        <>
+          <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+          <Link to="/list" className="nav-button action-btn">New Listing</Link>
+          <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard</Link>
+        </>
+      );
+    }
+
+    // Fallback for any unexpected cases
     return (
       <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
     );
-  }
+  };
 
-  // Profile is loading
-  if (profileLoading) {
-    console.log('🔍 Header: Profile loading, showing minimal navigation');
+  // Get navigation for collapsed state (simplified)
+  const getCollapsedNavigation = () => {
+    if (devMode) {
+      return (
+        <div className="nav-buttons-collapsed">
+          <Link to="/browse" className="nav-button-collapsed browse-btn">Browse</Link>
+          <Link to="/landlord-dashboard" className="nav-button-collapsed action-btn">Dashboard (L)</Link>
+          <Link to="/renter-dashboard" className="nav-button-collapsed action-btn secondary">Dashboard (R)</Link>
+        </div>
+      );
+    }
+    
+    if (!user || effectiveRole === null || profileLoading) {
+      return (
+        <div className="nav-buttons-collapsed">
+          <Link to="/browse" className="nav-button-collapsed browse-btn">Browse</Link>
+        </div>
+      );
+    }
+    
+    if (effectiveRole === 'renter') {
+      return (
+        <div className="nav-buttons-collapsed">
+          <Link to="/browse" className="nav-button-collapsed browse-btn">Browse</Link>
+          <Link to="/renter-dashboard" className="nav-button-collapsed action-btn">Dashboard</Link>
+        </div>
+      );
+    } else if (effectiveRole === 'landlord') {
+      return (
+        <div className="nav-buttons-collapsed">
+          <Link to="/browse" className="nav-button-collapsed browse-btn">Browse</Link>
+          <Link to="/list" className="nav-button-collapsed action-btn secondary">List</Link>
+          <Link to="/landlord-dashboard" className="nav-button-collapsed action-btn">Dashboard</Link>
+        </div>
+      );
+    }
+    
     return (
-      <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
+      <div className="nav-buttons-collapsed">
+        <Link to="/browse" className="nav-button-collapsed browse-btn">Browse</Link>
+      </div>
     );
-  }
-
-  console.log('🔍 Header: Showing role-based navigation for:', effectiveRole);
-
-  // Role-specific navigation
-  // Note: effectiveRole for admin users will be their sub_role ('renter' or 'landlord')
-  if (effectiveRole === 'renter') {
-    return (
-      <>
-        <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-        <Link to="/renter-dashboard" className="nav-button action-btn">Dashboard</Link>
-      </>
-    );
-  } else if (effectiveRole === 'landlord') {
-    return (
-      <>
-        <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-        <Link to="/list" className="nav-button action-btn">New Listing</Link>
-        <Link to="/landlord-dashboard" className="nav-button action-btn">Dashboard</Link>
-      </>
-    );
-  }
-
-  // Fallback for any unexpected cases
-  return (
-    <Link to="/browse" className="nav-button browse-btn">Browse Spaces</Link>
-  );
-};
+  };
 
   // Hamburger menu content based on auth state
   const getHamburgerMenuContent = () => {
@@ -411,7 +551,7 @@ const getCenterNavigation = () => {
     avatar: user?.email?.charAt(0).toUpperCase() || 'G',
   };
 
-  console.log('🔍 Header: Rendering. Loading:', loading, 'User:', !!user, 'Profile:', !!userProfile, 'DevMode:', devMode);
+  console.log('🔍 Header: Rendering. Loading:', loading, 'User:', !!user, 'Profile:', !!userProfile, 'DevMode:', devMode, 'Collapsed:', isCollapsed);
 
   if (loading) {
     console.log('🔍 Header: Showing loading state');
@@ -429,7 +569,10 @@ const getCenterNavigation = () => {
 
   console.log('🔍 Header: Showing normal header');
   return (
-    <div className="main-header">
+    <div 
+      ref={headerRef}
+      className={`main-header ${isCollapsed ? 'collapsed' : ''}`}
+    >
       {/* Main Header */}
       <div className="header-container">
         
@@ -443,9 +586,31 @@ const getCenterNavigation = () => {
             </Link>
           </div>
 
-          {/* Center: Navigation */}
+          {/* Center: Navigation (normal state) OR Search+Nav (collapsed state) */}
           <div className="nav-section">
             {getCenterNavigation()}
+          </div>
+          
+          {/* Collapsed state: Integrated search + navigation */}
+          <div className="search-nav-integrated">
+            <form onSubmit={handleCollapsedSearchSubmit} className="search-form">
+              <div className={`search-wrapper-collapsed ${searchFocused ? 'focused' : ''}`}>
+                <div className="search-icon-container">
+                  <Search className="search-icon" />
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={handleCollapsedSearchFocus}
+                  onBlur={handleCollapsedSearchBlur}
+                  placeholder="Find your space..."
+                  className="search-input"
+                />
+              </div>
+            </form>
+            
+            {getCollapsedNavigation()}
           </div>
 
           {/* Right: User Controls */}
@@ -528,7 +693,7 @@ const getCenterNavigation = () => {
           </div>
         </div>
 
-        {/* Search Row - Prominent Search Bar */}
+        {/* Search Row - Prominent Search Bar (hidden when collapsed) */}
         <div className="header-search-row">
           <div className="search-section-prominent">
             <form onSubmit={handleSearchSubmit} className="search-form">
@@ -566,8 +731,8 @@ const getCenterNavigation = () => {
               </div>
             </form>
 
-            {/* AI Suggestions Dropdown */}
-            {showResults && aiSuggestions.length > 0 && (
+            {/* AI Suggestions Dropdown - Only show if not collapsed or if collapsed search is focused */}
+            {showResults && aiSuggestions.length > 0 && (!isCollapsed || searchFocused) && (
               <div className="suggestions-dropdown">
                 {aiSuggestions.find(s => s.type === 'ai-interpretation') && (
                   <div className="ai-interpretation">

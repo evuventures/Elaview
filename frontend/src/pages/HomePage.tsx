@@ -10,6 +10,7 @@ import profile5 from '/images/profile5.png';
 import profile6 from '/images/profile6.png';
 import profile7 from '/images/profile7.png';
 import sohoImg from "/images/soho.png";
+import homebg from '/images/homebg.jpg'
 import timesSquareImg from "/images/timesSquare.png";
 import brooklynImg from "/images/brooklyn.png";
 import chelseaImg from "/images/chelsea.png";
@@ -111,11 +112,13 @@ export default function Home() {
   ];
   return (
     <>
-      <div className = "Home">
+      <div className="Home" style={{ 
+        backgroundImage: `url(${homebg})` 
+        }}>
         <div className = "HomeLeftSection">
-          <h1>Unlock Hidden Advertising Spaces</h1>
+          <h1>Unlock Hidden <br></br>Advertising Spaces</h1>
           <p>
-          Connect landlords with prime advertising real estate to brands
+          Connect landlords with prime advertising real estate <br></br>to brands
           seeking impactful visibility in cities.
           </p>
           <div className="HomeButton">
@@ -135,15 +138,17 @@ export default function Home() {
         
         
         <div className="HomeRightSection">
-          <img src={billboardImage} alt="Billboard" className="Billboard1" />
-          <div className="Card">
-            <div className="CardInfo">
-              <p className="CardTitle">SoHo Wall Space</p>
-              <p className="CardSubtext">30 × 40 ft • High Traffic • $5,000/week</p>
-            </div>
-            <Link to="/detailsPage/soho-hero-space" className="DetailsButton" style={{display: 'block', textDecoration: 'none'}}>View Details</Link>
-          </div>
+          <div className="BillboardContainer">
+            <img src={billboardImage} alt="Billboard" className="Billboard1" />
+            <div className="Card">
+              <div className="CardInfo">
+            <p className="CardTitle">SoHo Wall Space</p>
+          <p className="CardSubtext">30 × 40 ft • High Traffic • $5,000/week</p>
         </div>
+      <Link to="/detailsPage/soho-hero-space" className="DetailsButton" style={{display: 'block', textDecoration: 'none'}}>View Details</Link>
+    </div>
+  </div>
+</div>
       </div>
 
       <div className="FeaturedSpaces">

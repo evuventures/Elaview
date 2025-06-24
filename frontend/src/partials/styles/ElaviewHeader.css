@@ -1,6 +1,6 @@
 /* ====================================================================
-   ELAVIEW HEADER - PROFESSIONAL STYLING
-   Modern, clean header design inspired by Airbnb
+   ELAVIEW HEADER - PROFESSIONAL STYLING WITH COLLAPSE
+   Modern, clean header design inspired by Airbnb with scroll collapse
    ==================================================================== */
 
 /* ====================================================================
@@ -13,12 +13,14 @@
     top: 0;
     z-index: 1000;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .header-container {
     max-width: 1600px;
     margin: 0 auto;
     padding: 0 24px;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   /* ====================================================================
@@ -31,6 +33,7 @@
     height: 80px;
     padding: 12px 0;
     gap: 24px;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   /* Left Section - Logo */
@@ -57,7 +60,7 @@
     width: auto;
     max-width: 150px;
     object-fit: contain;
-    transition: opacity 0.2s ease;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .logo-img:hover {
@@ -71,6 +74,7 @@
     justify-content: center;
     gap: 24px;
     justify-self: center;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   /* Right Section - User Controls */
@@ -80,6 +84,7 @@
     justify-content: flex-end;
     gap: 16px;
     justify-self: end;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   /* ====================================================================
@@ -88,6 +93,8 @@
   .header-search-row {
     padding: 0px 0 20px;
     border-top: 1px solid #f7f7f7;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
   }
   
   .search-section-prominent {
@@ -202,6 +209,181 @@
   .search-control-btn svg {
     width: 16px;
     height: 16px;
+  }
+
+  /* ====================================================================
+     COLLAPSED STATE - TRIGGERED BY JAVASCRIPT
+     ==================================================================== */
+  .main-header.collapsed {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .main-header.collapsed .header-container {
+    padding: 0 16px; /* Reduce horizontal padding when collapsed */
+  }
+
+  /* Collapsed: Top row becomes the unified navigation bar */
+  .main-header.collapsed .header-top-row {
+    height: 60px; /* Reduced from 80px */
+    padding: 8px 0; /* Reduced padding */
+    grid-template-columns: auto 1fr auto; /* Logo | Search+Nav | User Controls */
+    gap: 16px; /* Reduced gap */
+  }
+
+  /* Collapsed: Hide the search row completely */
+  .main-header.collapsed .header-search-row {
+    padding: 0;
+    height: 0;
+    border-top: none;
+    opacity: 0;
+  }
+
+  /* Collapsed: Logo becomes smaller */
+  .main-header.collapsed .logo-img {
+    height: 32px; /* Reduced from 40px */
+    max-width: 120px; /* Slightly smaller */
+  }
+
+  /* ====================================================================
+     COLLAPSED SEARCH + NAVIGATION INTEGRATION
+     ==================================================================== */
+
+  /* Create the integrated search+nav container for collapsed state */
+  .search-nav-integrated {
+    display: none; /* Hidden by default */
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 600px; /* Prevent it from getting too wide */
+    margin: 0 auto;
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .main-header.collapsed .search-nav-integrated {
+    display: flex; /* Show only when collapsed */
+  }
+
+  .main-header.collapsed .nav-section {
+    display: none; /* Hide original nav section when collapsed */
+  }
+
+  /* Collapsed search wrapper */
+  .search-wrapper-collapsed {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 24px;
+    padding: 8px 12px; /* Reduced padding */
+    flex: 1;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    min-width: 200px; /* Ensure minimum width */
+  }
+
+  .search-wrapper-collapsed.focused {
+    border-color: #222222;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .search-wrapper-collapsed .search-icon-container {
+    width: 24px; /* Smaller than original */
+    height: 24px;
+    background: #ff5a5f;
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .search-wrapper-collapsed .search-icon {
+    width: 12px; /* Smaller icon */
+    height: 12px;
+    color: #ffffff;
+  }
+
+  .search-wrapper-collapsed .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px; /* Slightly smaller font */
+    font-weight: 400;
+    color: #222222;
+    background: transparent;
+    min-width: 0;
+  }
+
+  .search-wrapper-collapsed .search-input::placeholder {
+    color: #717171;
+  }
+
+  /* Navigation buttons in collapsed state */
+  .nav-buttons-collapsed {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .nav-button-collapsed {
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 13px; /* Slightly smaller */
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .nav-button-collapsed.browse-btn {
+    background: transparent;
+    color: #222222;
+    border: none;
+  }
+
+  .nav-button-collapsed.browse-btn:hover {
+    background: #f7f7f7;
+    color: #222222;
+  }
+
+  .nav-button-collapsed.action-btn {
+    background: #ffffff;
+    color: #222222;
+    border: 1px solid #dddddd;
+  }
+
+  .nav-button-collapsed.action-btn:hover {
+    background: #f7f7f7;
+    border-color: #222222;
+  }
+
+  /* ====================================================================
+     USER CONTROLS ADJUSTMENTS
+     ==================================================================== */
+
+  /* Collapsed: User controls become more compact */
+  .main-header.collapsed .user-controls-section {
+    gap: 12px; /* Reduced gap */
+  }
+
+  .main-header.collapsed .become-landlord-text {
+    font-size: 13px; /* Slightly smaller */
+  }
+
+  .main-header.collapsed .user-avatar {
+    width: 36px; /* Smaller avatar */
+    height: 36px;
+    font-size: 13px;
+  }
+
+  .main-header.collapsed .hamburger-menu {
+    width: 36px; /* Smaller hamburger */
+    height: 36px;
   }
   
   /* ====================================================================
@@ -411,7 +593,7 @@
     font-weight: 500;
     font-size: 14px;
     text-decoration: none;
-    transition: color 0.2s ease;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
   }
   
@@ -431,7 +613,7 @@
     justify-content: center;
     font-weight: 600;
     font-size: 14px;
-    transition: all 0.2s ease;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
   }
   
@@ -474,7 +656,7 @@
     border: 1px solid #dddddd;
     cursor: pointer;
     border-radius: 50%;
-    transition: all 0.2s ease;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .hamburger-menu:hover {
@@ -565,6 +747,27 @@
     border-radius: 0 0 8px 8px;
     z-index: 1001;
     box-shadow: 0 2px 8px rgba(255, 90, 95, 0.3);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .main-header.collapsed .dev-mode-indicator {
+    padding: 3px 10px;
+    font-size: 10px;
+  }
+
+  /* ====================================================================
+     ACCESSIBILITY AND FOCUS STATES
+     ==================================================================== */
+
+  .search-wrapper-collapsed:focus-within {
+    border-color: #222222;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Ensure good contrast in collapsed state */
+  .main-header.collapsed .nav-button-collapsed:focus {
+    outline: 2px solid #ff5a5f;
+    outline-offset: 2px;
   }
   
   /* ====================================================================
@@ -595,6 +798,25 @@
     
     .search-input {
       font-size: 15px;
+    }
+
+    /* Collapsed state responsive */
+    .main-header.collapsed .header-top-row {
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+    }
+    
+    .search-nav-integrated {
+      max-width: none; /* Allow full width on tablets */
+    }
+    
+    .nav-buttons-collapsed {
+      gap: 6px;
+    }
+    
+    .nav-button-collapsed {
+      padding: 6px 10px;
+      font-size: 12px;
     }
   }
   
@@ -638,6 +860,35 @@
     .hamburger-dropdown {
       width: 180px;
       right: -16px;
+    }
+
+    /* Collapsed state mobile */
+    .main-header.collapsed .header-container {
+      padding: 0 12px;
+    }
+    
+    .main-header.collapsed .header-top-row {
+      height: 56px; /* Even smaller on mobile */
+      gap: 8px;
+    }
+    
+    .main-header.collapsed .logo-img {
+      height: 28px;
+      max-width: 100px;
+    }
+    
+    /* On mobile, hide some navigation buttons when collapsed */
+    .nav-button-collapsed.secondary {
+      display: none;
+    }
+    
+    .search-wrapper-collapsed {
+      padding: 6px 10px;
+      min-width: 150px;
+    }
+    
+    .search-wrapper-collapsed .search-input {
+      font-size: 13px;
     }
   }
   
@@ -687,6 +938,24 @@
     .ai-badge {
       display: none;
     }
+
+    /* Collapsed state very small screens */
+    .main-header.collapsed .become-landlord-text {
+      display: none; /* Hide on very small screens */
+    }
+    
+    .search-nav-integrated {
+      gap: 8px;
+    }
+    
+    .nav-buttons-collapsed {
+      gap: 4px;
+    }
+    
+    .nav-button-collapsed {
+      padding: 5px 8px;
+      font-size: 11px;
+    }
   }
   
   /* ====================================================================
@@ -696,6 +965,18 @@
     box-sizing: border-box;
   }
   
-  .main-header * {
-    transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  .main-header *,
+  .header-container *,
+  .header-top-row *,
+  .header-search-row * {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Prevent layout shift during animation */
+  .search-nav-integrated {
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .main-header.collapsed .search-nav-integrated {
+    opacity: 1;
   }
