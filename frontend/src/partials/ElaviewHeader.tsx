@@ -45,13 +45,7 @@ const ElaviewHeader = () => {
 
   // Collapse states
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const headerRef = useRef<HTMLDivElement>(null);
-  
-  // Scroll collapse configuration with hysteresis
-  const COLLAPSE_THRESHOLD = 100; // Pixels to scroll before collapsing
-  const EXPAND_THRESHOLD = 60;    // Pixels to scroll back up before expanding (creates dead zone)
-  const SCROLL_DELTA_THRESHOLD = 8; // Minimum scroll delta to trigger (increased for stability)
 
   // Mock AI suggestions based on natural language processing
   const generateAiSuggestions = (query: string): AISuggestion[] => {
@@ -251,7 +245,7 @@ const ElaviewHeader = () => {
     };
   }, []);
 
-  // Scroll collapse handler with hysteresis and direction detection
+  // Simplified scroll collapse handler
   useEffect(() => {
     let ticking = false;
     
@@ -259,25 +253,16 @@ const ElaviewHeader = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
-          const scrollDelta = Math.abs(currentScrollY - lastScrollY);
-          const scrollDirection = currentScrollY > lastScrollY ? 'down' : 'up';
           
-          // Only process scroll if delta is significant enough
-          if (scrollDelta < SCROLL_DELTA_THRESHOLD) {
-            ticking = false;
-            return;
-          }
-          
-          // Hysteresis logic: different thresholds for collapsing vs expanding
-          if (!isCollapsed && currentScrollY > COLLAPSE_THRESHOLD && scrollDirection === 'down') {
+          // Simple logic: collapse when away from top, expand only at top
+          if (currentScrollY === 0 && isCollapsed) {
+            setIsCollapsed(false);
+            console.log('🔍 Header: Expanded at top position');
+          } else if (currentScrollY > 0 && !isCollapsed) {
             setIsCollapsed(true);
             console.log('🔍 Header: Collapsed at scroll position:', currentScrollY);
-          } else if (isCollapsed && currentScrollY <= EXPAND_THRESHOLD && scrollDirection === 'up') {
-            setIsCollapsed(false);
-            console.log('🔍 Header: Expanded at scroll position:', currentScrollY);
           }
           
-          setLastScrollY(currentScrollY);
           ticking = false;
         });
         
@@ -291,18 +276,17 @@ const ElaviewHeader = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, [isCollapsed, lastScrollY]);
+  }, [isCollapsed]); // Only depend on isCollapsed state
   
-  // Debounced resize handler to recalculate on window resize
+  // Simplified resize handler
   useEffect(() => {
     let resizeTimeout: NodeJS.Timeout;
     
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        // Reset collapse state on significant resize
-        const currentScrollY = window.scrollY;
-        if (currentScrollY <= EXPAND_THRESHOLD) {
+        // Reset to expanded state if at top after resize
+        if (window.scrollY === 0) {
           setIsCollapsed(false);
         }
       }, 150);
