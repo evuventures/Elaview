@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/SupabaseClient';
 import './styles/LandlordDashboard.css';
-import { Box, Button, Card, CardContent, Chip, IconButton, Stack, Typography } from '@mui/material';
+import { Box, Card, CardContent, Chip, IconButton, Stack, Typography } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';

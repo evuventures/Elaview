@@ -1,6 +1,6 @@
 // frontend/src/partials/ElaviewHeader.tsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, MapPin, Calendar, Filter, MessageSquare, Bell, User as UserIcon, Menu, Sparkles, TrendingUp, Globe } from 'lucide-react';
+import { Search, MapPin, Calendar, Filter, User as Menu, Sparkles, TrendingUp, Globe } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/SupabaseClient';
 import type { User as SupabaseUser } from '@supabase/supabase-js';

@@ -280,6 +280,15 @@ export default function Home() {
         </section>
       </div>
 
+      <div className="FeaturedSpaces">
+        <h2>Featured Spaces</h2>
+        <div className="SpacesGrid">
+          {featuredSpaces.map((space, idx) => (
+            <SpaceCard key={idx} {...space} />
+          ))}
+        </div>
+      </div>
+
       <div className="HeroSection">
         <div className="HeroContent">
           <div className="HeroText">
