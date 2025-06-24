@@ -52,7 +52,7 @@ body {
   z-index: 2;
   
   /* Glass morphism effect for better readability */
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(10px);
   border-radius: 20px 0 0 20px; /* top-left, top-right, bottom-right, bottom-left */
   box-shadow: none;
@@ -61,7 +61,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 20px 0 20px 40px;
+  margin: 60px 0px 60px 80px;
 }
 
 .HomeLeftSection h1 {
@@ -170,7 +170,7 @@ body {
   z-index: 2;
   
   /* Glass morphism effect for better readability - matching HomeLeftSection */
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
   border-radius: 0 20px 20px 0; /* top-left, top-right, bottom-right, bottom-left */
   box-shadow: none;
@@ -179,7 +179,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 20px 40px 20px 0;
+  margin: 60px 80px 60px 0;
 }
 
 /* Create a container for the billboard and card */
