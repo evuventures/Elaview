@@ -13,6 +13,7 @@ import BrokenImageIcon from '@mui/icons-material/BrokenImage';
 import People from '@mui/icons-material/People';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import WarningIcon from '@mui/icons-material/Warning';
+import ContactOwnerModal from './ContactOwnerModal'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import BlockIcon from '@mui/icons-material/Block';
 import React from 'react';
@@ -21,6 +22,7 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import { supabase } from '../utils/SupabaseClient';
+import { handleImageError, FALLBACK_IMAGE_LARGE, FALLBACK_IMAGE_SMALL } from '../utils/imageFallback';
 
 // Interface matching your database structure
 interface Listing {
@@ -115,6 +117,7 @@ export default function ItemDetailPage() {
   const [value1, _] = React.useState<number | null>(4.7);
   const [startDate, setstartDate] = useState<Date | null>(null);
   const [endDate, setendDate] = useState<Date | null>(null);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
 
   // Fetch listing data
   useEffect(() => {
@@ -355,20 +358,17 @@ export default function ItemDetailPage() {
               </Box>
             </Box>
 
-            {/* Updated image container */}
+            {/* Updated image container with fallback */}
             <Box sx={{ width: '100%', marginTop: '1em' }}>
               <div className="main-image-container">
                 <img 
-                  src={listing.primary_image_url || 'https://via.placeholder.com/800x400?text=No+Image+Available'} 
+                  src={listing.primary_image_url || FALLBACK_IMAGE_LARGE} 
                   alt={listing.title}
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = 'https://via.placeholder.com/800x400?text=Image+Unavailable';
-                  }}
+                  onError={(e) => handleImageError(e, 'large')}
                 />
               </div>
 
-              {/* Additional Images */}
+              {/* Additional Images with fallback */}
               <div className="additional-images-container">
                 {listing.image_urls && listing.image_urls.length > 0 ? (
                   listing.image_urls.slice(0, 4).map((imageUrl, index) => (
@@ -377,10 +377,7 @@ export default function ItemDetailPage() {
                         src={imageUrl} 
                         alt={`${listing.title} ${index + 1}`}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = 'https://via.placeholder.com/200x100?text=No+Image';
-                        }}
+                        onError={(e) => handleImageError(e, 'small')}
                       />
                     </Box>
                   ))
@@ -715,7 +712,12 @@ export default function ItemDetailPage() {
                   </Box>
                 </Box>
 
-                <button className='DetailsButton'>Contact Owner</button>
+                <button 
+                  className='DetailsButton'
+                  onClick={() => setContactModalOpen(true)}
+                >
+                  Contact Owner
+                </button>
 
                 <Box sx={{ textAlign: 'center', marginTop: '1em', color: '#666', fontWeight: 600, fontSize: 'calc(0.9rem + 0.1vw)' }}>
                   You won't be charged yet
@@ -766,6 +768,15 @@ export default function ItemDetailPage() {
           </Box>
         </Box>
       </div>
+      <ContactOwnerModal
+        open={contactModalOpen}
+        onClose={() => setContactModalOpen(false)}
+        listingId={listing.id}
+        listingTitle={listing.title}
+        listingImage={listing.primary_image_url}
+        pricePerWeek={listing.price_per_week || (listing.price_per_day ? listing.price_per_day * 7 : undefined)}
+        landlordName={listing.landlord_name}
+      />
     </Box>
   );
 }

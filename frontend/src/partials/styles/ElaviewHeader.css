@@ -13,14 +13,14 @@
     top: 0;
     z-index: 1000;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .header-container {
     max-width: 1600px;
     margin: 0 auto;
     padding: 0 24px;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   /* ====================================================================
@@ -33,7 +33,7 @@
     height: 80px;
     padding: 12px 0;
     gap: 24px;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   /* Left Section - Logo */
@@ -60,7 +60,7 @@
     width: auto;
     max-width: 150px;
     object-fit: contain;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .logo-img:hover {
@@ -74,7 +74,7 @@
     justify-content: center;
     gap: 24px;
     justify-self: center;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   /* Right Section - User Controls */
@@ -84,7 +84,7 @@
     justify-content: flex-end;
     gap: 16px;
     justify-self: end;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   /* ====================================================================
@@ -93,7 +93,7 @@
   .header-search-row {
     padding: 0px 0 20px;
     border-top: 1px solid #f7f7f7;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
   }
   
@@ -256,7 +256,7 @@
     width: 100%;
     max-width: 600px; /* Prevent it from getting too wide */
     margin: 0 auto;
-    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .main-header.collapsed .search-nav-integrated {
@@ -593,7 +593,7 @@
     font-weight: 500;
     font-size: 14px;
     text-decoration: none;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
   }
   
@@ -613,7 +613,7 @@
     justify-content: center;
     font-weight: 600;
     font-size: 14px;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
   }
   
@@ -656,7 +656,7 @@
     border: 1px solid #dddddd;
     cursor: pointer;
     border-radius: 50%;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .hamburger-menu:hover {
@@ -747,7 +747,7 @@
     border-radius: 0 0 8px 8px;
     z-index: 1001;
     box-shadow: 0 2px 8px rgba(255, 90, 95, 0.3);
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .main-header.collapsed .dev-mode-indicator {
@@ -969,12 +969,12 @@
   .header-container *,
   .header-top-row *,
   .header-search-row * {
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* Prevent layout shift during animation */
   .search-nav-integrated {
-    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .main-header.collapsed .search-nav-integrated {
