@@ -423,6 +423,8 @@ function BrowseSpace() {
         setCurrentPage(1);
     }
 
+
+
     return (
         <>
             <Box className='layout'>
@@ -639,7 +641,7 @@ function BrowseSpace() {
                                     </Collapse>
                                 </Box>
 
-                                <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                                <Box>
                                     <ListSubheader onClick={() => setOpen4(!open4)} sx={{ cursor: 'pointer' }}>
                                         <Box className='sidebar-top'>
                                             <Box className='sidebar-text'>Availability</Box>
@@ -678,10 +680,6 @@ function BrowseSpace() {
                                             </Box>
                                         </Box>
                                     </Collapse>
-                                </Box>
-
-                                <Box sx={{ py: 2, display: 'flex', justifyContent: 'center' }}>
-                                    <button>Apply Filters</button>
                                 </Box>
                             </Box>
                         </Box>
@@ -896,7 +894,7 @@ function BrowseSpace() {
                         </Collapse>
                     </Box>
 
-                    <Box sx={{ borderBottom: '1px solid rgb(211, 210, 210)' }}>
+                    <Box >
                         <ListSubheader onClick={() => setOpen4(!open4)} sx={{ cursor: 'pointer' }}>
                             <Box className='sidebar-top'>
                                 <Box className='sidebar-text'>Availability</Box>
@@ -937,22 +935,21 @@ function BrowseSpace() {
                         </Collapse>
                     </Box>
 
-                    <Box sx={{ py: 2, display: 'flex', justifyContent: 'center' }}>
-                        <button>Apply Filters</button>
-                    </Box>
+                    {/* <Box sx={{ py: 2, display: 'flex', justifyContent: 'center' }}>
+                        <button onClick={filterButton}>Apply Filters</button>
+                    </Box> */}
                 </Box>
 
                 <Box className='main-content'>
 
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5em' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '0.5em'}}>
                         <i onClick={toggleDrawer(true)} className="bi bi-list drawer" style={{ zIndex: 1200, padding: 2, fontSize: '24px', cursor: 'pointer' }}></i>
                         <Box className='content-heading'>Advertising Spaces in NYC</Box>
-
                     </Box>
 
 
                     {/* Filter Chips */}
-                    <Box sx={{ display: 'flex', gap: '0.5em', flexWrap: 'wrap', marginTop: '1em' }}>
+                    <Box className = 'chips' sx={{ display: 'flex', gap: '0.5em', flexWrap: 'wrap', marginTop: '1em'}}>
                         {areFiltersActive && filteredItems.length > 0 && (
                             <>
                                 {selectedLocations.map((location, index) => (
@@ -1033,7 +1030,7 @@ function BrowseSpace() {
                                         <button className='cancelFilters' onClick={() => setPriceRange([1000, 15000])}><i className="bi bi-x"></i></button>
                                     </Box>
                                 )}
-                                <button className='reset' onClick={reset}>Clear All</button>
+                                <button className='clearAll' onClick={reset}>Clear All</button>
                             </>
                         )}
                     </Box>
@@ -1117,11 +1114,11 @@ function BrowseSpace() {
                                                     </Box>
                                                 </Box>
 
-                                                <Box sx={{ display: 'flex', mt: 2 }}>
-                                                    <Box sx={{ fontSize: 'calc(0.6em + 0.2vw)', fontWeight: '500' }}>
+                                                <Box sx={{ display: 'flex', mt: 2,justifyContent:'space-between' }}>
+                                                    <Box sx={{ fontSize: 'calc(0.6em + 0.2vw)', fontWeight: '500',whiteSpace:'nowrap'  }}>
                                                         <span style={{ color: '#666' }}>Type</span> : {product.type}
                                                     </Box>
-                                                    <Box sx={{ fontSize: 'calc(0.7em + 0.1vw)', marginLeft: '5em', fontWeight: '500' }}>
+                                                    <Box sx={{ fontSize: 'calc(0.7em + 0.1vw)', fontWeight: '500',whiteSpace:'nowrap' }}>
                                                         <span style={{ color: '#666' }}>Size</span>: {product.width} x {product.height}
                                                     </Box>
                                                 </Box>

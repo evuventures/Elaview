@@ -108,7 +108,7 @@ function a11yProps(index: number) {
 
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>();
-  
+
   // State management
   const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
@@ -159,7 +159,7 @@ export default function ItemDetailPage() {
         // Increment view count
         const { error: viewError } = await supabase
           .from('rental_listings')
-          .update({ 
+          .update({
             view_count: (data.view_count || 0) + 1,
             updated_at: new Date().toISOString()
           })
@@ -219,9 +219,9 @@ export default function ItemDetailPage() {
       <Box sx={{ marginTop: '4em', padding: '2em' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px' }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ 
-              width: '40px', 
-              height: '40px', 
+            <div style={{
+              width: '40px',
+              height: '40px',
               border: '4px solid #f3f3f3',
               borderTop: '4px solid #3498db',
               borderRadius: '50%',
@@ -243,9 +243,9 @@ export default function ItemDetailPage() {
           <h2>Listing Not Found</h2>
           <p>{error || 'The listing you\'re looking for doesn\'t exist or has been removed.'}</p>
           <div style={{ marginTop: '20px' }}>
-            <Link 
-              to="/browse" 
-              style={{ 
+            <Link
+              to="/browse"
+              style={{
                 padding: '12px 24px',
                 backgroundColor: '#1976d2',
                 color: 'white',
@@ -263,13 +263,13 @@ export default function ItemDetailPage() {
   }
 
   // Features for display
-  const displayFeatures = listing.features && listing.features.length > 0 
-    ? listing.features 
+  const displayFeatures = listing.features && listing.features.length > 0
+    ? listing.features
     : [
-        "High visibility location",
-        "Professional installation available", 
-        "Weather-resistant surface"
-      ];
+      "High visibility location",
+      "Professional installation available",
+      "Weather-resistant surface"
+    ];
 
   // Split features into two columns
   const midpoint = Math.ceil(displayFeatures.length / 2);
@@ -279,26 +279,26 @@ export default function ItemDetailPage() {
   // Specification data
   const specData = [
     { icon: <LocalOfferIcon />, label: 'Type', value: listing.type || 'Not specified' },
-    { 
-      icon: <i className="bi bi-arrows-angle-contract"></i>, 
-      label: 'Dimensions', 
-      value: listing.width_ft && listing.height_ft 
-        ? `${listing.width_ft}ft x ${listing.height_ft}ft` 
-        : 'Not specified' 
+    {
+      icon: <i className="bi bi-arrows-angle-contract"></i>,
+      label: 'Dimensions',
+      value: listing.width_ft && listing.height_ft
+        ? `${listing.width_ft}ft x ${listing.height_ft}ft`
+        : 'Not specified'
     },
     { icon: <People />, label: 'Traffic', value: formatTraffic(listing.traffic_count_daily) },
     { icon: <i className="bi bi-type"></i>, label: 'Material', value: 'Weather-resistant' },
-    { 
-      icon: <WarningIcon />, 
-      label: 'Restrictions', 
-      value: listing.content_restrictions?.join(', ') || 'Standard content guidelines apply' 
+    {
+      icon: <WarningIcon />,
+      label: 'Restrictions',
+      value: listing.content_restrictions?.join(', ') || 'Standard content guidelines apply'
     },
-    { 
-      icon: <CalendarTodayIcon />, 
-      label: 'Min. Booking', 
-      value: listing.minimum_rental_days 
-        ? `${listing.minimum_rental_days} day${listing.minimum_rental_days > 1 ? 's' : ''}` 
-        : '1 day' 
+    {
+      icon: <CalendarTodayIcon />,
+      label: 'Min. Booking',
+      value: listing.minimum_rental_days
+        ? `${listing.minimum_rental_days} day${listing.minimum_rental_days > 1 ? 's' : ''}`
+        : '1 day'
     },
     { icon: <i className="bi bi-download"></i>, label: 'Installation', value: 'Available' },
     { icon: <BlockIcon />, label: 'Permit Required', value: 'Contact owner' },
@@ -317,7 +317,7 @@ export default function ItemDetailPage() {
       name: 'Mike Chen',
       company: 'Local Restaurant',
       rating: 4,
-      date: 'November 2024', 
+      date: 'November 2024',
       comment: 'Good visibility and responsive landlord. Installation went smoothly.'
     },
     {
@@ -331,9 +331,10 @@ export default function ItemDetailPage() {
 
   return (
     <Box sx={{ marginTop: '2em' }}>
-      <div className="item-detail-container">
+      <div>
+
         {/* Top navigation */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '2em' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '2em',alignItems:'center' }}>
           <Link to="/browse" style={{ textDecoration: "none", color: "#1E2A47", fontSize: 'calc(0.8rem + 0.2vw)' }}>
             ← Back to Listings
           </Link>
@@ -343,6 +344,7 @@ export default function ItemDetailPage() {
             <button className='icons'><i className="bi bi-heart"></i></button>
           </Box>
         </Box>
+
 
         <Box className='layout1'>
           <Box className='mainContent'>
@@ -362,7 +364,7 @@ export default function ItemDetailPage() {
             <Box sx={{ width: '100%', marginTop: '1em' }}>
               <div className="main-image-container">
                 <img 
-                  src={listing.primary_image_url || FALLBACK_IMAGE_LARGE} 
+                  src={listing.primary_image_url || 'https://via.placeholder.com/800x400?text=No+Image+Available'} 
                   alt={listing.title}
                   onError={(e) => handleImageError(e, 'large')}
                 />
@@ -373,8 +375,8 @@ export default function ItemDetailPage() {
                 {listing.image_urls && listing.image_urls.length > 0 ? (
                   listing.image_urls.slice(0, 4).map((imageUrl, index) => (
                     <Box key={index} sx={{ flex: 1, height: 100, borderRadius: '4px', overflow: 'hidden' }}>
-                      <img 
-                        src={imageUrl} 
+                      <img
+                        src={imageUrl}
                         alt={`${listing.title} ${index + 1}`}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={(e) => handleImageError(e, 'small')}
@@ -423,7 +425,7 @@ export default function ItemDetailPage() {
                   Description
                 </span>
                 <p className='detailsText'>
-                  {listing.description || 
+                  {listing.description ||
                     `Prime advertising space in ${listing.city || 'NYC'}. This ${listing.type?.toLowerCase()} space offers excellent visibility and high foot traffic, perfect for impactful advertising campaigns. Contact the owner for more details about availability and booking.`
                   }
                 </p>
@@ -434,7 +436,7 @@ export default function ItemDetailPage() {
                   Features
                 </Box>
 
-                <Box sx={{ display: 'flex', gap: '5em', width: '100%' }}>
+                <Box sx={{ display: 'flex', width: '100%',flexWrap:'wrap' }}>
                   <Box>
                     {featuresCol1.map((feature, index) => (
                       <ListItem key={index}>
@@ -506,7 +508,7 @@ export default function ItemDetailPage() {
                   <React.Fragment key={index}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <ListItemIcon sx={{
-                        color: '#666', minWidth: 'auto', marginRight: '0.5em', display: 'flex', 
+                        color: '#666', minWidth: 'auto', marginRight: '0.5em', display: 'flex',
                         alignItems: 'center', justifyContent: 'center', width: '24px'
                       }}>
                         {item.icon}
@@ -610,14 +612,19 @@ export default function ItemDetailPage() {
 
           {/* Sidebar with wrapper for responsive grid */}
           <Box className='sidebaar'>
+
             <div className="sidebar-content">
+
               <Box className='detailsLeftSideBar1'>
+
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
+
                   <Box sx={{ fontSize: 'calc(1em + 0.2vw)', fontWeight: 'bold' }}>
                     {formatPrice(listing.price_per_week || (listing.price_per_day ? listing.price_per_day * 7 : undefined))}
                   </Box>
                   <span style={{ color: '#666', fontWeight: 500 }}>/week</span>
                 </Box>
+
 
                 <Box sx={{ fontSize: 'calc(0.8em + 0.2vw)', color: '#666', fontWeight: 500 }}>
                   {formatAvailability(listing.available_from)}
@@ -628,18 +635,18 @@ export default function ItemDetailPage() {
                   <Box sx={{ width: '100%' }}>
                     <Typography sx={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>Start Date</Typography>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <DatePicker 
-                        value={startDate} 
+                      <DatePicker
+                        value={startDate}
                         onChange={(newValue) => setstartDate(newValue)}
                         slots={{ openPickerIcon: CalendarToday }}
                         slotProps={{
                           textField: {
-                            size: 'small', 
+                            size: 'small',
                             sx: {
                               width: '100%',
-                              minWidth: 'unset', 
+                              minWidth: 'unset',
                               '& .MuiOutlinedInput-root': {
-                                borderRadius: '4px', 
+                                borderRadius: '4px',
                                 '& fieldset': { borderColor: '#d3d2d2' },
                               },
                               '& .MuiInputBase-input': { py: 0.5, height: 'auto' },
@@ -654,18 +661,18 @@ export default function ItemDetailPage() {
                   <Box sx={{ width: '100%' }}>
                     <Typography sx={{ fontSize: 'calc(0.9rem + 0.1vw)' }}>End Date</Typography>
                     <LocalizationProvider dateAdapter={AdapterDateFns}>
-                      <DatePicker 
-                        value={endDate} 
+                      <DatePicker
+                        value={endDate}
                         onChange={(newValue) => setendDate(newValue)}
                         slots={{ openPickerIcon: CalendarToday }}
                         slotProps={{
                           textField: {
-                            size: 'small', 
+                            size: 'small',
                             sx: {
                               width: '100%',
-                              minWidth: 'unset', 
+                              minWidth: 'unset',
                               '& .MuiOutlinedInput-root': {
-                                borderRadius: '4px', 
+                                borderRadius: '4px',
                                 '& fieldset': { borderColor: '#d3d2d2' },
                               },
                               '& .MuiInputBase-input': { py: 0.5, height: 'auto' },
@@ -731,52 +738,46 @@ export default function ItemDetailPage() {
                 </Box>
               </Box>
 
-              {/* Owner Info */}
-              <Box className='detailsLeftSideBar2'>
-                <Box sx={{ fontSize: 'calc(1em + 0.2vw)', fontWeight: 'bold' }}>About the Owner</Box>
-                
-                <Box sx={{ fontSize: 'calc(0.8em + 0.2vw)', fontWeight: 500, textAlign: 'center', marginTop: '1em' }}>
-                  {listing.landlord_name || 'Property Owner'}
-                </Box>
-                
-                <Box sx={{ color: '#666', fontWeight: 500, fontSize: 'calc(0.8rem + 0.1vw)', textAlign: 'center' }}>
-                  {listing.landlord_verified ? '✓ Verified Owner' : 'Member since 2023'}
+
+              <Box className = 'tabletscreenView'>
+                {/* Owner Info */}
+                <Box className='detailsLeftSideBar2'>
+                  <Box sx={{ fontSize: 'calc(1em + 0.2vw)', fontWeight: 'bold' }}>About the Owner</Box>
+
+                  <Box sx={{ fontSize: 'calc(0.8em + 0.2vw)', fontWeight: 500, textAlign: 'center', marginTop: '1em' }}>
+                    {listing.landlord_name || 'Property Owner'}
+                  </Box>
+
+                  <Box sx={{ color: '#666', fontWeight: 500, fontSize: 'calc(0.8rem + 0.1vw)', textAlign: 'center' }}>
+                    {listing.landlord_verified ? '✓ Verified Owner' : 'Member since 2023'}
+                  </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '1em' }}>
+                    <Box sx={{ color: '#666', fontWeight: 500, fontSize: 'calc(0.9rem + 0.1vw)' }}>Response Rate</Box>
+                    <Box sx={{ fontWeight: 600, fontSize: 'calc(0.9rem + 0.1vw)' }}>95%</Box>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '1em' }}>
+                    <Box sx={{ color: '#666', fontWeight: 500, fontSize: 'calc(0.9rem + 0.1vw)' }}>Active Listings</Box>
+                    <Box sx={{ fontWeight: 600, fontSize: 'calc(0.9rem + 0.1vw)' }}>3</Box>
+                  </Box>
                 </Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '1em' }}>
-                  <Box sx={{ color: '#666', fontWeight: 500, fontSize: 'calc(0.9rem + 0.1vw)' }}>Response Rate</Box>
-                  <Box sx={{ fontWeight: 600, fontSize: 'calc(0.9rem + 0.1vw)' }}>95%</Box>
-                </Box>
+                {/* Similar Spaces */}
+                <Box className='detailsLeftSideBar3'>
+                  <Box sx={{ fontSize: 'calc(1em + 0.2vw)', fontWeight: 'bold' }}>Similar Spaces</Box>
 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '1em' }}>
-                  <Box sx={{ color: '#666', fontWeight: 500, fontSize: 'calc(0.9rem + 0.1vw)' }}>Active Listings</Box>
-                  <Box sx={{ fontWeight: 600, fontSize: 'calc(0.9rem + 0.1vw)' }}>3</Box>
-                </Box>
-              </Box>
+                  <Box sx={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                    <p>Similar spaces will be shown here</p>
+                  </Box>
 
-              {/* Similar Spaces */}
-              <Box className='detailsLeftSideBar2'>
-                <Box sx={{ fontSize: 'calc(1em + 0.2vw)', fontWeight: 'bold' }}>Similar Spaces</Box>
-                
-                <Box sx={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-                  <p>Similar spaces will be shown here</p>
+                  <button className='spacesviewButton'>View Similar Spaces</button>
                 </Box>
-
-                <button className='spacesviewButton'>View Similar Spaces</button>
               </Box>
             </div>
           </Box>
         </Box>
       </div>
-      <ContactOwnerModal
-        open={contactModalOpen}
-        onClose={() => setContactModalOpen(false)}
-        listingId={listing.id}
-        listingTitle={listing.title}
-        listingImage={listing.primary_image_url}
-        pricePerWeek={listing.price_per_week || (listing.price_per_day ? listing.price_per_day * 7 : undefined)}
-        landlordName={listing.landlord_name}
-      />
     </Box>
   );
 }

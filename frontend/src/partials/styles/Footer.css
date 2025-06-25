@@ -53,8 +53,8 @@
 .social-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 2em;
+  justify-content: center;
 }
 
 .social-link {
@@ -83,11 +83,13 @@
   border-top: 1px solid #e5e7eb;
   text-align: center;
   color: #6b7280;
-  font-size: 0.875rem;
-  padding-top: 2rem;
-  margin-top: 2rem;
+  font-size: calc(0.8em + 0.1vw);
+  padding-top: 2em;
+  margin-top: 2em;
 }
-@media (max-width: 1080px) {
+
+
+@media (max-width: 768px) {
   .footer {
     padding: 2rem 1rem;
   }
