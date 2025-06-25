@@ -5,40 +5,29 @@ import './styles/Footer.css';
 export default function Footer() {
   return (
     <footer className="footer">
+
       <div className="footer-container">
+
         <div className="footer-grid">
+
           <div className="footer-section">
             <div className="logo">
               <span>Elaview</span>
             </div>
             <p className="footer-description">Turn your unused billboard space into a revenue stream. Our platform lets you list, manage, and rent your billboard sign effortlessly</p>
-            <div className="social-links">
-              <Link to="#" className="social-link">
-                <Twitter className="icon" />
-                <span className="sr-only">Twitter</span>
-              </Link>
-              <Link to="#" className="social-link">
-                <Facebook className="icon" />
-                <span className="sr-only">Facebook</span>
-              </Link>
-              <Link to="#" className="social-link">
-                <Instagram className="icon" />
-                <span className="sr-only">Instagram</span>
-              </Link>
-              <Link to="#" className="social-link">
-                <Linkedin className="icon" />
-                <span className="sr-only">LinkedIn</span>
-              </Link>
-            </div>
           </div>
+
           <div className="footer-section">
+
             <h4 className="footer-title">Product</h4>
+
             <ul className="footer-links">
               <li>
                 <Link to="#" className="footer-link">
                   Features
                 </Link>
               </li>
+
               <li>
                 <Link to="#" className="footer-link">
                   Pricing
@@ -46,6 +35,7 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+
           <div className="footer-section">
             <h4 className="footer-title">Company</h4>
             <ul className="footer-links">
@@ -61,26 +51,58 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+
           <div className="footer-section">
+
             <h4 className="footer-title">Legal</h4>
+
             <ul className="footer-links">
               <li>
                 <Link to="#" className="footer-link">
                   Terms
                 </Link>
               </li>
+
               <li>
                 <Link to="#" className="footer-link">
                   Cookies
                 </Link>
               </li>
             </ul>
+
+          </div>
+
+        </div>
+
+        <div className="footer-section">
+
+          <h4 className="footer-title">Follow Us</h4>
+
+          <div className="social-links">
+
+            <Link to="#" className="social-link">
+              <Twitter className="icon" />
+            </Link>
+
+            <Link to="#" className="social-link">
+              <Facebook className="icon" />
+            </Link>
+
+            <Link to="#" className="social-link">
+              <Instagram className="icon" />
+            </Link>
+
+            <Link to="#" className="social-link">
+              <Linkedin className="icon" />
+            </Link>
           </div>
         </div>
+
         <div className="footer-bottom">
           © {new Date().getFullYear()} Elaview. All rights reserved.
         </div>
       </div>
+
     </footer>
   )
 } 

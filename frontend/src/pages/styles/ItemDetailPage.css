@@ -58,8 +58,32 @@
   border: 2px solid rgb(211, 210, 210);
   text-align: left;
   padding: 1.2em;
-  border-radius: 0.3em
+  border-radius: 0.3em;
 }
+
+
+.detailsLeftSideBar2 {
+  border: 2px solid rgb(211, 210, 210);
+  text-align: left;
+  padding: 1.2em;
+  border-radius: 0.3em;
+  margin-top: 2em;
+  width: 100%;
+  height: auto;
+}
+
+
+
+.detailsLeftSideBar3 {
+  border: 2px solid rgb(211, 210, 210);
+  text-align: left;
+  padding: 1.2em;
+  border-radius: 0.3em;
+  margin-top: 2em;
+  width: 100%;
+  height: auto;
+}
+
 
 .reportItem {
   text-align: center;
@@ -70,15 +94,6 @@
   gap: 0.5em;
   color: #666;
   font-weight: 600;
-}
-
-.detailsLeftSideBar2 {
-  border: 2px solid rgb(211, 210, 210);
-  text-align: left;
-  padding: 1.2em;
-  border-radius: 0.3em;
-  margin-top: 2em;
-  width: 100%;
 }
 
 .logo1 {
@@ -200,6 +215,12 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+    padding: 1em;
+  }
+
+
+  .detailsLeftSideBar1{
+    margin-top: 2em;
   }
 
   .main-image-container {
@@ -213,6 +234,10 @@
 
   .sections {
     max-width: 100%;
+  }
+
+  .tabletscreenView{
+    margin-top: 5em;
   }
 }
 
@@ -238,5 +263,9 @@
 
   .additional-images-container {
     gap: 0.5rem;
+  }
+
+   .tabletscreenView{
+    margin-top: 0;
   }
 }
