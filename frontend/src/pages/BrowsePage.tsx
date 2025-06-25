@@ -10,6 +10,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { CalendarToday } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../utils/SupabaseClient';
+import { handleImageError, FALLBACK_IMAGE_MEDIUM } from '../utils/imageFallback';
 
 interface Product {
     id: string;
@@ -185,7 +186,7 @@ function BrowseSpace() {
                 return;
             }
 
-            // Transform Supabase data to match your Product interface
+            // Transform Supabase data to match your Product interface with fallback images
             const transformedListings: Product[] = data.map((listing: SupabaseListing) => ({
                 id: listing.id,
                 location: listing.title || 'Unknown Location',
@@ -193,7 +194,7 @@ function BrowseSpace() {
                 pricePerMonth: listing.price_per_week
                     ? Math.round(listing.price_per_week * 4.3)
                     : (listing.price_per_day ? Math.round(listing.price_per_day * 30) : 0),
-                img: listing.primary_image_url || 'https://via.placeholder.com/400x300?text=No+Image',
+                img: listing.primary_image_url || FALLBACK_IMAGE_MEDIUM,
                 type: listing.type || 'Other',
                 width: listing.width_ft ? `${listing.width_ft}ft` : '20ft',
                 height: listing.height_ft ? `${listing.height_ft}ft` : '25ft',
@@ -1099,10 +1100,7 @@ function BrowseSpace() {
                                                 src={product.img}
                                                 style={{ height: '15em', objectFit: 'cover' }}
                                                 alt={getBaseLocation(product.location)}
-                                                onError={(e) => {
-                                                    const target = e.target as HTMLImageElement;
-                                                    target.src = 'https://via.placeholder.com/400x300?text=No+Image';
-                                                }}
+                                                onError={(e) => handleImageError(e, 'medium')}
                                             />
 
                                             <Box className="card-body" sx={{ textAlign: 'left', borderRadius: '1em', padding: '1em' }}>
