@@ -22,7 +22,7 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import { supabase } from '../utils/SupabaseClient';
-import { handleImageError, FALLBACK_IMAGE_LARGE, FALLBACK_IMAGE_SMALL } from '../utils/imageFallback';
+import { handleImageError, FALLBACK_IMAGE_LARGE } from '../utils/imageFallback';
 
 // Interface matching your database structure
 interface Listing {
